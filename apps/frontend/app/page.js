@@ -101,7 +101,7 @@ export default function LandingPage() {
     setLoading(true);
     setError(null);
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
 
     try {
       const res = await fetch(`${apiUrl}/runs`, {

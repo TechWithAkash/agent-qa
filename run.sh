@@ -67,13 +67,18 @@ if [ ! -d "node_modules" ]; then
     npm install --silent
 fi
 
+FRONTEND_PORT=3000
+if lsof -Pi :3000 -sTCP:LISTEN -t >/dev/null 2>&1 ; then
+    FRONTEND_PORT=3002
+fi
+
 echo ""
 echo -e "${GREEN}====================================================${NC}"
 echo -e "${GREEN}🚀 Application is now live!                         ${NC}"
 echo -e "${GREEN}====================================================${NC}"
-echo -e "📊 ${BLUE}DRISHTI Dashboard:${NC}  http://localhost:3000"
+echo -e "📊 ${BLUE}DRISHTI Dashboard:${NC}  http://localhost:${FRONTEND_PORT}"
 echo -e "🛍️  ${BLUE}ShopLite Store:${NC}     http://localhost:3001"
 echo -e "${YELLOW}(Press Ctrl+C at any time to stop all servers)${NC}"
 echo ""
 
-npm run dev
+npm run dev -- -p ${FRONTEND_PORT}
