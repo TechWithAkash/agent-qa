@@ -5,26 +5,27 @@ export async function POST(req) {
   try {
     const body = await req.json();
 
-    // Check if external FastAPI backend is available
-    const backendUrl = process.env.BACKEND_API_URL || "http://localhost:8000/api";
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 800);
+    const backendUrl = process.env.BACKEND_API_URL;
+    if (backendUrl) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 800);
 
-      const res = await fetch(`${backendUrl}/runs`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
+        const res = await fetch(`${backendUrl}/runs`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
 
-      if (res.ok) {
-        const data = await res.json();
-        return NextResponse.json(data, { status: 202 });
+        if (res.ok) {
+          const data = await res.json();
+          return NextResponse.json(data, { status: 202 });
+        }
+      } catch (e) {
+        // Backend not responding, proceed to fallback in-memory engine
       }
-    } catch (e) {
-      // Backend not running, proceed to fallback in-memory engine
     }
 
     // In-memory autonomous engine

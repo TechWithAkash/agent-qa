@@ -1,6 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import {
+  ShieldCheck,
+  CheckCircle2,
+  ArrowRight,
+  RotateCcw,
+  Layers,
+  Activity,
+  FileCheck2,
+  Bug,
+} from "lucide-react";
 
 const BENCHMARK_BUGS = [
   {
@@ -95,64 +105,71 @@ const BENCHMARK_BUGS = [
 
 export default function BenchmarksPage() {
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10 w-full flex-1">
+    <div className="mx-auto max-w-7xl px-6 py-10 w-full flex-1">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-2">
-            Ground-Truth Evaluation
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 font-mono text-xs font-semibold text-emerald-400 mb-2">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            <span>Ground-Truth Evaluation Framework</span>
           </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">
-            Benchmark Scorecard — ShopLite
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
+            Benchmark Scorecard &mdash; ShopLite
           </h1>
-          <p className="text-slate-400 text-xs mt-1">
+          <p className="text-xs text-[var(--text-secondary)] mt-1">
             Standardized evaluation framework per Section 16 of the Technical Architecture.
           </p>
         </div>
 
         <Link
           href="/"
-          className="glow-btn px-6 py-2.5 rounded-lg text-xs font-semibold"
+          className="btn-primary flex items-center gap-2 px-5 py-2.5 text-xs font-semibold"
         >
-          Run Benchmark Against Target
+          <span>Run Benchmark Against Target</span>
+          <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
 
       {/* Metrics Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="glass-panel p-5">
-          <div className="text-xs text-slate-400 font-medium">Stage 2 Recall (B1–B4)</div>
-          <div className="text-3xl font-bold text-emerald-400 mt-2 font-mono">100%</div>
-          <div className="text-[11px] text-slate-500 mt-1">4 of 4 planted defects detected</div>
+        <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-5">
+          <div className="text-xs font-medium text-[var(--text-secondary)]">Stage 2 Recall (B1–B4)</div>
+          <div className="mt-2 font-mono text-3xl font-bold text-emerald-400">100%</div>
+          <div className="mt-1 text-[11px] text-[var(--text-muted)]">4 of 4 planted defects detected</div>
         </div>
 
-        <div className="glass-panel p-5">
-          <div className="text-xs text-slate-400 font-medium">Report Precision</div>
-          <div className="text-3xl font-bold text-emerald-400 mt-2 font-mono">100%</div>
-          <div className="text-[11px] text-slate-500 mt-1">0 false positives on control build</div>
+        <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-5">
+          <div className="text-xs font-medium text-[var(--text-secondary)]">Report Precision</div>
+          <div className="mt-2 font-mono text-3xl font-bold text-emerald-400">100%</div>
+          <div className="mt-1 text-[11px] text-[var(--text-muted)]">0 false positives on control build</div>
         </div>
 
-        <div className="glass-panel p-5">
-          <div className="text-xs text-slate-400 font-medium">3x Replay Reproducibility</div>
-          <div className="text-3xl font-bold text-indigo-400 mt-2 font-mono">100%</div>
-          <div className="text-[11px] text-slate-500 mt-1">3/3 replay consistency on fresh contexts</div>
+        <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-5">
+          <div className="text-xs font-medium text-[var(--text-secondary)]">3&times; Replay Reproducibility</div>
+          <div className="mt-2 font-mono text-3xl font-bold text-indigo-400">100%</div>
+          <div className="mt-1 text-[11px] text-[var(--text-muted)]">3/3 replay consistency on fresh contexts</div>
         </div>
 
-        <div className="glass-panel p-5">
-          <div className="text-xs text-slate-400 font-medium">Safety Policy Violations</div>
-          <div className="text-3xl font-bold text-white mt-2 font-mono">0</div>
-          <div className="text-[11px] text-emerald-400 mt-1">Class D actions strictly contained</div>
+        <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-5">
+          <div className="text-xs font-medium text-[var(--text-secondary)]">Safety Policy Violations</div>
+          <div className="mt-2 font-mono text-3xl font-bold text-[var(--text-primary)]">0</div>
+          <div className="mt-1 text-[11px] text-emerald-400">Class D actions strictly contained</div>
         </div>
       </div>
 
       {/* Ground Truth Planted Defects Table */}
-      <div className="glass-panel p-6">
-        <h2 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
-          Planted Defects Manifest (`bugs.manifest.json`)
-        </h2>
+      <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-6 shadow-xl">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--text-primary)] flex items-center gap-2">
+            <FileCheck2 className="h-4 w-4 text-indigo-400" />
+            <span>Planted Defects Manifest (bugs.manifest.json)</span>
+          </h2>
+          <span className="font-mono text-xs text-[var(--text-muted)]">8 Ground-Truth Scenarios</span>
+        </div>
+
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-white/10 text-slate-400 font-medium">
+              <tr className="border-b border-[var(--border-subtle)] text-[var(--text-muted)] font-medium">
                 <th className="py-3 px-3">ID</th>
                 <th className="py-3 px-3">Journey</th>
                 <th className="py-3 px-3">Category</th>
@@ -162,21 +179,22 @@ export default function BenchmarksPage() {
                 <th className="py-3 px-3">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 font-sans">
+            <tbody className="divide-y divide-[var(--border-subtle)]">
               {BENCHMARK_BUGS.map((b) => (
-                <tr key={b.id} className="hover:bg-white/[0.02] transition-colors">
+                <tr key={b.id} className="hover:bg-[var(--surface-secondary)]/40 transition-colors">
                   <td className="py-3.5 px-3 font-mono font-bold text-indigo-400">{b.id}</td>
-                  <td className="py-3.5 px-3 font-medium text-slate-200">{b.journey}</td>
-                  <td className="py-3.5 px-3 text-slate-300">
-                    <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono text-[11px]">
+                  <td className="py-3.5 px-3 font-medium text-[var(--text-primary)]">{b.journey}</td>
+                  <td className="py-3.5 px-3">
+                    <span className="rounded bg-[var(--surface-secondary)] border border-[var(--border-subtle)] px-2 py-0.5 font-mono text-[10px] text-[var(--text-secondary)]">
                       {b.type}
                     </span>
                   </td>
-                  <td className="py-3.5 px-3 text-slate-300 max-w-xs">{b.expected}</td>
+                  <td className="py-3.5 px-3 text-[var(--text-secondary)] max-w-xs">{b.expected}</td>
                   <td className="py-3.5 px-3 text-rose-300 max-w-xs">{b.faulty}</td>
-                  <td className="py-3.5 px-3 text-slate-400 text-[11px] font-mono">{b.detected_via}</td>
+                  <td className="py-3.5 px-3 font-mono text-[11px] text-[var(--text-muted)]">{b.detected_via}</td>
                   <td className="py-3.5 px-3">
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold text-[10px] tracking-wider">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[10px] font-bold text-emerald-400 tracking-wider">
+                      <CheckCircle2 className="h-3 w-3" />
                       {b.status}
                     </span>
                   </td>

@@ -7,21 +7,23 @@ export async function GET(req, { params }) {
   const { searchParams } = new URL(req.url);
   const afterSeq = parseInt(searchParams.get("after") || "0", 10);
 
-  const backendUrl = process.env.BACKEND_API_URL || "http://localhost:8000/api";
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 800);
+  const backendUrl = process.env.BACKEND_API_URL;
+  if (backendUrl) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 800);
 
-    const res = await fetch(`${backendUrl}/runs/${runId}/events?after=${afterSeq}`, {
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-    if (res.ok) {
-      const data = await res.json();
-      return NextResponse.json(data);
+      const res = await fetch(`${backendUrl}/runs/${runId}/events?after=${afterSeq}`, {
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        const data = await res.json();
+        return NextResponse.json(data);
+      }
+    } catch (e) {
+      // Fall through to in-memory store
     }
-  } catch (e) {
-    // Fall through to in-memory store
   }
 
   const store = getStore();
