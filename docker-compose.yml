@@ -1,0 +1,116 @@
+# =============================================================================
+# DRISHTI AI — Docker Compose
+# Section 21.1: All services run on a team laptop via docker compose.
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # Database
+  # ---------------------------------------------------------------------------
+  mongo:
+    image: mongo:7
+    container_name: drishti-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # Backend API (FastAPI)
+  # ---------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: drishti-backend
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/drishti
+      - ARTIFACT_DIR=/data/artifacts
+      - FRONTEND_ORIGIN=http://localhost:3000
+    volumes:
+      - ./apps/backend:/app
+      - artifacts:/data/artifacts
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # Runner (Pipeline + Playwright + Chromium)
+  # ---------------------------------------------------------------------------
+  runner:
+    build:
+      context: ./apps/runner
+      dockerfile: Dockerfile
+    container_name: drishti-runner
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/drishti
+      - ARTIFACT_DIR=/data/artifacts
+      - LLM_PROVIDER=${LLM_PROVIDER:-openai}
+      - LLM_MODEL=${LLM_MODEL:-gpt-4o}
+      - LLM_API_KEY=${LLM_API_KEY}
+      - LLM_FALLBACK_MODEL=${LLM_FALLBACK_MODEL:-gpt-4o-mini}
+      - LLM_MODE=${LLM_MODE:-live}
+      - OPERATOR_PRIVATE_ALLOWLIST=${OPERATOR_PRIVATE_ALLOWLIST:-shoplite}
+      - MAX_PARALLEL_CONTEXTS=${MAX_PARALLEL_CONTEXTS:-1}
+    volumes:
+      - ./apps/runner:/app
+      - artifacts:/data/artifacts
+    depends_on:
+      mongo:
+        condition: service_healthy
+      shoplite:
+        condition: service_started
+    # SEC-8 partial: security hardening
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # Frontend Dashboard (Next.js)
+  # ---------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    container_name: drishti-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:${BACKEND_PORT:-8000}/api
+    volumes:
+      - ./apps/frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # ShopLite — Benchmark Target App
+  # ---------------------------------------------------------------------------
+  shoplite:
+    build:
+      context: ./apps/shoplite
+      dockerfile: Dockerfile
+    container_name: drishti-shoplite
+    ports:
+      - "${SHOPLITE_PORT:-3001}:3001"
+    environment:
+      - PORT=3001
+      - BUG_SET=${SHOPLITE_BUG_SET:-all}
+    volumes:
+      - ./apps/shoplite:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+  artifacts:

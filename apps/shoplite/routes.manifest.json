@@ -1,0 +1,130 @@
+{
+  "application": "ShopLite",
+  "version": "1.0.0",
+  "routes": [
+    {
+      "path": "/",
+      "name": "Home",
+      "method": "GET",
+      "auth_required": false,
+      "description": "Landing page with hero banner and category links",
+      "interactive_elements": [
+        { "id": "nav-brand", "type": "link", "target": "/" },
+        { "id": "nav-products", "type": "link", "target": "/products" },
+        { "id": "nav-cart", "type": "link", "target": "/cart" },
+        { "id": "nav-login", "type": "link", "target": "/login" },
+        { "id": "nav-signup", "type": "link", "target": "/signup" },
+        { "id": "hero-browse-btn", "type": "link", "target": "/products" },
+        { "id": "hero-signup-btn", "type": "link", "target": "/signup" }
+      ]
+    },
+    {
+      "path": "/signup",
+      "name": "Sign Up",
+      "method": "GET",
+      "auth_required": false,
+      "description": "User registration form",
+      "interactive_elements": [
+        { "id": "email", "type": "input", "input_type": "email" },
+        { "id": "password", "type": "input", "input_type": "password" },
+        { "id": "signup-btn", "type": "button", "action": "submit" },
+        { "id": "link-login", "type": "link", "target": "/login" }
+      ]
+    },
+    {
+      "path": "/login",
+      "name": "Login",
+      "method": "GET",
+      "auth_required": false,
+      "description": "User login form",
+      "interactive_elements": [
+        { "id": "email", "type": "input", "input_type": "email" },
+        { "id": "password", "type": "input", "input_type": "password" },
+        { "id": "login-btn", "type": "button", "action": "submit" },
+        { "id": "link-forgot-password", "type": "link", "target": "/forgot-password" },
+        { "id": "link-signup", "type": "link", "target": "/signup" }
+      ]
+    },
+    {
+      "path": "/forgot-password",
+      "name": "Forgot Password",
+      "method": "GET",
+      "auth_required": false,
+      "description": "Password recovery request page",
+      "interactive_elements": [
+        { "id": "reset-email", "type": "input", "input_type": "email" },
+        { "id": "reset-submit-btn", "type": "button", "action": "submit" },
+        { "id": "link-back-login", "type": "link", "target": "/login" }
+      ]
+    },
+    {
+      "path": "/account",
+      "name": "Account Dashboard",
+      "method": "GET",
+      "auth_required": true,
+      "description": "User profile and account overview",
+      "interactive_elements": [
+        { "id": "logout-btn", "type": "button", "action": "logout" },
+        { "id": "account-shop-btn", "type": "link", "target": "/products" },
+        { "id": "account-cart-btn", "type": "link", "target": "/cart" }
+      ]
+    },
+    {
+      "path": "/products",
+      "name": "Products",
+      "method": "GET",
+      "auth_required": false,
+      "description": "Product catalog with search filter",
+      "interactive_elements": [
+        { "id": "search-input", "type": "input", "input_type": "text" },
+        { "id": "search-btn", "type": "button", "action": "submit" },
+        { "class": "add-to-cart-btn", "type": "button", "action": "add_to_cart" }
+      ]
+    },
+    {
+      "path": "/products/:id",
+      "name": "Product Detail",
+      "method": "GET",
+      "auth_required": false,
+      "description": "Individual product detail and quantity selection",
+      "interactive_elements": [
+        { "id": "detail-qty", "type": "input", "input_type": "number" },
+        { "id": "detail-add-btn", "type": "button", "action": "add_to_cart" }
+      ]
+    },
+    {
+      "path": "/cart",
+      "name": "Cart",
+      "method": "GET",
+      "auth_required": false,
+      "description": "Shopping cart overview and line items",
+      "interactive_elements": [
+        { "id": "cart-start-shopping-btn", "type": "link", "target": "/products" },
+        { "id": "cart-continue-btn", "type": "link", "target": "/products" },
+        { "id": "cart-checkout-btn", "type": "link", "target": "/checkout" }
+      ]
+    },
+    {
+      "path": "/checkout",
+      "name": "Checkout",
+      "method": "GET",
+      "auth_required": false,
+      "description": "Order checkout, promo coupon application, and payment",
+      "interactive_elements": [
+        { "id": "coupon-input", "type": "input", "input_type": "text" },
+        { "id": "apply-coupon-btn", "type": "button", "action": "apply_coupon" },
+        { "id": "place-order-btn", "type": "button", "action": "place_order" }
+      ]
+    },
+    {
+      "path": "/order/:id",
+      "name": "Order Confirmation",
+      "method": "GET",
+      "auth_required": false,
+      "description": "Receipt and order confirmation summary",
+      "interactive_elements": [
+        { "id": "order-continue-btn", "type": "link", "target": "/products" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+<%- include('header', { title: 'Shopping Cart', session: session }) %>
+
+<div style="max-width: 800px; margin: 1rem auto;">
+  <h1 style="font-size: 2rem; margin-bottom: 1.5rem;">Shopping Cart</h1>
+
+  <% if (!items || items.length === 0) { %>
+    <div class="card" style="text-align: center; padding: 3rem 1rem;">
+      <p style="font-size: 3rem; margin-bottom: 0.5rem;">🛒</p>
+      <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Your cart is empty</h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">Looks like you haven't added anything to your cart yet.</p>
+      <a href="/products" id="cart-start-shopping-btn" class="btn">Explore Products</a>
+    </div>
+  <% } else { %>
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border); text-align: left; color: var(--text-muted); font-size: 0.85rem;">
+            <th style="padding-bottom: 0.75rem;">Product</th>
+            <th style="padding-bottom: 0.75rem;">Price</th>
+            <th style="padding-bottom: 0.75rem;">Quantity</th>
+            <th style="padding-bottom: 0.75rem; text-align: right;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% items.forEach(function(item) { %>
+            <tr style="border-bottom: 1px solid var(--border);" id="cart-item-<%= item.productId %>">
+              <td style="padding: 1rem 0; display: flex; align-items: center; gap: 0.75rem;">
+                <span style="font-size: 2rem;"><%= item.product ? item.product.image : '📦' %></span>
+                <span style="font-weight: 600;"><%= item.product ? item.product.name : 'Unknown Product' %></span>
+              </td>
+              <td style="padding: 1rem 0;">
+                $<%= item.product ? item.product.price.toFixed(2) : '0.00' %>
+              </td>
+              <td style="padding: 1rem 0;" id="cart-qty-<%= item.productId %>">
+                <%= item.quantity %>
+              </td>
+              <td style="padding: 1rem 0; text-align: right; font-weight: 600;">
+                $<%= item.product ? (item.product.price * item.quantity).toFixed(2) : '0.00' %>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+
+      <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 1.25rem;">
+        <span style="font-size: 1.1rem; color: var(--text-muted);">Subtotal</span>
+        <span id="cart-subtotal" style="font-size: 1.5rem; font-weight: 700; color: #fff;">$<%= subtotal.toFixed(2) %></span>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <a href="/products" class="btn btn-secondary" id="cart-continue-btn">&larr; Continue Shopping</a>
+      <a href="/checkout" class="btn" id="cart-checkout-btn">Proceed to Checkout &rarr;</a>
+    </div>
+  <% } %>
+</div>
+
+<%- include('footer') %>

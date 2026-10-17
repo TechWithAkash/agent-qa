@@ -1,0 +1,88 @@
+[
+  {
+    "id": "J1",
+    "name": "User Registration",
+    "description": "User enters valid email and 8+ char password to create an account",
+    "starting_route": "/signup",
+    "steps": [
+      { "action": "navigate", "target": "/signup" },
+      { "action": "fill", "target": "#email", "value": "testuser@example.com" },
+      { "action": "fill", "target": "#password", "value": "Password123!" },
+      { "action": "click", "target": "#signup-btn" }
+    ],
+    "terminal_state": {
+      "expected_url_pattern": "/account",
+      "expected_text": "Account Dashboard",
+      "no_errors": true
+    }
+  },
+  {
+    "id": "J2",
+    "name": "User Login",
+    "description": "Existing user logs in with email and password",
+    "starting_route": "/login",
+    "steps": [
+      { "action": "navigate", "target": "/login" },
+      { "action": "fill", "target": "#email", "value": "testuser@example.com" },
+      { "action": "fill", "target": "#password", "value": "Password123!" },
+      { "action": "click", "target": "#login-btn" }
+    ],
+    "terminal_state": {
+      "expected_url_pattern": "/account",
+      "expected_text": "Account Dashboard",
+      "no_errors": true
+    }
+  },
+  {
+    "id": "J3",
+    "name": "Product Search & Browse",
+    "description": "User searches for a product and navigates to its details",
+    "starting_route": "/products",
+    "steps": [
+      { "action": "navigate", "target": "/products" },
+      { "action": "fill", "target": "#search-input", "value": "Headphones" },
+      { "action": "click", "target": "#search-btn" },
+      { "action": "click", "target": "#product-list a" }
+    ],
+    "terminal_state": {
+      "expected_url_pattern": "/products/p1",
+      "expected_text": "Wireless Headphones",
+      "no_errors": true
+    }
+  },
+  {
+    "id": "J4",
+    "name": "Cart Management",
+    "description": "User adds an item to cart and views the cart summary",
+    "starting_route": "/products",
+    "steps": [
+      { "action": "navigate", "target": "/products" },
+      { "action": "click", "target": "#add-to-cart-p1" },
+      { "action": "navigate", "target": "/cart" }
+    ],
+    "terminal_state": {
+      "expected_url_pattern": "/cart",
+      "expected_text": "Wireless Headphones",
+      "no_errors": true
+    }
+  },
+  {
+    "id": "J5",
+    "name": "Checkout & Order Placement",
+    "description": "User applies coupon and places an order",
+    "starting_route": "/checkout",
+    "steps": [
+      { "action": "navigate", "target": "/products" },
+      { "action": "click", "target": "#add-to-cart-p1" },
+      { "action": "navigate", "target": "/checkout" },
+      { "action": "fill", "target": "#coupon-input", "value": "SAVE10" },
+      { "action": "click", "target": "#apply-coupon-btn" },
+      { "action": "click", "target": "#place-order-btn" }
+    ],
+    "terminal_state": {
+      "expected_url_pattern": "/order/",
+      "expected_text": "Thank You for Your Order!",
+      "no_errors": true
+    }
+  }
+]

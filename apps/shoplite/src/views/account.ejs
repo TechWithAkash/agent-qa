@@ -1,0 +1,36 @@
+<%- include('header', { title: 'Account Dashboard', session: session }) %>
+
+<div style="max-width: 600px; margin: 2rem auto;">
+  <div class="card">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
+      <h1 style="font-size: 1.75rem;">Account Dashboard</h1>
+      <button id="logout-btn" class="btn btn-secondary" onclick="logout()">Log Out</button>
+    </div>
+
+    <div style="margin-bottom: 1.5rem;">
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.25rem;">Email Address</p>
+      <p id="user-email" style="font-size: 1.1rem; font-weight: 600;"><%= session ? session.email : 'Guest' %></p>
+    </div>
+
+    <div style="margin-bottom: 1.5rem;">
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.25rem;">Account Status</p>
+      <span class="badge" style="background: rgba(34, 197, 94, 0.2); color: #86efac; padding: 0.25rem 0.6rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600;">
+        Active Member
+      </span>
+    </div>
+
+    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+      <a href="/products" class="btn" id="account-shop-btn">Continue Shopping</a>
+      <a href="/cart" class="btn btn-secondary" id="account-cart-btn">View Cart</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function logout() {
+  document.cookie = 'sid=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  window.location.href = '/login';
+}
+</script>
+
+<%- include('footer') %>

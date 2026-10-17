@@ -1,0 +1,66 @@
+<%- include('header', { title: 'Sign Up', session: session }) %>
+
+<div style="max-width: 440px; margin: 2rem auto;">
+  <div class="card">
+    <h1 style="font-size: 1.75rem; margin-bottom: 0.5rem; text-align: center;">Create Account</h1>
+    <p style="color: var(--text-muted); font-size: 0.9rem; text-align: center; margin-bottom: 1.5rem;">
+      Sign up to start shopping on ShopLite.
+    </p>
+
+    <div id="error-alert" class="alert alert-danger" style="display: none;"></div>
+
+    <form id="signup-form" action="/api/signup" method="POST">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="text" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password (minimum 8 characters)</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="new-password">
+      </div>
+
+      <button type="submit" id="signup-btn" style="width: 100%; margin-top: 0.5rem;">
+        Sign Up
+      </button>
+    </form>
+
+    <p style="text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-top: 1.5rem;">
+      Already have an account? <a href="/login" id="link-login" style="color: var(--primary);">Log In</a>
+    </p>
+  </div>
+</div>
+
+<script>
+document.getElementById('signup-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const alert = document.getElementById('error-alert');
+  alert.style.display = 'none';
+
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  try {
+    const res = await fetch('/api/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      if (data.sessionId) {
+        document.cookie = `sid=${data.sessionId}; path=/`;
+      }
+      window.location.href = data.redirect || '/account';
+    } else {
+      alert.textContent = data.error || 'Failed to sign up';
+      alert.style.display = 'block';
+    }
+  } catch (err) {
+    alert.textContent = 'Server error during sign up';
+    alert.style.display = 'block';
+  }
+});
+</script>
+
+<%- include('footer') %>

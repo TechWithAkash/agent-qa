@@ -1,0 +1,63 @@
+<%- include('header', { title: product.name, session: session }) %>
+
+<div style="max-width: 800px; margin: 2rem auto;">
+  <a href="/products" style="color: var(--primary); text-decoration: none; display: inline-block; margin-bottom: 1.5rem;">
+    &larr; Back to Products
+  </a>
+
+  <div class="card" style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem; align-items: center;">
+    <div style="font-size: 8rem; text-align: center; background: #0b1120; border-radius: 0.5rem; padding: 2rem 0;">
+      <%= product.image %>
+    </div>
+
+    <div>
+      <span style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">
+        <%= product.category %>
+      </span>
+      <h1 style="font-size: 2rem; margin: 0.25rem 0 1rem;"><%= product.name %></h1>
+      <p style="font-size: 1.75rem; font-weight: 700; color: #fff; margin-bottom: 1.5rem;">
+        $<%= product.price.toFixed(2) %>
+      </p>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label for="detail-qty">Quantity</label>
+        <input type="number" id="detail-qty" value="1" min="1" style="width: 120px;">
+      </div>
+
+      <button id="detail-add-btn" class="btn" style="width: 100%;" onclick="addToCart('<%= product.id %>')">
+        Add to Cart
+      </button>
+
+      <div id="cart-feedback" class="alert alert-success" style="display: none; margin-top: 1rem;">
+        Added to cart! <a href="/cart" style="color: inherit; font-weight: 600;">View Cart</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function addToCart(productId) {
+  const qtyInput = document.getElementById('detail-qty');
+  const qty = parseInt(qtyInput.value, 10);
+  const feedback = document.getElementById('cart-feedback');
+  feedback.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/cart/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId, quantity: qty })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      feedback.style.display = 'block';
+    } else {
+      alert(data.error || 'Failed to add item');
+    }
+  } catch (e) {
+    alert('Server error adding to cart');
+  }
+}
+</script>
+
+<%- include('footer') %>

@@ -1,0 +1,14 @@
+<%- include('header', { title: 'Page Not Found', session: session }) %>
+
+<div style="max-width: 500px; margin: 3rem auto; text-align: center;">
+  <div class="card" style="padding: 3rem 1.5rem;">
+    <h1 style="font-size: 4rem; font-weight: 800; color: var(--primary); margin-bottom: 0.5rem;">404</h1>
+    <h2 style="font-size: 1.5rem; margin-bottom: 0.75rem;">Page Not Found</h2>
+    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+      The page you were looking for doesn't exist or has been moved.
+    </p>
+    <a href="/" id="btn-home-404" class="btn">Return to Home</a>
+  </div>
+</div>
+
+<%- include('footer') %>

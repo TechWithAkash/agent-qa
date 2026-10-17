@@ -1,0 +1,185 @@
+[
+  {
+    "id": "B1",
+    "journey": "J1",
+    "route": "/signup",
+    "category": "validation",
+    "severity": "medium",
+    "expected": "Malformed email rejected with message; user stays on /signup",
+    "faulty": "Account created, redirect to /account",
+    "trigger": [
+      "Navigate to /signup",
+      "Enter email 'invalid-email-address'",
+      "Enter password 'validPassword123'",
+      "Click Sign Up"
+    ],
+    "match_rules": {
+      "route": "/signup",
+      "symptom_any": ["redirect:/account", "status:201", "missing_validation"]
+    },
+    "verification": {
+      "kind": "playwright_check",
+      "script": "verify/b1.py",
+      "pass_means_bug_absent": true
+    },
+    "split": "dev"
+  },
+  {
+    "id": "B2",
+    "journey": "J1",
+    "route": "/signup",
+    "category": "server_error",
+    "severity": "high",
+    "expected": "Duplicate email shows a message such as 'already registered'; no server error",
+    "faulty": "POST /api/signup returns 500; page shows generic error",
+    "trigger": [
+      "Register user with email 'dup@example.com'",
+      "Attempt to register again with email 'dup@example.com'"
+    ],
+    "match_rules": {
+      "route": "/signup",
+      "symptom_any": ["status:500", "already registered missing", "server error"]
+    },
+    "verification": {
+      "kind": "playwright_check",
+      "script": "verify/b2.py",
+      "pass_means_bug_absent": true
+    },
+    "split": "dev"
+  },
+  {
+    "id": "B3",
+    "journey": "J2",
+    "route": "/login",
+    "category": "logic",
+    "severity": "medium",
+    "expected": "Login with a registered email in any letter case succeeds",
+    "faulty": "Login fails if email contains uppercase letters",
+    "trigger": [
+      "Register user with email 'caseuser@example.com'",
+      "Attempt to login with email 'CASEUSER@example.com'"
+    ],
+    "match_rules": {
+      "route": "/login",
+      "symptom_any": ["status:401", "Invalid email or password", "case_mismatch"]
+    },
+    "verification": {
+      "kind": "playwright_check",
+      "script": "verify/b3.py",
+      "pass_means_bug_absent": true
+    },
+    "split": "dev"
+  },
+  {
+    "id": "B4",
+    "journey": "J2",
+    "route": "/forgot-password",
+    "category": "navigation",
+    "severity": "medium",
+    "expected": "'Forgot password' link opens a reset page",
+    "faulty": "Link returns 404",
+    "trigger": [
+      "Navigate to /login",
+      "Click 'Forgot password?' link or navigate directly to /forgot-password"
+    ],
+    "match_rules": {
+      "route": "/forgot-password",
+      "symptom_any": ["status:404", "Not Found", "dead_link"]
+    },
+    "verification": {
+      "kind": "playwright_check",
+      "script": "verify/b4.py",
+      "pass_means_bug_absent": true
+    },
+    "split": "dev"
+  },
+  {
+    "id": "B5",
+    "journey": "J3",
+    "route": "/products",
+    "category": "edge_case",
+    "severity": "low",
+    "expected": "Search ignores trailing whitespace",
+    "faulty": "Query with trailing space returns no results",
+    "trigger": [
+      "Search for 'Coffee ' with trailing space"
+    ],
+    "match_rules": {
+      "route": "/products",
+      "symptom_any": ["no products found", "zero_results_whitespace"]
+    },
+    "verification": {
+      "kind": "playwright_check",
+      "script": "verify/b5.py",
+      "pass_means_bug_absent": true
+    },
+    "split": "dev"
+  },
+  {
+    "id": "B6",
+    "journey": "J4",
+    "route": "/cart",
+    "category": "validation",
+    "severity": "medium",
+    "expected": "Quantity must be at least 1",
+    "faulty": "Quantity 0 or negative accepted; cart total negative",
+    "trigger": [
+      "Add product with quantity 0 or -1"
+    ],
+    "match_rules": {
+      "route": "/cart",
+      "symptom_any": ["negative_total", "zero_quantity_accepted"]
+    },
+    "verification": {
+      "kind": "playwright_check",
+      "script": "verify/b6.py",
+      "pass_means_bug_absent": true
+    },
+    "split": "dev"
+  },
+  {
+    "id": "B7",
+    "journey": "J5",
+    "route": "/checkout",
+    "category": "pricing",
+    "severity": "high",
+    "expected": "SAVE10 applies once per order",
+    "faulty": "Applying twice stacks the discount",
+    "trigger": [
+      "Apply coupon SAVE10",
+      "Apply coupon SAVE10 again"
+    ],
+    "match_rules": {
+      "route": "/checkout",
+      "symptom_any": ["stacked_discount", "multiple_coupons"]
+    },
+    "verification": {
+      "kind": "playwright_check",
+      "script": "verify/b7.py",
+      "pass_means_bug_absent": true
+    },
+    "split": "dev"
+  },
+  {
+    "id": "B8",
+    "journey": "J5",
+    "route": "/checkout",
+    "category": "crash",
+    "severity": "high",
+    "expected": "Checkout with empty cart shows a message",
+    "faulty": "Uncaught TypeError in console; blank panel",
+    "trigger": [
+      "Navigate to /checkout with an empty cart"
+    ],
+    "match_rules": {
+      "route": "/checkout",
+      "symptom_any": ["uncaught TypeError", "status:500", "blank panel"]
+    },
+    "verification": {
+      "kind": "playwright_check",
+      "script": "verify/b8.py",
+      "pass_means_bug_absent": true
+    },
+    "split": "dev"
+  }
+]

@@ -1,0 +1,30 @@
+<%- include('header', { title: 'Order Confirmation', session: session }) %>
+
+<div style="max-width: 650px; margin: 2rem auto; text-align: center;">
+  <div class="card" style="padding: 3rem 2rem;">
+    <div style="font-size: 3.5rem; color: var(--success); margin-bottom: 1rem;">🎉</div>
+    <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Thank You for Your Order!</h1>
+    <p style="color: var(--text-muted); font-size: 1rem; margin-bottom: 1.5rem;">
+      Your order has been placed and is being processed.
+    </p>
+
+    <div style="background: #0b1120; border-radius: 0.5rem; padding: 1.25rem; margin-bottom: 2rem; text-align: left;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+        <span style="color: var(--text-muted);">Order ID</span>
+        <span id="order-id" style="font-family: monospace; font-weight: 600;"><%= order ? order.id : 'N/A' %></span>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+        <span style="color: var(--text-muted);">Items</span>
+        <span><%= order ? order.items.length : 0 %> items</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+        <span style="color: var(--text-muted);">Status</span>
+        <span style="color: var(--success); font-weight: 600;">Confirmed</span>
+      </div>
+    </div>
+
+    <a href="/products" id="order-continue-btn" class="btn">Continue Shopping</a>
+  </div>
+</div>
+
+<%- include('footer') %>

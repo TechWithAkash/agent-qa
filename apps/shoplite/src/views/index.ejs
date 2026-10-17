@@ -1,0 +1,41 @@
+<%- include('header', { title: 'Home', session: session }) %>
+
+<div style="text-align: center; padding: 3rem 1rem;">
+  <h1 style="font-size: 2.75rem; margin-bottom: 1rem;">Welcome to ShopLite</h1>
+  <p style="color: var(--text-muted); font-size: 1.15rem; max-width: 600px; margin: 0 auto 2rem;">
+    Your one-stop destination for quality essentials. Explore our catalog, sign up for exclusive offers, and check out seamlessly.
+  </p>
+  <div style="display: flex; gap: 1rem; justify-content: center;">
+    <a href="/products" class="btn" id="hero-browse-btn" style="padding: 0.75rem 1.75rem; font-size: 1.1rem;">
+      Browse Products &rarr;
+    </a>
+    <% if (!session) { %>
+      <a href="/signup" class="btn btn-secondary" id="hero-signup-btn" style="padding: 0.75rem 1.75rem; font-size: 1.1rem;">
+        Create Account
+      </a>
+    <% } %>
+  </div>
+</div>
+
+<div style="margin-top: 2rem;">
+  <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Why Shop With Us?</h2>
+  <div class="grid">
+    <div class="card">
+      <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚡</div>
+      <h3 style="margin-bottom: 0.5rem;">Fast Exploration</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Modern shopping experience built for quick search and seamless navigation.</p>
+    </div>
+    <div class="card">
+      <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔒</div>
+      <h3 style="margin-bottom: 0.5rem;">Safe & Secure</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Protected credentials and authenticated checkout flows.</p>
+    </div>
+    <div class="card">
+      <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎟️</div>
+      <h3 style="margin-bottom: 0.5rem;">Exclusive Deals</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Use coupon SAVE10 at checkout for 10% off your entire order.</p>
+    </div>
+  </div>
+</div>
+
+<%- include('footer') %>

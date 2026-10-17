@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title + ' - ShopLite' : 'ShopLite — Modern Demo Store' %></title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <a href="/" class="brand" id="nav-brand">
+      <span>🛍️</span> ShopLite
+    </a>
+    <nav id="main-nav">
+      <a href="/products" id="nav-products">Products</a>
+      <a href="/cart" id="nav-cart">Cart</a>
+      <% if (session) { %>
+        <a href="/account" id="nav-account">Account (<%= session.email %>)</a>
+      <% } else { %>
+        <a href="/login" id="nav-login">Login</a>
+        <a href="/signup" id="nav-signup" class="btn btn-secondary" style="padding: 0.4rem 0.8rem;">Sign Up</a>
+      <% } %>
+    </nav>
+  </header>
+  <main>
