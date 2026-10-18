@@ -53,6 +53,16 @@ export default function LandingPage() {
       setMode("sandbox");
       setAttestation(true);
       setError(null);
+    } else if (type === "padmora") {
+      setTargetUrl("https://padmorasarees.com/");
+      setDescription(`# Padmora Sarees Ground-Truth Autonomous QA Rules
+- Storefront Availability: Root URL and Mohar collection banner must resolve HTTP 200 OK without unhandled load errors.
+- Headline & Branding: Main H1 "Padmora Sarees by Yashi | Handloom" rendered with proper contrast and DOM hierarchy.
+- Product Weaves: Interactive category filters (Maheshwari, Banarasi, Narayanpet, Paithani) and "Every saree, one place" collections.
+- Media & Video: "Sarees in Motion" video players and customer care footer links must not throw unhandled exceptions.`);
+      setMode("sandbox");
+      setAttestation(true);
+      setError(null);
     } else if (type === "designrip") {
       setTargetUrl("https://designrip.in");
       setDescription(DEFAULT_RULES);
@@ -243,6 +253,17 @@ export default function LandingPage() {
                 }`}
               >
                 WealthWise Live App
+              </button>
+              <button
+                type="button"
+                onClick={() => handlePreset("padmora")}
+                className={`rounded-lg px-3 py-1.5 text-xs font-semibold border transition-all cursor-pointer ${
+                  targetUrl.includes("padmorasarees")
+                    ? "border-black bg-black text-white shadow-xs"
+                    : "border-[#e4e4e7] bg-white text-zinc-700 hover:border-zinc-400 hover:bg-zinc-50"
+                }`}
+              >
+                Padmora Sarees
               </button>
               <button
                 type="button"
