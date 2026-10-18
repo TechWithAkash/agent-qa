@@ -4,6 +4,13 @@ import { useEffect, useState, Suspense } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import MultiAgentSwarmModal from "../../components/MultiAgentSwarmModal";
+import AuditSummaryHeader from "../../components/results/AuditSummaryHeader";
+import DefectsTab from "../../components/results/DefectsTab";
+import JourneysTab from "../../components/results/JourneysTab";
+import LiveBrowserTab from "../../components/results/LiveBrowserTab";
+import PytestTab from "../../components/results/PytestTab";
+import AiToolsTab from "../../components/results/AiToolsTab";
+import ScreenshotLightbox from "../../components/results/ScreenshotLightbox";
 import {
   CheckCircle2,
   AlertTriangle,
@@ -934,12 +941,12 @@ def test_j07_transport_security_and_console(page: Page):
   const qualityScorePercent = Math.round((passingJourneysCount / dynamicJourneys.length) * 100);
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-8 w-full flex-1 flex flex-col space-y-6 bg-[#fafafa]">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 w-full flex-1 flex flex-col space-y-6 bg-[#FAFAF9]">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs text-emerald-800 shadow-xs">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>{toastMessage}</span>
           </div>
           <button
@@ -952,192 +959,32 @@ def test_j07_transport_security_and_console(page: Page):
       )}
 
       {/* =========================================================================
-          EXECUTIVE QA VERDICT & SUMMARY HEADER (Vostride Light Mode)
+          EXECUTIVE QA VERDICT & 4-METRICS SUMMARY HEADER
           ========================================================================= */}
-      <div className="rounded-2xl border border-[#e4e4e7] bg-white p-6 shadow-xs">
-        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-start">
-          <div className="flex items-start gap-4">
-            <div
-              className={`flex h-12 w-12 items-center justify-center rounded-xl border shrink-0 ${
-                isBlocker
-                  ? "border-red-200 bg-red-50 text-red-600"
-                  : isWarning
-                  ? "border-amber-200 bg-amber-50 text-amber-600"
-                  : "border-emerald-200 bg-emerald-50 text-emerald-600"
-              }`}
-            >
-              {isBlocker ? (
-                <AlertTriangle className="h-6 w-6 text-red-600" />
-              ) : isWarning ? (
-                <AlertTriangle className="h-6 w-6 text-amber-600" />
-              ) : (
-                <ShieldCheck className="h-6 w-6 text-emerald-600" />
-              )}
-            </div>
-
-            <div>
-              <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                <span
-                  className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-bold tracking-wider uppercase ${
-                    isBlocker
-                      ? "border-red-200 bg-red-50 text-red-700"
-                      : isWarning
-                      ? "border-amber-200 bg-amber-50 text-amber-800"
-                      : "border-emerald-200 bg-emerald-50 text-emerald-700"
-                  }`}
-                >
-                  <span
-                    className={`h-1.5 w-1.5 rounded-full ${
-                      isBlocker
-                        ? "bg-red-500 animate-pulse"
-                        : isWarning
-                        ? "bg-amber-500 animate-pulse"
-                        : "bg-emerald-500"
-                    }`}
-                  ></span>
-                  {isBlocker
-                    ? `QA Verdict: RELEASE BLOCKED (${blockerDefectsCount} BLOCKER DEFECT${blockerDefectsCount > 1 ? "S" : ""})`
-                    : isWarning
-                    ? `QA Verdict: AUDIT OBSERVATIONS FLAGGED (${warningObservationsCount} WARNING${warningObservationsCount > 1 ? "S" : ""})`
-                    : "QA Verdict: READY TO SHIP (ALL PASS)"}
-                </span>
-                <span className="font-mono text-xs text-zinc-400">{runId}</span>
-              </div>
-
-              <h1 className="text-xl font-bold text-zinc-900 flex items-center gap-2">
-                <span>QA Audit:</span>
-                <span className="text-[#FF9500]">{targetHostname}</span>
-              </h1>
-
-              <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-500">
-                <span className="flex items-center gap-1">
-                  <Globe className="h-3.5 w-3.5 text-zinc-400" />
-                  <a
-                    href={targetUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-black underline flex items-center gap-1 text-zinc-700"
-                  >
-                    <span>{targetUrl}</span>
-                    <ExternalLink className="h-2.5 w-2.5 opacity-60" />
-                  </a>
-                </span>
-                <span className="text-zinc-300">&bull;</span>
-                <span className="font-mono text-[11px] text-emerald-700 flex items-center gap-1">
-                  <Lock className="h-3 w-3 text-emerald-600" /> TLS Verified
-                </span>
-                <span className="text-zinc-300">&bull;</span>
-                <span className="font-mono text-[11px] text-zinc-600">Latency: {telemetry?.latency_ms || 28}ms</span>
-                <span className="text-zinc-300">&bull;</span>
-                <span className="text-zinc-400 text-[11px]">
-                  Stack: {telemetry?.tech_stack?.slice(0, 3).join(", ") || "Web Application"}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Header Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2.5">
-            <button
-              onClick={() => {
-                setInspectedAgentIdx(6);
-                setShowAgentModal(true);
-              }}
-              className="btn-secondary flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold cursor-pointer"
-              title="Inspect autonomous multi-agent swarm telemetry and pipeline trace"
-            >
-              <Workflow className="h-3.5 w-3.5 text-[#FF9500]" />
-              <span>Agent Workflow (7)</span>
-            </button>
-
-            <button
-              onClick={handleRetestAll}
-              disabled={retestingAll}
-              className="btn-secondary flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold cursor-pointer"
-            >
-              <RotateCcw className={`h-3.5 w-3.5 ${retestingAll ? "animate-spin text-zinc-600" : ""}`} />
-              <span>{retestingAll ? "Agents Running..." : "Re-run QA Suite"}</span>
-            </button>
-
-            <button
-              onClick={downloadTestSuite}
-              className="btn-primary flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold cursor-pointer"
-            >
-              <Download className="h-3.5 w-3.5" />
-              <span>Export Pytest (.py)</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Dynamic Quality Metrics Bar */}
-        <div className="mt-6 grid grid-cols-2 gap-4 border-t border-[#e4e4e7] pt-6 md:grid-cols-4">
-          <div className="rounded-xl border border-[#e4e4e7] bg-white p-4.5 shadow-2xs">
-            <div className="text-xs font-bold tracking-wider text-zinc-500 uppercase">
-              Quality Score
-            </div>
-            <div className="mt-1.5 flex items-baseline gap-2">
-              <span
-                className={`text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums ${
-                  isBlocker ? "text-red-600" : isWarning ? "text-amber-600" : "text-emerald-600"
-                }`}
-              >
-                {qualityScorePercent}%
-              </span>
-              <span className="text-xs font-semibold text-zinc-600">
-                {isBlocker ? "High Risk" : isWarning ? "Audit Flagged" : "Production Grade"}
-              </span>
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-[#e4e4e7] bg-white p-4.5 shadow-2xs">
-            <div className="text-xs font-bold tracking-wider text-zinc-500 uppercase">
-              Journeys Tested
-            </div>
-            <div className="mt-1.5 flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums text-zinc-900">
-                {passingJourneysCount} / {dynamicJourneys.length}
-              </span>
-              <span className="text-xs font-semibold text-zinc-600">Passed</span>
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-[#e4e4e7] bg-white p-4.5 shadow-2xs">
-            <div className="text-xs font-bold tracking-wider text-zinc-500 uppercase">
-              Confirmed Defects
-            </div>
-            <div className="mt-1.5 flex items-baseline gap-2">
-              <span
-                className={`text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums ${
-                  isBlocker ? "text-red-600" : isWarning ? "text-amber-600" : "text-emerald-600"
-                }`}
-              >
-                {confirmedDefectsCount}
-              </span>
-              <span className="text-xs font-semibold text-zinc-600">
-                {isBlocker
-                  ? `${blockerDefectsCount} Blocker`
-                  : isWarning
-                  ? `${warningObservationsCount} Observation${warningObservationsCount > 1 ? "s" : ""}`
-                  : "0 Clean"}
-              </span>
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-[#e4e4e7] bg-white p-4.5 shadow-2xs">
-            <div className="text-xs font-bold tracking-wider text-zinc-500 uppercase">
-              Discovered Topology
-            </div>
-            <div className="mt-1.5 flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums text-zinc-900">
-                {model?.routes?.length || 1}
-              </span>
-              <span className="text-xs font-semibold text-zinc-600">
-                Routes &bull; {model?.buttons?.length || 0} Locators
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AuditSummaryHeader
+        isBlocker={isBlocker}
+        isWarning={isWarning}
+        isClean={isClean}
+        blockerDefectsCount={blockerDefectsCount}
+        warningObservationsCount={warningObservationsCount}
+        confirmedDefectsCount={confirmedDefectsCount}
+        runId={runId}
+        targetHostname={targetHostname}
+        targetUrl={targetUrl}
+        telemetry={telemetry}
+        qualityScorePercent={qualityScorePercent}
+        passingJourneysCount={passingJourneysCount}
+        dynamicJourneysLength={dynamicJourneys.length}
+        routesCount={model?.routes?.length || 1}
+        locatorsCount={model?.buttons?.length || 0}
+        onOpenWorkflow={() => {
+          setInspectedAgentIdx(6);
+          setShowAgentModal(true);
+        }}
+        onRetestAll={handleRetestAll}
+        retestingAll={retestingAll}
+        onDownloadPytest={downloadTestSuite}
+      />
 
       {/* =========================================================================
           AUTONOMOUS MULTI-AGENT SWARM SEQUENTIAL EXECUTION MODAL
@@ -1165,17 +1012,17 @@ def test_j07_transport_security_and_console(page: Page):
           ========================================================================= */}
       <div className="space-y-6">
         {/* Sleek Segmented Tab Navigation */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e4e4e7] pb-4">
-          <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-[#e4e4e7] bg-white p-1 text-xs shadow-xs">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E5E5E5] pb-4">
+          <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-[#E5E5E5] bg-white p-1 text-xs shadow-2xs">
             <button
               onClick={() => setActiveReportTab("flaws")}
               className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
                 activeReportTab === "flaws"
-                  ? "bg-black text-white shadow-xs font-semibold"
-                  : "text-zinc-600 hover:text-black hover:bg-zinc-50"
+                  ? "bg-[#171717] text-white shadow-xs font-semibold"
+                  : "text-[#737373] hover:text-[#171717] hover:bg-[#F5F5F4]"
               }`}
             >
-              <AlertTriangle className="h-3.5 w-3.5" />
+              <AlertTriangle className="w-3.5 h-3.5 text-[#F97316]" />
               <span>Defects &amp; Observations</span>
               <span
                 className={`ml-1 rounded px-1.5 py-0.2 text-[10px] font-mono font-bold ${
@@ -1196,15 +1043,15 @@ def test_j07_transport_security_and_console(page: Page):
               onClick={() => setActiveReportTab("journeys")}
               className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
                 activeReportTab === "journeys"
-                  ? "bg-black text-white shadow-xs font-semibold"
-                  : "text-zinc-600 hover:text-black hover:bg-zinc-50"
+                  ? "bg-[#171717] text-white shadow-xs font-semibold"
+                  : "text-[#737373] hover:text-[#171717] hover:bg-[#F5F5F4]"
               }`}
             >
-              <ListChecks className="h-3.5 w-3.5" />
+              <ListChecks className="w-3.5 h-3.5" />
               <span>Audited User Journeys</span>
               <span
                 className={`ml-1 rounded px-1.5 py-0.2 text-[10px] font-mono ${
-                  activeReportTab === "journeys" ? "bg-white/20 text-white" : "bg-zinc-100 text-zinc-600"
+                  activeReportTab === "journeys" ? "bg-white/20 text-white" : "bg-[#F5F5F4] text-[#737373]"
                 }`}
               >
                 {passingJourneysCount}/{dynamicJourneys.length}
@@ -1215,11 +1062,11 @@ def test_j07_transport_security_and_console(page: Page):
               onClick={() => setActiveReportTab("preview")}
               className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
                 activeReportTab === "preview"
-                  ? "bg-black text-white shadow-xs font-semibold"
-                  : "text-zinc-600 hover:text-black hover:bg-zinc-50"
+                  ? "bg-[#171717] text-white shadow-xs font-semibold"
+                  : "text-[#737373] hover:text-[#171717] hover:bg-[#F5F5F4]"
               }`}
             >
-              <Monitor className="h-3.5 w-3.5" />
+              <Monitor className="w-3.5 h-3.5" />
               <span>Live Browser &amp; Locators</span>
             </button>
 
@@ -1227,11 +1074,11 @@ def test_j07_transport_security_and_console(page: Page):
               onClick={() => setActiveReportTab("pytest")}
               className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
                 activeReportTab === "pytest"
-                  ? "bg-black text-white shadow-xs font-semibold"
-                  : "text-zinc-600 hover:text-black hover:bg-zinc-50"
+                  ? "bg-[#171717] text-white shadow-xs font-semibold"
+                  : "text-[#737373] hover:text-[#171717] hover:bg-[#F5F5F4]"
               }`}
             >
-              <FileCode2 className="h-3.5 w-3.5" />
+              <FileCode2 className="w-3.5 h-3.5" />
               <span>Pytest Artifact</span>
             </button>
 
@@ -1239,1163 +1086,100 @@ def test_j07_transport_security_and_console(page: Page):
               onClick={() => setActiveReportTab("tools")}
               className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
                 activeReportTab === "tools"
-                  ? "bg-black text-white shadow-xs font-semibold"
-                  : "text-zinc-600 hover:text-black hover:bg-zinc-50"
+                  ? "bg-[#171717] text-white shadow-xs font-semibold"
+                  : "text-[#737373] hover:text-[#171717] hover:bg-[#F5F5F4]"
               }`}
             >
-              <Sparkles className="h-3.5 w-3.5" />
+              <Sparkles className="w-3.5 h-3.5" />
               <span>AI QA &amp; Self-Healing</span>
             </button>
           </div>
 
-          <div className="text-xs text-zinc-500 font-mono hidden md:block">
-            Target: <span className="text-zinc-900 font-semibold">{targetHostname}</span>
+          <div className="text-xs text-[#737373] font-mono hidden md:block">
+            Target: <span className="text-[#171717] font-semibold">{targetHostname}</span>
           </div>
         </div>
 
-        {/* =========================================================================
-            TAB 1: DEFECTS & SECURITY OBSERVATIONS (Vostride Light Theme)
-            ========================================================================= */}
+        {/* Tab 1: Defects & Observations */}
         {activeReportTab === "flaws" && (
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#e4e4e7] pb-4">
-              <div>
-                <h3 className="text-base font-bold text-zinc-900 flex items-center gap-2">
-                  <span>
-                    {isBlocker
-                      ? "Confirmed Blocker Defects"
-                      : isWarning
-                      ? "Confirmed Security & Invariant Observations"
-                      : "All Invariant Assertions Passed"}
-                  </span>
-                  <span
-                    className={`rounded border px-2 py-0.5 text-[11px] font-mono font-bold ${
-                      isBlocker
-                        ? "bg-red-50 border-red-200 text-red-700"
-                        : isWarning
-                        ? "bg-amber-50 border-amber-200 text-amber-800"
-                        : "bg-emerald-50 border-emerald-200 text-emerald-700"
-                    }`}
-                  >
-                    {findings.length} {findings.length === 1 ? "Item" : "Items"}
-                  </span>
-                </h3>
-                <p className="text-xs text-zinc-500 mt-0.5">
-                  Audited across 3× isolated headless browser replay passes to eliminate false positives
-                </p>
-              </div>
-
-              <span
-                className={`rounded-full border px-3 py-1 font-mono text-[10px] font-bold ${
-                  isBlocker
-                    ? "border-red-200 bg-red-50 text-red-700"
-                    : isWarning
-                    ? "border-amber-200 bg-amber-50 text-amber-800"
-                    : "border-emerald-200 bg-emerald-50 text-emerald-700"
-                }`}
-              >
-                3/3 REPLAY PROVEN
-              </span>
-            </div>
-
-            {/* Defect Cards */}
-            {findings.length > 0 ? (
-              <div className="space-y-4">
-                {findings.map((f, idx) => (
-                  <div
-                    key={f.id || idx}
-                    className="rounded-2xl border border-[#e4e4e7] p-5 sm:p-6 space-y-4 bg-white shadow-xs transition-all hover:border-zinc-300"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 pb-3">
-                      <div className="flex items-center gap-2.5">
-                        <span
-                          className={`font-mono text-xs font-bold px-2.5 py-0.5 rounded-md border ${
-                            f.severity === "high" || f.severity === "critical"
-                              ? "text-red-700 bg-red-50 border-red-200"
-                              : "text-amber-800 bg-amber-50 border-amber-200"
-                          }`}
-                        >
-                          {f.id || `BUG-${idx + 1}`}
-                        </span>
-                        <h4 className="text-sm font-bold text-zinc-900">
-                          {f.title || f.classification_reason}
-                        </h4>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`rounded-md px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase border ${
-                            f.severity === "high" || f.severity === "critical"
-                              ? "bg-red-50 border-red-200 text-red-700"
-                              : "bg-amber-50 border-amber-200 text-amber-800"
-                          }`}
-                        >
-                          {f.severity || "warning"}
-                        </span>
-                        <span className="rounded-md bg-zinc-100 border border-zinc-200 px-2.5 py-0.5 font-mono text-[10px] text-zinc-600">
-                          {f.journey || "User Journey"}
-                        </span>
-                        <span className="rounded-md bg-orange-50 border border-orange-200 px-2.5 py-0.5 font-mono text-[10px] text-[#FF9500] font-bold">
-                          {f.replay_rate || "3/3 Verified"}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Expected vs Actual Side-by-Side */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                      <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 space-y-1">
-                        <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">
-                          Expected Invariant Behavior:
-                        </span>
-                        <p className="text-[12px] text-zinc-800 leading-relaxed font-sans">
-                          {f.expected}
-                        </p>
-                      </div>
-                      <div className="rounded-xl border border-red-200 bg-red-50/50 p-4 space-y-1">
-                        <span className="text-[10px] font-bold text-red-700 uppercase tracking-wider block">
-                          Actual Observed Symptom:
-                        </span>
-                        <p className="text-[12px] text-zinc-800 leading-relaxed font-sans">
-                          {f.actual}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Steps to Reproduce */}
-                    {f.trigger_steps && f.trigger_steps.length > 0 && (
-                      <div className="space-y-1.5">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">
-                          Deterministic Steps to Reproduce:
-                        </span>
-                        <ol className="space-y-1 list-decimal list-inside text-xs text-zinc-800 font-mono bg-zinc-50 p-3.5 rounded-xl border border-[#e4e4e7]">
-                          {f.trigger_steps.map((st, sIdx) => (
-                            <li key={sIdx} className="leading-relaxed">
-                              {st}
-                            </li>
-                          ))}
-                        </ol>
-                      </div>
-                    )}
-
-                    {/* Technical Evidence Trace */}
-                    {f.evidence && (
-                      <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-3.5 font-mono text-xs">
-                        <span className="text-[10px] uppercase font-bold text-zinc-500 block mb-1">
-                          Technical Evidence Trace:
-                        </span>
-                        <p className="text-zinc-800 break-all text-[11px] leading-relaxed">{f.evidence}</p>
-                      </div>
-                    )}
-
-                    {/* Visual Screenshot & Location of Anomaly Pinpoint */}
-                    {f.anomaly_location && (
-                      <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-4 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Camera className="h-4 w-4 text-[#FF9500]" />
-                            <span className="text-xs font-bold text-zinc-900">
-                              Visual Workflow Screenshot &amp; Location of Anomaly
-                            </span>
-                            <span className="rounded bg-red-50 border border-red-200 px-2 py-0.5 text-[10px] font-mono text-red-700 font-bold flex items-center gap-1">
-                              <Crosshair className="h-3 w-3 animate-spin" />
-                              <span>Pinpoint Active</span>
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-500">
-                            <span>Screen: <span className="text-zinc-900 font-semibold">{f.anomaly_location.screen}</span></span>
-                            <span>&bull;</span>
-                            <span>Target: <span className="text-red-700 font-semibold">{f.anomaly_location.selector}</span></span>
-                          </div>
-                        </div>
-
-                        {/* macOS Browser Mockup Frame with Complete High-Res Scrollable Page */}
-                        {(() => {
-                          const defectInfo = getDefectScreenshotInfo(f);
-                          return (
-                            <div className="rounded-xl border border-[#e4e4e7] bg-white shadow-xs overflow-hidden">
-                              {/* Browser Header Bar */}
-                              <div className="flex items-center justify-between px-3 py-2 border-b border-[#e4e4e7] bg-[#fcfcfd]">
-                                <div className="flex items-center gap-2">
-                                  {/* Traffic lights */}
-                                  <div className="flex items-center gap-1.5 mr-2">
-                                    <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f56] border border-[#e0443e]/40 inline-block"></span>
-                                    <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e] border border-[#dea123]/40 inline-block"></span>
-                                    <span className="h-2.5 w-2.5 rounded-full bg-[#27c93f] border border-[#1aab29]/40 inline-block"></span>
-                                  </div>
-                                  {/* Route URL Pill */}
-                                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-100 border border-[#e4e4e7] text-[11px] font-mono text-zinc-700">
-                                    <Lock className="h-3 w-3 text-emerald-600" />
-                                    <span className="text-zinc-500">https://www.mywealthwise.in</span>
-                                    <span className="font-bold text-zinc-900">{defectInfo.route}</span>
-                                  </div>
-                                </div>
-
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[10px] font-mono text-zinc-500 hidden sm:inline">
-                                    {defectInfo.pageName}
-                                  </span>
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      setFullImageModal({
-                                        src: defectInfo.src,
-                                        title: `${f.id}: ${f.title}`,
-                                        route: defectInfo.route,
-                                        selector: f.anomaly_location?.selector,
-                                        description: f.anomaly_location?.description,
-                                        id: f.id,
-                                      })
-                                    }
-                                    className="flex items-center gap-1 px-2.5 py-1 rounded bg-zinc-900 text-white text-[10px] font-mono hover:bg-zinc-800 transition-colors shadow-2xs cursor-pointer"
-                                    title="Open Fullscreen High-Resolution Screenshot"
-                                  >
-                                    <Maximize2 className="h-3 w-3" />
-                                    <span>Full Page</span>
-                                  </button>
-                                </div>
-                              </div>
-
-                              {/* Scrollable Viewport with Authentic Complete Page Display */}
-                              <div className="relative max-h-[540px] overflow-y-auto bg-zinc-100/60 select-none group">
-                                {defectInfo.isImage ? (
-                                  <div className="relative w-full">
-                                    <img
-                                      src={defectInfo.src}
-                                      alt={`Complete page capture for ${f.id}`}
-                                      className="w-full h-auto block select-none"
-                                    />
-
-                                    {/* DYNAMIC ANOMALY BOUNDING BOX WITH TARGET CROSSHAIR */}
-                                    <div
-                                      className="absolute rounded-lg border-2 border-red-500 bg-red-500/15 shadow-[0_0_24px_rgba(239,68,68,0.4)] transition-all duration-300 flex items-start justify-end p-1.5 pointer-events-none"
-                                      style={{
-                                        left: `${f.anomaly_location.x ?? 25}%`,
-                                        top: `${f.anomaly_location.y ?? 35}%`,
-                                        width: `${f.anomaly_location.w ?? 50}%`,
-                                        height: `${f.anomaly_location.h ?? 25}%`,
-                                      }}
-                                    >
-                                      {/* Anomaly Badge / Tooltip */}
-                                      <div className="flex items-center gap-1.5 rounded bg-black/95 border border-red-500 px-2.5 py-1 text-[10px] font-mono font-bold text-white shadow-xl -mt-4 mr-1">
-                                        <Crosshair className="h-3.5 w-3.5 text-red-400 animate-spin" />
-                                        <span>LOCATION OF ANOMALY: {f.id}</span>
-                                      </div>
-
-                                      {/* Target Crosshairs in corner */}
-                                      <span className="absolute -bottom-1 -left-1 h-3 w-3 border-b-2 border-l-2 border-red-500"></span>
-                                      <span className="absolute -top-1 -right-1 h-3 w-3 border-t-2 border-r-2 border-red-500"></span>
-                                      <span className="absolute -bottom-1 -right-1 h-3 w-3 border-b-2 border-r-2 border-red-500"></span>
-                                      <span className="absolute -top-1 -left-1 h-3 w-3 border-t-2 border-l-2 border-red-500"></span>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <iframe
-                                    src={defectInfo.src}
-                                    title={`Visual Screenshot for ${f.id}`}
-                                    sandbox="allow-same-origin allow-forms"
-                                    className="w-full h-[500px] border-0 pointer-events-none select-none bg-white"
-                                    loading="lazy"
-                                  />
-                                )}
-
-                                {/* Sticky bottom descriptor pill */}
-                                <div className="sticky bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-[#e4e4e7] p-2.5 flex items-center justify-between text-xs font-mono shadow-md text-zinc-900 z-10">
-                                  <span className="truncate">
-                                    Detected anomaly: <span className="text-red-600 font-bold">{f.anomaly_location.description}</span>
-                                  </span>
-                                  <span className="text-[10px] text-zinc-500 shrink-0 ml-2 hidden sm:inline">
-                                    Selector: <code className="text-black font-semibold">{f.anomaly_location.selector}</code> [x: {f.anomaly_location.x}%, y: {f.anomaly_location.y}%]
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })()}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-8 text-center space-y-2">
-                <CheckCircle2 className="h-8 w-8 text-emerald-600 mx-auto mb-2" />
-                <h4 className="text-base font-bold text-zinc-900">Zero Defects Detected</h4>
-                <p className="text-xs text-zinc-600 max-w-md mx-auto">
-                  The target application passed all autonomous navigation, form submission, and security invariant assertions without any anomalies.
-                </p>
-              </div>
-            )}
-
-            {/* Environment Health Summary Card */}
-            <div className="rounded-2xl border border-[#e4e4e7] bg-white p-5 space-y-3 shadow-xs">
-              <div className="flex items-center justify-between border-b border-[#e4e4e7] pb-3">
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-700">
-                    Environment Health &amp; Endpoint Telemetry
-                  </h4>
-                  <p className="text-[11px] text-zinc-400 mt-0.5">
-                    Live endpoint reachability, TLS verification, and server response time
-                  </p>
-                </div>
-                <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-700">
-                  HEALTHY
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-3">
-                  <span className="block text-[10px] text-zinc-400">HTTP Status</span>
-                  <span className="font-mono text-xs font-bold text-emerald-700">
-                    {telemetry?.status_code || 200} OK
-                  </span>
-                </div>
-                <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-3">
-                  <span className="block text-[10px] text-zinc-400">Response Latency</span>
-                  <span className="font-mono text-xs font-bold text-zinc-900">
-                    {telemetry?.latency_ms || 28}ms
-                  </span>
-                </div>
-                <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-3">
-                  <span className="block text-[10px] text-zinc-400">Transport</span>
-                  <span className="font-mono text-xs font-bold text-zinc-900">
-                    {targetUrl.startsWith("https://") ? "TLS 1.3 Active" : "HTTP Plain"}
-                  </span>
-                </div>
-                <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-3">
-                  <span className="block text-[10px] text-zinc-400">Interactive Elements</span>
-                  <span className="font-mono text-xs font-bold text-zinc-900">
-                    {(model?.buttons?.length || 0) + (model?.inputs?.length || 0)} Locators
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <DefectsTab
+            isBlocker={isBlocker}
+            isWarning={isWarning}
+            isClean={isClean}
+            findings={findings}
+            targetUrl={targetUrl}
+            targetHostname={targetHostname}
+            model={model}
+            telemetry={telemetry}
+            getDefectScreenshotInfo={getDefectScreenshotInfo}
+            setFullImageModal={setFullImageModal}
+          />
         )}
 
-        {/* =========================================================================
-            TAB 2: AUDITED USER JOURNEYS (Vostride Light Theme)
-            ========================================================================= */}
+        {/* Tab 2: Audited User Journeys */}
         {activeReportTab === "journeys" && (
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#e4e4e7] pb-4">
-              <div>
-                <h3 className="text-base font-bold text-zinc-900">
-                  Audited User Journeys &amp; Invariant Tests
-                </h3>
-                <p className="text-xs text-zinc-500 mt-0.5">
-                  Autonomous scenario formulation tested against live authentication gateways and interactive targets
-                </p>
-              </div>
-              <span className="font-mono text-xs text-zinc-600 bg-zinc-100 border border-zinc-200 px-3 py-1 rounded-lg">
-                {passingJourneysCount} of {dynamicJourneys.length} Passed
-              </span>
-            </div>
-
-            <div className="space-y-2.5">
-              {dynamicJourneys.map((j) => {
-                const isExpanded = expandedJourney === j.id;
-                return (
-                  <div
-                    key={j.id}
-                    className="rounded-2xl border border-[#e4e4e7] bg-white overflow-hidden transition-all hover:border-zinc-300 shadow-xs"
-                  >
-                    <div
-                      onClick={() => setExpandedJourney(isExpanded ? null : j.id)}
-                      className="flex items-center justify-between p-4 cursor-pointer hover:bg-zinc-50/60 transition-colors"
-                    >
-                      <div className="flex items-center gap-3.5">
-                        <div
-                          className={`flex h-6 w-6 items-center justify-center rounded-full shrink-0 ${
-                            j.status === "DEFECT DETECTED"
-                              ? "bg-red-50 text-red-600 border border-red-200"
-                              : j.status === "POLICY WARNING"
-                              ? "bg-amber-50 text-amber-600 border border-amber-200"
-                              : "bg-emerald-50 text-emerald-600 border border-emerald-200"
-                          }`}
-                        >
-                          {j.status === "DEFECT DETECTED" ? (
-                            <AlertTriangle className="h-3.5 w-3.5" />
-                          ) : j.status === "POLICY WARNING" ? (
-                            <AlertTriangle className="h-3.5 w-3.5" />
-                          ) : (
-                            <Check className="h-3.5 w-3.5" />
-                          )}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="text-xs sm:text-sm font-semibold text-zinc-900">{j.title}</h4>
-                            <span className="text-[10px] text-zinc-500 font-mono bg-zinc-100 border border-zinc-200 px-1.5 py-0.5 rounded">
-                              {j.category}
-                            </span>
-                          </div>
-                          <span className="text-[11px] font-mono text-zinc-600">
-                            Target: {j.target}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-3 shrink-0">
-                        <span
-                          className={`rounded-md px-2.5 py-0.5 font-mono text-[10px] font-bold ${
-                            j.status === "DEFECT DETECTED"
-                              ? "border border-red-200 bg-red-50 text-red-700"
-                              : j.status === "POLICY WARNING"
-                              ? "border border-amber-200 bg-amber-50 text-amber-800"
-                              : "border border-emerald-200 bg-emerald-50 text-emerald-700"
-                          }`}
-                        >
-                          {j.status}
-                        </span>
-                        {isExpanded ? (
-                          <ChevronUp className="h-4 w-4 text-zinc-400" />
-                        ) : (
-                          <ChevronDown className="h-4 w-4 text-zinc-400" />
-                        )}
-                      </div>
-                    </div>
-
-                    {isExpanded && (
-                      <div className="border-t border-[#e4e4e7] bg-zinc-50/60 p-4 text-xs font-mono space-y-3">
-                        <div className="text-[12px] text-zinc-700 font-sans leading-relaxed">{j.details}</div>
-                        <div>
-                          <span className="text-[10px] uppercase font-bold text-zinc-500 block mb-1.5">
-                            Executed Playwright Invariant Assertions:
-                          </span>
-                          <div className="space-y-1.5">
-                            {j.assertions.map((ast, i) => (
-                              <div key={i} className="text-zinc-800 text-[11px] bg-white p-2 rounded-lg border border-[#e4e4e7] shadow-2xs font-mono">
-                                &gt; {ast}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Workflow Screenshot Trace */}
-                        {(() => {
-                          const screens = getWorkflowScreens(j);
-                          return (
-                            <div>
-                              <span className="text-[10px] uppercase font-bold text-zinc-500 block mb-1.5 flex items-center gap-1.5">
-                                <Camera className="h-3.5 w-3.5 text-[#FF9500]" />
-                                <span>Workflow Step Screenshot Capture:</span>
-                              </span>
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
-                                {/* Pre-Action Actual Render */}
-                                <div className="rounded-xl border border-[#e4e4e7] bg-white p-3 space-y-2 shadow-xs">
-                                  <div className="flex items-center justify-between text-[10px]">
-                                    <span className="font-bold text-zinc-900 flex items-center gap-1.5">
-                                      <Camera className="h-3 w-3 text-zinc-400" />
-                                      <span>Pre-Action State Screenshot</span>
-                                    </span>
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-emerald-700 font-mono font-bold text-[9px] bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
-                                        {screens.pre.badge}
-                                      </span>
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          setFullImageModal({
-                                            src: screens.pre.src,
-                                            title: `${j.title} — Pre-Action`,
-                                            route: screens.pre.target,
-                                            description: screens.pre.caption,
-                                          })
-                                        }
-                                        className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-mono text-[9px] transition-colors cursor-pointer"
-                                        title="View Full Page Screenshot"
-                                      >
-                                        <Maximize2 className="h-2.5 w-2.5" />
-                                        <span>Expand</span>
-                                      </button>
-                                    </div>
-                                  </div>
-                                  <div className="rounded-lg overflow-hidden border border-[#e4e4e7] bg-zinc-100">
-                                    <div className="flex items-center justify-between px-2 py-1 bg-zinc-50 border-b border-[#e4e4e7] text-[9px] font-mono text-zinc-500">
-                                      <div className="flex items-center gap-1">
-                                        <span className="h-1.5 w-1.5 rounded-full bg-[#ff5f56]"></span>
-                                        <span className="h-1.5 w-1.5 rounded-full bg-[#ffbd2e]"></span>
-                                        <span className="h-1.5 w-1.5 rounded-full bg-[#27c93f]"></span>
-                                      </div>
-                                      <span className="truncate max-w-[200px]">{screens.pre.target}</span>
-                                    </div>
-                                    <div className="max-h-[340px] overflow-y-auto bg-white">
-                                      {screens.pre.isImage ? (
-                                        <img
-                                          src={screens.pre.src}
-                                          alt={screens.pre.caption}
-                                          className="w-full h-auto block select-none"
-                                        />
-                                      ) : (
-                                        <iframe
-                                          src={screens.pre.src}
-                                          title={`Pre-Action Screenshot for ${j.id}`}
-                                          sandbox="allow-same-origin allow-forms"
-                                          className="w-full h-[320px] border-0 pointer-events-none select-none bg-white"
-                                          loading="lazy"
-                                        />
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="text-[10px] text-zinc-500 font-mono truncate px-1">
-                                    {screens.pre.caption}
-                                  </div>
-                                </div>
-
-                                {/* Post-Interaction Actual Render */}
-                                <div className="rounded-xl border border-[#e4e4e7] bg-white p-3 space-y-2 shadow-xs">
-                                  <div className="flex items-center justify-between text-[10px]">
-                                    <span className="font-bold text-zinc-900 flex items-center gap-1.5">
-                                      <Camera className="h-3 w-3 text-zinc-400" />
-                                      <span>Post-Interaction State Screenshot</span>
-                                    </span>
-                                    <div className="flex items-center gap-2">
-                                      <span
-                                        className={`font-mono font-bold text-[9px] px-1.5 py-0.5 rounded border ${
-                                          j.status === "DEFECT DETECTED"
-                                            ? "text-red-700 bg-red-50 border-red-200"
-                                            : "text-emerald-700 bg-emerald-50 border-emerald-200"
-                                        }`}
-                                      >
-                                        {screens.post.badge}
-                                      </span>
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          setFullImageModal({
-                                            src: screens.post.src,
-                                            title: `${j.title} — Post-Action`,
-                                            route: screens.post.target,
-                                            description: screens.post.caption,
-                                          })
-                                        }
-                                        className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-mono text-[9px] transition-colors cursor-pointer"
-                                        title="View Full Page Screenshot"
-                                      >
-                                        <Maximize2 className="h-2.5 w-2.5" />
-                                        <span>Expand</span>
-                                      </button>
-                                    </div>
-                                  </div>
-                                  <div className="rounded-lg overflow-hidden border border-[#e4e4e7] bg-zinc-100">
-                                    <div className="flex items-center justify-between px-2 py-1 bg-zinc-50 border-b border-[#e4e4e7] text-[9px] font-mono text-zinc-500">
-                                      <div className="flex items-center gap-1">
-                                        <span className="h-1.5 w-1.5 rounded-full bg-[#ff5f56]"></span>
-                                        <span className="h-1.5 w-1.5 rounded-full bg-[#ffbd2e]"></span>
-                                        <span className="h-1.5 w-1.5 rounded-full bg-[#27c93f]"></span>
-                                      </div>
-                                      <span className="truncate max-w-[200px]">{screens.post.target}</span>
-                                    </div>
-                                    <div className="max-h-[340px] overflow-y-auto bg-white">
-                                      {screens.post.isImage ? (
-                                        <img
-                                          src={screens.post.src}
-                                          alt={screens.post.caption}
-                                          className="w-full h-auto block select-none"
-                                        />
-                                      ) : (
-                                        <iframe
-                                          src={screens.post.src}
-                                          title={`Post-Action Screenshot for ${j.id}`}
-                                          sandbox="allow-same-origin allow-forms"
-                                          className="w-full h-[320px] border-0 pointer-events-none select-none bg-white"
-                                          loading="lazy"
-                                        />
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="text-[10px] text-zinc-500 font-mono truncate px-1">
-                                    {screens.post.caption}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })()}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <JourneysTab
+            dynamicJourneys={dynamicJourneys}
+            passingJourneysCount={passingJourneysCount}
+            expandedJourney={expandedJourney}
+            setExpandedJourney={setExpandedJourney}
+            getWorkflowScreens={getWorkflowScreens}
+            setFullImageModal={setFullImageModal}
+          />
         )}
 
-        {/* =========================================================================
-            TAB 3: LIVE BROWSER PREVIEW & LOCATORS (Vostride Light Theme)
-            ========================================================================= */}
+        {/* Tab 3: Live Browser & Locators */}
         {activeReportTab === "preview" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Left 8 cols: Interactive Browser Mockup */}
-            <div className="rounded-2xl border border-[#e4e4e7] bg-white p-5 lg:col-span-8 space-y-4 shadow-xs">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#e4e4e7] pb-3">
-                <div className="flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-[#FF9500]" />
-                  <h3 className="text-sm font-bold text-zinc-900">
-                    Live Target Web Preview
-                  </h3>
-                </div>
-
-                {/* Viewport switcher */}
-                <div className="flex items-center gap-1 rounded-lg border border-[#e4e4e7] bg-zinc-100 p-1">
-                  <button
-                    onClick={() => setViewportMode("desktop")}
-                    className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors cursor-pointer ${
-                      viewportMode === "desktop" ? "bg-black text-white font-medium shadow-xs" : "text-zinc-600 hover:text-black"
-                    }`}
-                  >
-                    <Monitor className="h-3.5 w-3.5" />
-                    <span>Desktop</span>
-                  </button>
-                  <button
-                    onClick={() => setViewportMode("tablet")}
-                    className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors cursor-pointer ${
-                      viewportMode === "tablet" ? "bg-black text-white font-medium shadow-xs" : "text-zinc-600 hover:text-black"
-                    }`}
-                  >
-                    <Tablet className="h-3.5 w-3.5" />
-                    <span>Tablet</span>
-                  </button>
-                  <button
-                    onClick={() => setViewportMode("mobile")}
-                    className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors cursor-pointer ${
-                      viewportMode === "mobile" ? "bg-black text-white font-medium shadow-xs" : "text-zinc-600 hover:text-black"
-                    }`}
-                  >
-                    <Smartphone className="h-3.5 w-3.5" />
-                    <span>Mobile</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Interactive Address Bar & Quick Navigation Bar */}
-              <div className="flex flex-col gap-2 rounded-xl border border-[#e4e4e7] bg-zinc-50 p-2.5">
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1 text-zinc-500">
-                    <button
-                      onClick={() => handleNavigatePreview("/")}
-                      title="Navigate to Home"
-                      className="p-1 rounded hover:bg-zinc-200 text-zinc-600 hover:text-black transition-colors cursor-pointer"
-                    >
-                      <RotateCcw className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-
-                  {/* Active URL Address Bar */}
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      if (previewUrlInput) handleNavigatePreview(previewUrlInput);
-                    }}
-                    className="flex-1 flex items-center gap-2 rounded-lg border border-[#e4e4e7] bg-white px-3 py-1 text-xs font-mono shadow-2xs"
-                  >
-                    <Lock className="h-3 w-3 text-emerald-600 shrink-0" />
-                    <span className="text-zinc-400 shrink-0">
-                      {targetUrl.replace(/\/$/, "")}
-                    </span>
-                    <input
-                      type="text"
-                      value={previewUrlInput !== "" ? previewUrlInput : previewRoute}
-                      onChange={(e) => setPreviewUrlInput(e.target.value)}
-                      placeholder={previewRoute}
-                      className="w-full bg-transparent text-zinc-900 outline-none placeholder:text-zinc-400 font-mono text-xs font-medium"
-                    />
-                    <button
-                      type="submit"
-                      className="px-2 py-0.5 rounded bg-black hover:bg-zinc-800 text-white font-sans text-[10px] font-bold cursor-pointer shrink-0 transition-colors"
-                    >
-                      Navigate
-                    </button>
-                  </form>
-                </div>
-
-                {/* Quick Route Nav Pills */}
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 pt-1 text-[11px] font-sans">
-                  <span className="text-[10px] uppercase font-bold text-zinc-400 shrink-0 mr-1">
-                    Routes:
-                  </span>
-                  {(targetUrl?.toLowerCase().includes("padmora")
-                    ? [
-                        { label: "Storefront (/)", route: "/" },
-                        { label: "Mohar Collection", route: "/collections/mohar" },
-                        { label: "All Sarees", route: "/collections/all" },
-                        { label: "Shop by Weave", route: "/#weaves" },
-                        { label: "Sarees in Motion", route: "/#motion" },
-                      ]
-                    : [
-                        { label: "Home (/)", route: "/" },
-                        { label: "Sign-Up (/auth/signup)", route: "/auth/signup" },
-                        { label: "Sign-In (/auth/signin)", route: "/auth/signin" },
-                        { label: "Budget View", route: "/budget" },
-                        { label: "Track View", route: "/track" },
-                      ]
-                  ).map((tab, idx) => {
-                    const isActive =
-                      previewRoute === tab.route ||
-                      (tab.route !== "/" && previewRoute.includes(tab.route.replace(/^\//, "")));
-                    return (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          setPreviewUrlInput(tab.route);
-                          handleNavigatePreview(tab.route);
-                        }}
-                        className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all shrink-0 cursor-pointer flex items-center gap-1 ${
-                          isActive
-                            ? "bg-black text-white shadow-xs border border-black font-semibold"
-                            : "bg-white text-zinc-700 hover:text-black hover:bg-zinc-100 border border-[#e4e4e7]"
-                        }`}
-                      >
-                        <span>{tab.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Embedded Live Browser Frame */}
-              <div className="overflow-hidden rounded-xl border border-[#e4e4e7] bg-white shadow-xs">
-                <div className="flex h-8 items-center justify-between bg-zinc-100 border-b border-[#e4e4e7] px-3 font-mono text-[11px] text-zinc-500">
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-red-400"></span>
-                    <span className="h-2 w-2 rounded-full bg-amber-400"></span>
-                    <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
-                    <span className="ml-2 truncate max-w-[340px] text-zinc-700 font-medium">
-                      {targetUrl.replace(/\/$/, "")}
-                      {previewRoute.startsWith("/") ? previewRoute : "/" + previewRoute}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {isNavigatingPreview && (
-                      <span className="text-orange-600 font-mono text-[10px] animate-pulse font-bold">
-                        NAVIGATING...
-                      </span>
-                    )}
-                    <span className="text-emerald-700 font-bold text-[10px]">REAL-TIME RENDER</span>
-                  </div>
-                </div>
-
-                <div
-                  className={`transition-all duration-300 mx-auto relative ${
-                    viewportMode === "desktop"
-                      ? "w-full h-[520px]"
-                      : viewportMode === "tablet"
-                      ? "w-[85%] h-[520px]"
-                      : "w-[55%] h-[520px]"
-                  }`}
-                >
-                  {isNavigatingPreview && (
-                    <div className="absolute inset-0 bg-white/70 backdrop-blur-2xs z-20 flex flex-col items-center justify-center gap-2 font-mono text-xs text-zinc-900">
-                      <span className="h-5 w-5 rounded-full border-2 border-black border-t-transparent animate-spin"></span>
-                      <span>Dispatching Chromium Context to {previewRoute}...</span>
-                    </div>
-                  )}
-
-                  {targetUrl?.toLowerCase().includes("padmora") ? (
-                    <div className="h-full w-full relative overflow-y-auto bg-zinc-100 flex flex-col items-center">
-                      <div className="sticky top-3 self-end mr-3 mb-[-36px] bg-white/95 backdrop-blur-sm border border-[#e4e4e7] px-3 py-1.5 rounded-full text-[10px] font-mono text-emerald-700 font-bold flex items-center gap-2 shadow-sm z-10">
-                        <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span>STOREFRONT: PADMORA SAREES (MOHAR COLLECTION)</span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setFullImageModal({
-                              src: "/screenshots/padmora-home.png",
-                              title: "Padmora Sarees by Yashi | Storefront",
-                              route: "https://padmorasarees.com/",
-                              description: "Full High-Resolution Storefront Viewport (Mohar Collection)",
-                            })
-                          }
-                          className="ml-1 p-0.5 hover:bg-zinc-100 rounded text-zinc-600 transition-colors cursor-pointer"
-                          title="Expand Full Page"
-                        >
-                          <Maximize2 className="h-3 w-3" />
-                        </button>
-                      </div>
-                      <img
-                        src="/screenshots/padmora-home.png"
-                        alt="Padmora Sarees Storefront Render"
-                        className="w-full h-auto block select-none shadow-sm"
-                      />
-                    </div>
-                  ) : (!targetUrl || targetUrl.includes("wealthwise") || targetUrl.includes("mywealthwise")) ? (
-                    <div className="h-full w-full relative overflow-y-auto bg-zinc-100 flex flex-col items-center">
-                      {(() => {
-                        const activeScreenshotSrc =
-                          previewRoute.includes("signup")
-                            ? "/screenshots/wealthwise-signup.png"
-                            : previewRoute.includes("signin") || previewRoute.includes("login")
-                            ? "/screenshots/wealthwise-auth.png"
-                            : previewRoute.includes("budget")
-                            ? "/screenshots/wealthwise-budget.png"
-                            : previewRoute.includes("track")
-                            ? "/screenshots/wealthwise-track.png"
-                            : "/screenshots/wealthwise-home.png";
-                        const activeRouteName =
-                          previewRoute.includes("signup")
-                            ? "ROUTE: /auth/signup (SIGN-UP FORM)"
-                            : previewRoute.includes("signin") || previewRoute.includes("login")
-                            ? "ROUTE: /auth/signin (SIGN-IN PORTAL)"
-                            : previewRoute.includes("budget")
-                            ? "FEATURE: BUDGET DASHBOARD"
-                            : previewRoute.includes("track")
-                            ? "FEATURE: EXPENSE TRACKER"
-                            : "ROUTE: / (HOMEPAGE HERO)";
-                        return (
-                          <>
-                            <div className="sticky top-3 self-end mr-3 mb-[-36px] bg-white/95 backdrop-blur-sm border border-[#e4e4e7] px-3 py-1.5 rounded-full text-[10px] font-mono text-emerald-700 font-bold flex items-center gap-2 shadow-sm z-10">
-                              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                              <span>{activeRouteName}</span>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setFullImageModal({
-                                    src: activeScreenshotSrc,
-                                    title: activeRouteName,
-                                    route: previewRoute,
-                                    description: "Live Chromium Render Viewport",
-                                  })
-                                }
-                                className="ml-1 p-0.5 hover:bg-zinc-100 rounded text-zinc-600 transition-colors cursor-pointer"
-                                title="Expand Full Page"
-                              >
-                                <Maximize2 className="h-3 w-3" />
-                              </button>
-                            </div>
-                            <img
-                              src={activeScreenshotSrc}
-                              alt={`WealthWise Live Render for ${previewRoute}`}
-                              className="w-full h-auto block select-none shadow-sm"
-                            />
-                          </>
-                        );
-                      })()}
-                    </div>
-                  ) : targetUrl ? (
-                    <iframe
-                      key={`${targetUrl}-${previewRoute}`}
-                      src={`/api/proxy-preview?url=${encodeURIComponent(
-                        previewRoute && previewRoute !== "/"
-                          ? `${targetUrl.replace(/\/$/, "")}${
-                              previewRoute.startsWith("/") ? previewRoute : "/" + previewRoute
-                            }`
-                          : targetUrl
-                      )}`}
-                      title="Live Target Web Preview"
-                      sandbox="allow-same-origin allow-forms allow-scripts"
-                      className="h-full w-full border-0 bg-white"
-                      loading="eager"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full flex-col items-center justify-center font-mono text-xs text-zinc-400 gap-2">
-                      <span className="h-4 w-4 rounded-full border-2 border-black border-t-transparent animate-spin"></span>
-                      <span>Loading live browser viewport...</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Right 4 cols: Discovered Locators Matrix */}
-            <div className="rounded-2xl border border-[#e4e4e7] bg-white p-5 lg:col-span-4 space-y-4 shadow-xs">
-              <div className="border-b border-[#e4e4e7] pb-3">
-                <h4 className="text-sm font-bold text-zinc-900">
-                  Discovered Locators ({model?.buttons?.length || 0})
-                </h4>
-                <p className="text-xs text-zinc-500 mt-0.5">
-                  Click any locator to navigate preview & copy selector
-                </p>
-              </div>
-
-              <div className="max-h-[520px] space-y-2 overflow-y-auto pr-1">
-                {(() => {
-                  const isPadmoraSite = targetUrl?.toLowerCase().includes("padmora");
-                  const buttonList =
-                    model?.buttons && model.buttons.length > 0
-                      ? model.buttons
-                      : isPadmoraSite
-                      ? ["EXPLORE MOHAR", "Shop by Weave", "Maheshwari", "Banarasi", "VIEW ALL SAREES", "FIND MY SAREE"]
-                      : [];
-
-                  return buttonList.length > 0 ? (
-                    buttonList.map((btn, idx) => {
-                      const sel = `button:has-text("${btn}")`;
-                      const btnLower = btn.toLowerCase();
-                      return (
-                        <div
-                          key={idx}
-                          onClick={() => {
-                            copyToClipboard(sel, "selector");
-                            if (btnLower.includes("budget")) {
-                              handleNavigatePreview("/budget");
-                            } else if (btnLower.includes("track")) {
-                              handleNavigatePreview("/track");
-                            } else if (btnLower.includes("sign in") || btnLower.includes("login")) {
-                              handleNavigatePreview("/auth/signin");
-                            } else if (
-                              btnLower.includes("free") ||
-                              btnLower.includes("sign up") ||
-                              btnLower.includes("get started")
-                            ) {
-                              handleNavigatePreview("/auth/signup");
-                            } else if (btnLower.includes("home") || btnLower.includes("wealthwise") || btnLower.includes("mohar")) {
-                              handleNavigatePreview("/");
-                            }
-                          }}
-                          className="group flex items-center justify-between rounded-xl border border-[#e4e4e7] bg-zinc-50/80 p-2.5 text-xs transition-all hover:border-black hover:bg-white cursor-pointer shadow-2xs"
-                        >
-                          <div className="truncate pr-2">
-                            <span className="block truncate font-semibold text-zinc-900">
-                              {btn}
-                            </span>
-                            <code className="font-mono text-[10px] text-zinc-600">{sel}</code>
-                          </div>
-                          <span className="text-zinc-400 group-hover:text-black shrink-0">
-                            {copiedSelector === sel ? (
-                              <Check className="h-4 w-4 text-emerald-600" />
-                            ) : (
-                              <Copy className="h-4 w-4" />
-                            )}
-                          </span>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <div className="text-xs text-zinc-400 text-center py-6">
-                      Locators will appear here once synthesized.
-                    </div>
-                  );
-                })()}
-              </div>
-            </div>
-          </div>
+          <LiveBrowserTab
+            viewportMode={viewportMode}
+            setViewportMode={setViewportMode}
+            previewRoute={previewRoute}
+            setPreviewRoute={setPreviewRoute}
+            previewUrlInput={previewUrlInput}
+            setPreviewUrlInput={setPreviewUrlInput}
+            isNavigatingPreview={isNavigatingPreview}
+            handleNavigatePreview={handleNavigatePreview}
+            targetUrl={targetUrl}
+            model={model}
+            copiedSelector={copiedSelector}
+            copyToClipboard={copyToClipboard}
+            setFullImageModal={setFullImageModal}
+          />
         )}
 
-        {/* =========================================================================
-            TAB 4: STANDALONE PYTEST TEST SUITE (Vostride Light Theme)
-            ========================================================================= */}
+        {/* Tab 4: Pytest Artifact */}
         {activeReportTab === "pytest" && (
-          <div className="rounded-2xl border border-[#e4e4e7] bg-white p-6 space-y-4 shadow-xs">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#e4e4e7] pb-4">
-              <div>
-                <h3 className="text-base font-bold text-zinc-900 flex items-center gap-2">
-                  <FileCode2 className="h-4 w-4 text-[#FF9500]" />
-                  <span>Standalone Pytest-Playwright Test Suite</span>
-                </h3>
-                <p className="text-xs text-zinc-500 mt-0.5">
-                  Self-contained executable Python test artifact generated with real target locators
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => copyToClipboard(computedPlaywrightCode, "code")}
-                  className="btn-secondary flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold cursor-pointer"
-                >
-                  {copiedCode ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
-                  <span>{copiedCode ? "Copied" : "Copy Code"}</span>
-                </button>
-
-                <button
-                  onClick={downloadTestSuite}
-                  className="btn-primary flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold cursor-pointer"
-                >
-                  <Download className="h-3.5 w-3.5" />
-                  <span>Download .py</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Code container */}
-            <div className="max-h-[500px] overflow-y-auto rounded-xl border border-zinc-800 bg-[#0c0d12] p-4 font-mono text-xs text-zinc-200 leading-relaxed shadow-inner">
-              <pre>{computedPlaywrightCode}</pre>
-            </div>
-
-            {/* Terminal Run Instructions */}
-            <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-3.5 font-mono text-xs text-zinc-800 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-zinc-400">$</span>
-                <span className="text-zinc-900 font-semibold">pytest -v test_{targetHostname.replace(/[^a-zA-Z0-9]/g, "_")}.py --headed</span>
-              </div>
-              <span className="text-[10px] text-zinc-500 font-bold uppercase">Run Locally</span>
-            </div>
-          </div>
+          <PytestTab
+            computedPlaywrightCode={computedPlaywrightCode}
+            targetHostname={targetHostname}
+            copiedCode={copiedCode}
+            copyToClipboard={copyToClipboard}
+            downloadTestSuite={downloadTestSuite}
+          />
         )}
 
-        {/* =========================================================================
-            TAB 5: AUTONOMOUS QA TOOLS & SELF-HEALING (Vostride Light Theme)
-            ========================================================================= */}
+        {/* Tab 5: AI QA & Self-Healing */}
         {activeReportTab === "tools" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            {/* Card 1: Ask QA Agent */}
-            <div className="rounded-2xl border border-[#e4e4e7] bg-white p-6 space-y-4 shadow-xs">
-              <div className="border-b border-[#e4e4e7] pb-3">
-                <h3 className="text-base font-bold text-zinc-900 flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-[#FF9500]" />
-                  <span>Ask QA Agent (Natural Language Test)</span>
-                </h3>
-                <p className="text-xs text-zinc-500 mt-0.5">
-                  Execute ad-hoc validation on the live application in natural language
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={customStepText}
-                    onChange={(e) => setCustomStepText(e.target.value)}
-                    placeholder={`e.g. Verify sign-up flow on "${signupRoute}" or Click button "${primaryButton}"...`}
-                    onKeyDown={(e) => e.key === "Enter" && handleExecuteNLStep(customStepText)}
-                    className="w-full flex-1 text-sm font-sans text-zinc-900 placeholder:text-zinc-400 font-normal px-4 py-2.5 rounded-xl border border-[#e4e4e7] bg-white focus:border-black focus:outline-none focus:ring-1 focus:ring-black transition-all"
-                  />
-                  <button
-                    onClick={() => handleExecuteNLStep(customStepText)}
-                    disabled={executingStep || !customStepText.trim()}
-                    className="btn-primary flex items-center gap-1.5 px-4 py-2.5 text-xs font-semibold cursor-pointer disabled:opacity-50 whitespace-nowrap"
-                  >
-                    {executingStep ? (
-                      <RotateCcw className="h-3.5 w-3.5 animate-spin" />
-                    ) : (
-                      <Send className="h-3.5 w-3.5" />
-                    )}
-                    <span>Run</span>
-                  </button>
-                </div>
-
-                {stepResult && (
-                  <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-3.5 font-mono text-xs">
-                    <div className="flex items-center justify-between text-emerald-700 font-bold mb-1">
-                      <span className="flex items-center gap-1.5">
-                        <Check className="h-3.5 w-3.5 text-emerald-600" />
-                        <span>Step Executed Successfully</span>
-                      </span>
-                      <span className="text-[10px] text-zinc-400">
-                        {stepResult.latency_ms || 24}ms
-                      </span>
-                    </div>
-                    <div className="text-zinc-700 text-[11px] font-sans">
-                      {stepResult.reasoning || "Natural language intent compiled to Playwright assertion and executed against live DOM."}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Card 2: Self-Healing Engine */}
-            <div className="rounded-2xl border border-[#e4e4e7] bg-white p-6 space-y-4 shadow-xs">
-              <div className="flex items-center justify-between border-b border-[#e4e4e7] pb-3">
-                <div>
-                  <h3 className="text-base font-bold text-zinc-900 flex items-center gap-2">
-                    <Wand2 className="h-4 w-4 text-[#FF9500]" />
-                    <span>Self-Healing Engine (Locator Drift)</span>
-                  </h3>
-                  <p className="text-xs text-zinc-500 mt-0.5">
-                    Recovers broken locators using semantic role hierarchy without test failure
-                  </p>
-                </div>
-
-                <button
-                  onClick={handleTriggerSelfHealing}
-                  disabled={isHealing}
-                  className="btn-secondary flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold cursor-pointer disabled:opacity-50 shrink-0"
-                >
-                  <Wand2 className={`h-3.5 w-3.5 ${isHealing ? "animate-spin text-[#FF9500]" : ""}`} />
-                  <span>{isHealing ? "Recovering..." : "Simulate Drift"}</span>
-                </button>
-              </div>
-
-              <div className="space-y-2">
-                {healedChains.length > 0 ? (
-                  healedChains.map((hc, idx) => (
-                    <div key={idx} className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-3 text-xs font-mono">
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-red-600 line-through">{hc.broken_selector}</span>
-                          <span className="text-zinc-400">&rarr;</span>
-                          <span className="font-bold text-emerald-700">{hc.healed_selector}</span>
-                        </div>
-                        <span className="rounded bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
-                          RECOVERED ({hc.recovery_latency_ms || 18}ms)
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-zinc-600 font-sans">{hc.recovery_strategy || "Recovered via semantic role & accessible name match"}</p>
-                    </div>
-                  ))
-                ) : (
-                  <div className="rounded-xl border border-dashed border-[#e4e4e7] p-6 text-center text-xs text-zinc-400">
-                    Click &quot;Simulate Drift&quot; to test autonomous locator recovery.
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          <AiToolsTab
+            customStepText={customStepText}
+            setCustomStepText={setCustomStepText}
+            executingStep={executingStep}
+            handleExecuteNLStep={handleExecuteNLStep}
+            stepResult={stepResult}
+            signupRoute={signupRoute}
+            primaryButton={primaryButton}
+            healedChains={healedChains}
+            isHealing={isHealing}
+            handleTriggerSelfHealing={handleTriggerSelfHealing}
+          />
         )}
       </div>
 
-      {/* =========================================================================
-          FULL-SCREEN HIGH-RESOLUTION SCREENSHOT LIGHTBOX MODAL
-          ========================================================================= */}
-      {fullImageModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-6xl max-h-[92vh] flex flex-col bg-white rounded-2xl shadow-2xl border border-[#e4e4e7] overflow-hidden">
-            {/* Modal Browser Header */}
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#e4e4e7] bg-[#fafafa]">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5">
-                  <span className="h-3 w-3 rounded-full bg-[#ff5f56]"></span>
-                  <span className="h-3 w-3 rounded-full bg-[#ffbd2e]"></span>
-                  <span className="h-3 w-3 rounded-full bg-[#27c93f]"></span>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-zinc-900">{fullImageModal.title}</span>
-                    {fullImageModal.route && (
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-200/80 text-zinc-800 font-semibold">
-                        {fullImageModal.route}
-                      </span>
-                    )}
-                  </div>
-                  {fullImageModal.description && (
-                    <p className="text-[11px] text-zinc-500 font-mono mt-0.5 truncate max-w-xl">
-                      {fullImageModal.description}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <a
-                  href={fullImageModal.src}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 px-2.5 py-1 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-mono transition-colors"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  <span>Open Raw</span>
-                </a>
-                <button
-                  type="button"
-                  onClick={() => setFullImageModal(null)}
-                  className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 transition-colors cursor-pointer"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Modal Image Viewport */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-zinc-100 flex justify-center items-start">
-              <div className="relative w-full max-w-5xl shadow-xl rounded-xl overflow-hidden border border-[#e4e4e7] bg-white">
-                <img
-                  src={fullImageModal.src}
-                  alt={fullImageModal.title}
-                  className="w-full h-auto block select-none"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* High-Resolution Screenshot Lightbox */}
+      <ScreenshotLightbox
+        fullImageModal={fullImageModal}
+        setFullImageModal={setFullImageModal}
+      />
     </div>
   );
 }
