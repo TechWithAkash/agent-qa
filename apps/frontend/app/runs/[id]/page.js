@@ -302,9 +302,9 @@ function RunConsoleContent() {
   };
 
   // Trigger self-healing
-  const handleTriggerSelfHealing = async () => {
+  const handleTriggerSelfHealing = async (customSelector) => {
     setIsHealing(true);
-    const brokenTarget = `#legacy_${(model?.buttons?.[0] || "action").toLowerCase().replace(/[^a-z0-9]+/g, "_")}_btn`;
+    const brokenTarget = customSelector || `#legacy_${(model?.buttons?.[0] || "action").toLowerCase().replace(/[^a-z0-9]+/g, "_")}_btn`;
     try {
       const res = await fetch(`${apiUrl}/runs/${runId}/heal`, {
         method: "POST",
@@ -1168,9 +1168,14 @@ def test_j07_transport_security_and_console(page: Page):
             stepResult={stepResult}
             signupRoute={signupRoute}
             primaryButton={primaryButton}
+            h1Text={h1Text}
+            targetHostname={targetHostname}
+            targetUrl={targetUrl}
+            model={model}
             healedChains={healedChains}
             isHealing={isHealing}
             handleTriggerSelfHealing={handleTriggerSelfHealing}
+            copyToClipboard={copyToClipboard}
           />
         )}
       </div>
