@@ -772,6 +772,12 @@ async function executeDynamicPipeline(runId, targetUrl, config) {
 
     const btn1 = buttons[0] || "Get Started";
     const inp1 = inputs[0]?.placeholder || "search";
+    const signupRoute =
+      Array.from(discoveredRoutes).find((r) => /signup|register/i.test(r)) ||
+      (isShopLite ? "/signup" : "/auth/signup");
+    const signinRoute =
+      Array.from(discoveredRoutes).find((r) => /login|signin/i.test(r)) ||
+      (isShopLite ? "/login" : "/auth/signin");
 
     const tailoredPytestCode = isShopLite
       ? `"""

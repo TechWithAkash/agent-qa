@@ -33,6 +33,7 @@ import {
   Workflow,
   ListChecks,
   Compass,
+  X,
 } from "lucide-react";
 
 const MULTI_AGENT_PIPELINE = [
@@ -43,6 +44,7 @@ const MULTI_AGENT_PIPELINE = [
     description: "Probing target DNS, TLS 1.3 handshake, HTTP status code, and latency verification.",
     tag: "Security / Transport",
     icon: ShieldCheck,
+    actionSummary: (host) => `Verifying target DNS resolution, TLS 1.3 encryption handshake, and server latency on ${host}...`,
   },
   {
     key: "S2",
@@ -51,6 +53,7 @@ const MULTI_AGENT_PIPELINE = [
     description: "Deep crawling internal links, auth gateways (/auth/signup, /auth/signin), and sitemap indexing.",
     tag: "Autonomous Crawl",
     icon: Globe,
+    actionSummary: (host) => `Autonomous crawler mapping internal routes, interactive forms, and prioritizing auth gateways (/auth/signup, /auth/signin)...`,
   },
   {
     key: "S3",
@@ -59,6 +62,7 @@ const MULTI_AGENT_PIPELINE = [
     description: "Constructing accessible role hierarchy, registering actionable locators, forms, inputs, and buttons.",
     tag: "DOM Modeling",
     icon: Cpu,
+    actionSummary: () => `Synthesizing accessible DOM tree hierarchy, registering actionable buttons, inputs, and semantic locators...`,
   },
   {
     key: "S4",
@@ -67,6 +71,7 @@ const MULTI_AGENT_PIPELINE = [
     description: "Formulating deterministic test cases for Sign-Up onboarding, Sign-In authentication, and navigation flows.",
     tag: "Assertion Planning",
     icon: Sparkles,
+    actionSummary: () => `Formulating deterministic user journey test suites for user onboarding, sign-in, and conversion flows...`,
   },
   {
     key: "S5",
@@ -75,6 +80,7 @@ const MULTI_AGENT_PIPELINE = [
     description: "Dispatching isolated headless Chromium contexts to verify assertion stability and eliminate false positives.",
     tag: "Execution & Replay",
     icon: Play,
+    actionSummary: () => `Dispatching headless Chromium contexts across 3× replay iterations to eliminate flakiness and verify assertions...`,
   },
   {
     key: "S6",
@@ -83,6 +89,7 @@ const MULTI_AGENT_PIPELINE = [
     description: "Analyzing Content-Security-Policy (CSP), nosniff headers, input boundaries, and runtime console errors.",
     tag: "Security Invariants",
     icon: AlertTriangle,
+    actionSummary: () => `Auditing Content-Security-Policy (CSP), nosniff headers, input boundary constraints, and runtime exceptions...`,
   },
   {
     key: "S10",
@@ -91,6 +98,7 @@ const MULTI_AGENT_PIPELINE = [
     description: "Compiling standalone pytest-playwright test artifact with real target selectors and compiling executive verdict.",
     tag: "Report Synthesis",
     icon: FileCode2,
+    actionSummary: () => `Compiling standalone pytest-playwright test artifact with real locators and synthesizing executive audit verdict...`,
   },
 ];
 
@@ -126,8 +134,10 @@ function RunConsoleContent() {
   const [healedChains, setHealedChains] = useState([]);
   const [isHealing, setIsHealing] = useState(false);
 
-  // View state & multi-agent interactivity
-  const [activeViewTab, setActiveViewTab] = useState("report"); // "report" | "orchestration"
+  // View state & multi-agent modal interactivity
+  const [showAgentModal, setShowAgentModal] = useState(false);
+  const [modalDismissed, setModalDismissed] = useState(false);
+  const [inspectedAgentIdx, setInspectedAgentIdx] = useState(null);
   const [liveReplayStep, setLiveReplayStep] = useState(null);
   const [expandedJourney, setExpandedJourney] = useState(null);
   const [viewportMode, setViewportMode] = useState("desktop");
@@ -199,6 +209,13 @@ function RunConsoleContent() {
     };
   }, [runId, apiUrl]);
 
+  // Automatically open modal when run is actively executing
+  useEffect(() => {
+    if (run && run.status !== "completed" && !modalDismissed) {
+      setShowAgentModal(true);
+    }
+  }, [run?.status, modalDismissed]);
+
   const targetUrl = run?.target_url || "";
   let targetHostname = "Target Web Application";
   if (targetUrl) {
@@ -212,6 +229,19 @@ function RunConsoleContent() {
   const stageMap = { S1: 0, S2: 1, S3: 2, S4: 3, S5: 4, S6: 5, S7: 6, S8: 6, S9: 6, S10: 7 };
   const currentAgentIndex =
     liveReplayStep !== null ? liveReplayStep : isCompleted ? 7 : (stageMap[currentStage] ?? 0);
+
+  const isAllAgentsComplete =
+    (isCompleted && liveReplayStep === null) || liveReplayStep === 7;
+
+  const displayAgentIdx =
+    inspectedAgentIdx !== null
+      ? inspectedAgentIdx
+      : liveReplayStep !== null
+      ? Math.min(liveReplayStep, 6)
+      : Math.min(currentAgentIndex, 6);
+
+  const activeAgent = MULTI_AGENT_PIPELINE[displayAgentIdx] || MULTI_AGENT_PIPELINE[0];
+  const ActiveAgentIcon = activeAgent.icon;
 
   const confirmedDefectsCount = findings.length;
   const blockerDefectsCount = findings.filter(
@@ -302,16 +332,15 @@ def test_01_core_dom_rendering(page: Page):
   // Interactive Re-run passing through all 7 agents step-by-step
   const handleRetestAll = async () => {
     setRetestingAll(true);
-    setActiveViewTab("orchestration");
+    setShowAgentModal(true);
+    setInspectedAgentIdx(null);
     for (let i = 0; i < 7; i++) {
       setLiveReplayStep(i);
       await new Promise((r) => setTimeout(r, 650));
     }
     setLiveReplayStep(7);
-    await new Promise((r) => setTimeout(r, 400));
-    setLiveReplayStep(null);
+    await new Promise((r) => setTimeout(r, 500));
     setRetestingAll(false);
-    setActiveViewTab("report");
     setToastMessage("All 7 Autonomous Agents re-executed with 100% determinism. Executive report updated.");
     setTimeout(() => setToastMessage(null), 5000);
   };
@@ -466,8 +495,6 @@ def test_01_core_dom_rendering(page: Page):
   ).length;
   const qualityScorePercent = Math.round((passingJourneysCount / dynamicJourneys.length) * 100);
 
-  const showOrchestration = !isCompleted || activeViewTab === "orchestration";
-
   return (
     <div className="mx-auto max-w-7xl px-6 py-8 w-full flex-1 flex flex-col space-y-6">
       {/* Toast Notification */}
@@ -571,52 +598,36 @@ def test_01_core_dom_rendering(page: Page):
             </div>
           </div>
 
-          {/* Action Buttons & View Mode Switcher */}
-          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3">
-            {/* View Mode Toggle */}
-            <div className="flex rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-secondary)] p-1 text-xs">
-              <button
-                onClick={() => setActiveViewTab("report")}
-                className={`flex items-center gap-1.5 rounded-md px-3 py-1 font-medium transition-colors cursor-pointer ${
-                  activeViewTab === "report" && !retestingAll
-                    ? "bg-indigo-600 text-white shadow-sm"
-                    : "text-[var(--text-muted)] hover:text-white"
-                }`}
-              >
-                <ListChecks className="h-3.5 w-3.5" />
-                <span>Executive Report</span>
-              </button>
-              <button
-                onClick={() => setActiveViewTab("orchestration")}
-                className={`flex items-center gap-1.5 rounded-md px-3 py-1 font-medium transition-colors cursor-pointer ${
-                  activeViewTab === "orchestration" || retestingAll
-                    ? "bg-indigo-600 text-white shadow-sm"
-                    : "text-[var(--text-muted)] hover:text-white"
-                }`}
-              >
-                <Workflow className="h-3.5 w-3.5" />
-                <span>Agent Workflow (7)</span>
-              </button>
-            </div>
+          {/* Header Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2.5">
+            <button
+              onClick={() => {
+                setInspectedAgentIdx(6);
+                setShowAgentModal(true);
+              }}
+              className="btn-secondary flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold cursor-pointer hover:border-indigo-500/50 hover:bg-indigo-500/10 transition-colors"
+              title="Inspect autonomous multi-agent swarm telemetry and pipeline trace"
+            >
+              <Workflow className="h-3.5 w-3.5 text-indigo-400" />
+              <span>Agent Workflow (7)</span>
+            </button>
 
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleRetestAll}
-                disabled={retestingAll}
-                className="btn-secondary flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold cursor-pointer"
-              >
-                <RotateCcw className={`h-3.5 w-3.5 ${retestingAll ? "animate-spin" : ""}`} />
-                <span>{retestingAll ? "Processing Agents..." : "Re-run QA Suite"}</span>
-              </button>
+            <button
+              onClick={handleRetestAll}
+              disabled={retestingAll}
+              className="btn-secondary flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold cursor-pointer hover:border-indigo-500/50 transition-colors"
+            >
+              <RotateCcw className={`h-3.5 w-3.5 ${retestingAll ? "animate-spin text-indigo-400" : ""}`} />
+              <span>{retestingAll ? "Agents Running..." : "Re-run QA Suite"}</span>
+            </button>
 
-              <button
-                onClick={downloadTestSuite}
-                className="btn-primary flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold cursor-pointer"
-              >
-                <Download className="h-3.5 w-3.5" />
-                <span>Export Pytest (.py)</span>
-              </button>
-            </div>
+            <button
+              onClick={downloadTestSuite}
+              className="btn-primary flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold cursor-pointer"
+            >
+              <Download className="h-3.5 w-3.5" />
+              <span>Export Pytest (.py)</span>
+            </button>
           </div>
         </div>
 
@@ -691,166 +702,242 @@ def test_01_core_dom_rendering(page: Page):
       </div>
 
       {/* =========================================================================
-          VIEW A: MULTI-AGENT SWARM ORCHESTRATION CONSOLE (LIVE / INTERACTIVE)
+          AUTONOMOUS MULTI-AGENT SWARM SEQUENTIAL EXECUTION MODAL
           ========================================================================= */}
-      {showOrchestration ? (
-        <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-6 space-y-6 shadow-xl">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[var(--border-subtle)] pb-4">
-            <div className="flex items-center gap-3">
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-400">
-                <Workflow className="h-5 w-5 animate-pulse" />
-                <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-indigo-500"></span>
-                </span>
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <span>Autonomous Multi-Agent Orchestration Swarm</span>
-                  <span className="rounded bg-indigo-500/15 border border-indigo-500/30 px-2 py-0.5 text-[10px] font-mono text-indigo-300">
-                    7 Agents Coordinated
+      {showAgentModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
+          <div className="relative w-full max-w-2xl rounded-2xl border border-[var(--border-subtle)] bg-[#0b0e14] p-6 sm:p-7 shadow-2xl flex flex-col space-y-5 my-auto">
+            {/* Modal Header */}
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 shrink-0">
+                  <Workflow className="h-5 w-5 animate-pulse" />
+                  <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500"></span>
                   </span>
-                </h2>
-                <p className="text-xs text-[var(--text-secondary)]">
-                  Watch each specialized agent execute and synthesize findings across isolated browser sandboxes
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-base font-bold text-[var(--text-primary)]">
+                      Autonomous Multi-Agent Swarm
+                    </h2>
+                    <span className="rounded bg-indigo-500/15 border border-indigo-500/30 px-2 py-0.5 text-[10px] font-mono text-indigo-300">
+                      7 Agents
+                    </span>
+                  </div>
+                  <p className="text-xs text-[var(--text-secondary)]">
+                    Auditing target: <span className="text-indigo-400 font-medium">{targetHostname}</span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="font-mono text-xs text-[var(--text-muted)]">
+                  {isAllAgentsComplete
+                    ? "7 of 7 Agents Complete"
+                    : `Agent ${Math.min(displayAgentIdx + 1, 7)} of 7`}
+                </span>
+                <button
+                  onClick={() => {
+                    setShowAgentModal(false);
+                    setModalDismissed(true);
+                  }}
+                  className="rounded-lg p-1.5 text-[var(--text-muted)] hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
+                  title="Close modal"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Linear Progress Bar */}
+            <div className="w-full bg-[var(--surface-secondary)] h-1.5 rounded-full overflow-hidden border border-white/[0.05]">
+              <div
+                className="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full transition-all duration-500 rounded-full"
+                style={{
+                  width: `${
+                    isAllAgentsComplete
+                      ? 100
+                      : Math.min(100, Math.round(((displayAgentIdx + 1) / 7) * 100))
+                  }%`,
+                }}
+              />
+            </div>
+
+            {/* Minimalist 7-Node Horizontal Stepper */}
+            <div className="grid grid-cols-7 gap-1 px-1">
+              {MULTI_AGENT_PIPELINE.map((ag, idx) => {
+                const isPast =
+                  (isAllAgentsComplete && liveReplayStep === null) || currentAgentIndex > idx;
+                const isCurrent = !isAllAgentsComplete && currentAgentIndex === idx;
+                const isSelected = displayAgentIdx === idx;
+                return (
+                  <button
+                    key={ag.key}
+                    onClick={() => setInspectedAgentIdx(idx)}
+                    className={`flex flex-col items-center gap-1.5 transition-all cursor-pointer ${
+                      isSelected ? "scale-105" : "opacity-80 hover:opacity-100"
+                    }`}
+                  >
+                    <div
+                      className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-mono font-bold transition-all ${
+                        isPast
+                          ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-400"
+                          : isCurrent
+                          ? "bg-indigo-500/25 border border-indigo-500/60 text-indigo-300 ring-2 ring-indigo-500/30 animate-pulse"
+                          : "bg-[var(--surface-secondary)] border border-[var(--border-subtle)] text-[var(--text-muted)]"
+                      }`}
+                    >
+                      {isPast ? <Check className="h-3.5 w-3.5" /> : idx + 1}
+                    </div>
+                    <span
+                      className={`text-[9px] font-mono tracking-tight uppercase truncate max-w-[56px] text-center ${
+                        isSelected ? "text-indigo-300 font-semibold" : "text-[var(--text-muted)]"
+                      }`}
+                    >
+                      {ag.tag.split(" ")[0]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Active Agent Spotlight Hero Card */}
+            <div className="rounded-xl border border-indigo-500/30 bg-gradient-to-b from-[#121622] to-[#0c0e15] p-5 shadow-lg relative overflow-hidden space-y-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-3.5">
+                  <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/15 border border-indigo-500/40 text-indigo-400 shrink-0">
+                    <ActiveAgentIcon className="h-6 w-6 text-indigo-400" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-mono text-[10px] uppercase tracking-wider text-indigo-400 font-bold bg-indigo-500/10 border border-indigo-500/25 px-2 py-0.5 rounded">
+                        {activeAgent.tag}
+                      </span>
+                      <span className="text-xs text-[var(--text-muted)] font-mono">
+                        Agent {displayAgentIdx + 1} of 7
+                      </span>
+                    </div>
+                    <h3 className="text-base font-bold text-[var(--text-primary)]">
+                      {activeAgent.name}
+                    </h3>
+                    <p className="text-xs text-indigo-300/80 font-medium">{activeAgent.role}</p>
+                  </div>
+                </div>
+
+                <div className="shrink-0">
+                  {isAllAgentsComplete ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 font-mono text-[11px] font-bold text-emerald-300">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                      <span>VERIFIED</span>
+                    </span>
+                  ) : currentAgentIndex === displayAgentIdx ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/20 border border-indigo-500/40 px-3 py-1 font-mono text-[11px] font-bold text-indigo-300 animate-pulse">
+                      <RotateCcw className="h-3 w-3 animate-spin" />
+                      <span>ACTIVE</span>
+                    </span>
+                  ) : currentAgentIndex > displayAgentIdx ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-0.5 font-mono text-[10px] font-bold text-emerald-400">
+                      <Check className="h-3 w-3" />
+                      <span>COMPLETED</span>
+                    </span>
+                  ) : (
+                    <span className="rounded bg-[var(--surface-secondary)] border border-[var(--border-subtle)] px-2.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
+                      STANDBY
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Plain English Action Explanation */}
+              <div className="rounded-lg bg-[var(--surface-secondary)]/60 border border-[var(--border-subtle)] p-3.5 text-xs text-[var(--text-secondary)] leading-relaxed">
+                <span className="text-indigo-400 font-semibold block mb-1 text-[11px]">
+                  Current Autonomous Action:
+                </span>
+                <p>
+                  {activeAgent.actionSummary
+                    ? activeAgent.actionSummary(targetHostname)
+                    : activeAgent.description}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-xs text-[var(--text-muted)]">
-                Progress: {Math.min(currentAgentIndex, 7)} / 7 Agents
-              </span>
-              <button
-                onClick={() => setActiveViewTab("report")}
-                className="btn-secondary px-3 py-1.5 text-xs font-semibold cursor-pointer"
-              >
-                <span>Jump to Executive Report &rarr;</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Progress bar */}
-          <div className="w-full bg-[var(--surface-secondary)] h-2 rounded-full overflow-hidden border border-white/[0.05]">
-            <div
-              className="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full transition-all duration-500 rounded-full"
-              style={{ width: `${Math.min(100, Math.round((currentAgentIndex / 7) * 100))}%` }}
-            ></div>
-          </div>
-
-          {/* 7 Multi-Agent Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            {MULTI_AGENT_PIPELINE.map((ag, idx) => {
-              const IconComponent = ag.icon;
-              const isPast = currentAgentIndex > idx;
-              const isCurrent = currentAgentIndex === idx;
-              const isPending = currentAgentIndex < idx;
-
-              return (
-                <div
-                  key={ag.key}
-                  className={`rounded-xl border p-4 transition-all duration-300 flex flex-col justify-between ${
-                    isCurrent
-                      ? "border-indigo-500/60 bg-indigo-500/[0.06] shadow-lg shadow-indigo-500/10 ring-1 ring-indigo-500/40"
-                      : isPast
-                      ? "border-emerald-500/30 bg-emerald-500/[0.02]"
-                      : "border-[var(--border-subtle)] bg-[var(--surface-secondary)]/30 opacity-60"
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={`flex h-7 w-7 items-center justify-center rounded-lg border text-xs font-mono font-bold ${
-                            isCurrent
-                              ? "border-indigo-500/40 bg-indigo-500/20 text-indigo-300 animate-pulse"
-                              : isPast
-                              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                              : "border-[var(--border-subtle)] bg-[var(--surface-secondary)] text-[var(--text-muted)]"
-                          }`}
-                        >
-                          {idx + 1}
-                        </div>
-                        <span className="font-mono text-[10px] text-[var(--text-muted)] uppercase tracking-wider">
-                          {ag.tag}
-                        </span>
-                      </div>
-
-                      {/* Status indicator badge */}
-                      {isPast ? (
-                        <span className="inline-flex items-center gap-1 rounded bg-emerald-500/10 border border-emerald-500/25 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-400">
-                          <Check className="h-3 w-3" />
-                          <span>COMPLETED</span>
-                        </span>
-                      ) : isCurrent ? (
-                        <span className="inline-flex items-center gap-1 rounded bg-indigo-500/20 border border-indigo-500/40 px-2 py-0.5 font-mono text-[10px] font-bold text-indigo-300 animate-pulse">
-                          <RotateCcw className="h-3 w-3 animate-spin" />
-                          <span>ACTIVE...</span>
-                        </span>
-                      ) : (
-                        <span className="rounded bg-[var(--surface-secondary)] border border-[var(--border-subtle)] px-2 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
-                          QUEUED
-                        </span>
-                      )}
-                    </div>
-
-                    <h4 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5 mb-1">
-                      <IconComponent className="h-3.5 w-3.5 text-indigo-400 shrink-0" />
-                      <span>{ag.name}</span>
-                    </h4>
-                    <p className="text-[11px] font-medium text-indigo-300/80 mb-1.5">{ag.role}</p>
-                    <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">{ag.description}</p>
-                  </div>
-
-                  {/* Micro telemetry footer */}
-                  <div className="mt-3 pt-2.5 border-t border-white/[0.05] flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)]">
-                    <span>Context: Isolated</span>
-                    <span>{isPast ? "Verified" : isCurrent ? "Executing" : "Standby"}</span>
-                  </div>
+            {/* Live Telemetry Micro-Feed */}
+            <div className="rounded-xl border border-[var(--border-subtle)] bg-[#050608] p-3.5 font-mono text-xs shadow-inner">
+              <div className="flex items-center justify-between border-b border-white/[0.06] pb-2 mb-2 text-[10px] text-[var(--text-muted)]">
+                <div className="flex items-center gap-1.5">
+                  <Terminal className="h-3 w-3 text-indigo-400" />
+                  <span className="text-[var(--text-secondary)] font-semibold">
+                    Live Sandbox Telemetry Stream
+                  </span>
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Live Streaming Terminal Log Output */}
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[#050608] p-4 font-mono text-xs shadow-inner">
-            <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5 mb-3 text-[11px] text-[var(--text-muted)]">
-              <div className="flex items-center gap-2">
-                <Terminal className="h-3.5 w-3.5 text-indigo-400" />
-                <span className="text-[var(--text-secondary)] font-semibold">Live Agent Telemetry Stream</span>
+                <span className="text-emerald-400 flex items-center gap-1 text-[10px]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span>Streaming Events ({events.length})</span>
+                </span>
               </div>
-              <span className="text-emerald-400 flex items-center gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Streaming Events ({events.length})</span>
-              </span>
+
+              <div className="max-h-[110px] overflow-y-auto space-y-1.5 pr-1 font-mono text-[10px]">
+                {events.length > 0 ? (
+                  events.slice(-5).map((ev, i) => (
+                    <div key={ev.seq || i} className="flex items-start gap-2 leading-relaxed">
+                      <span className="text-[var(--text-muted)] shrink-0 text-[9px]">
+                        {new Date(ev.ts || Date.now()).toLocaleTimeString()}
+                      </span>
+                      <span className="rounded bg-indigo-500/15 border border-indigo-500/30 px-1 py-0.2 text-[9px] text-indigo-300 shrink-0">
+                        [{ev.stage || "S1"}]
+                      </span>
+                      <span className="text-[var(--text-secondary)] truncate">{ev.message}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-[var(--text-muted)] text-center py-2">
+                    Initializing isolated browser sandbox and preflight probe...
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="max-h-[180px] overflow-y-auto space-y-1.5 pr-1 font-mono text-[11px]">
-              {events.length > 0 ? (
-                events.slice(-10).map((ev, i) => (
-                  <div key={ev.seq || i} className="flex items-start gap-2.5 leading-relaxed">
-                    <span className="text-[var(--text-muted)] shrink-0 text-[10px]">
-                      {new Date(ev.ts || Date.now()).toLocaleTimeString()}
-                    </span>
-                    <span className="rounded bg-indigo-500/15 border border-indigo-500/30 px-1.5 py-0.2 text-[9px] text-indigo-300 shrink-0">
-                      [{ev.stage || "S1"}]
-                    </span>
-                    <span className="text-[var(--text-secondary)]">{ev.message}</span>
-                  </div>
-                ))
+            {/* Modal Bottom Action */}
+            <div className="pt-1">
+              {isAllAgentsComplete ? (
+                <button
+                  onClick={() => {
+                    setShowAgentModal(false);
+                    setModalDismissed(true);
+                  }}
+                  className="btn-primary w-full py-3 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-indigo-600/20"
+                >
+                  <span>View Executive QA Report &amp; Flaws</span>
+                  <ArrowRight className="h-4 w-4" />
+                </button>
               ) : (
-                <div className="text-[var(--text-muted)] text-center py-4">
-                  Connecting to autonomous swarm event emitter...
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                    <RotateCcw className="h-3.5 w-3.5 animate-spin text-indigo-400" />
+                    <span>Executing sequential agent audits across isolated browser sandboxes...</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShowAgentModal(false);
+                      setModalDismissed(true);
+                    }}
+                    className="text-xs text-indigo-400 hover:text-white underline cursor-pointer"
+                  >
+                    Peek at Report
+                  </button>
                 </div>
               )}
             </div>
           </div>
         </div>
-      ) : (
-        /* =========================================================================
-            VIEW B: DETAILED EXECUTIVE QA REPORT & AUDIT EVIDENCE
-            ========================================================================= */
-        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+      )}
+
+      {/* =========================================================================
+          EXECUTIVE QA REPORT & AUDIT EVIDENCE (CLEAN, MINIMALIST, INTUITIVE)
+          ========================================================================= */}
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
           {/* LEFT COLUMN: REAL QA STORY */}
           <div className="space-y-6 lg:col-span-7">
             {/* SECTION 1: Preflight & Environment Health */}
@@ -1413,7 +1500,6 @@ def test_01_core_dom_rendering(page: Page):
             </div>
           </div>
         </div>
-      )}
     </div>
   );
 }
