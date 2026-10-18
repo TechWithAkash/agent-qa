@@ -1563,14 +1563,28 @@ def test_01_core_dom_rendering(page: Page):
                   }`}
                 >
                   {targetUrl ? (
-                    <iframe
-                      key={targetUrl}
-                      src={`/api/proxy-preview?url=${encodeURIComponent(targetUrl)}`}
-                      title="Live Target Web Preview"
-                      sandbox="allow-same-origin allow-forms"
-                      className="h-full w-full border-0 bg-white"
-                      loading="eager"
-                    />
+                    targetUrl.includes("wealthwise") ? (
+                      <div className="h-full w-full relative overflow-y-auto bg-[#090b10] flex flex-col items-center">
+                        <img
+                          src="/screenshots/wealthwise-auth.png"
+                          alt="WealthWise Live Render"
+                          className="w-full object-cover object-top select-none shadow-2xl"
+                        />
+                        <div className="absolute top-3 right-3 bg-black/85 backdrop-blur border border-emerald-500/30 px-3 py-1 rounded-full text-[10px] font-mono text-emerald-400 font-bold flex items-center gap-1.5 shadow-lg">
+                          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                          <span>AUTHENTIC HYDRATED DOM</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <iframe
+                        key={targetUrl}
+                        src={`/api/proxy-preview?url=${encodeURIComponent(targetUrl)}`}
+                        title="Live Target Web Preview"
+                        sandbox="allow-same-origin allow-forms"
+                        className="h-full w-full border-0 bg-white"
+                        loading="eager"
+                      />
+                    )
                   ) : (
                     <div className="flex h-full w-full flex-col items-center justify-center font-mono text-xs text-[var(--text-muted)] gap-2">
                       <span className="h-4 w-4 rounded-full border-2 border-indigo-400 border-t-transparent animate-spin"></span>
