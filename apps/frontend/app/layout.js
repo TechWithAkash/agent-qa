@@ -1,19 +1,6 @@
 import "./globals.css";
 import Link from "next/link";
-import { Inter, JetBrains_Mono } from "next/font/google";
 import { ShieldCheck, Activity, Terminal, ArrowUpRight } from "lucide-react";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata = {
   title: "DRISHTI AI — Autonomous AI QA Platform",
@@ -23,15 +10,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} h-full`}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en" className="h-full">
       <body className="min-h-full flex flex-col antialiased bg-[#fafafa] text-[#09090b]">
         {/* Top Navigation - Vostride Clean Light Theme */}
         <header className="border-b border-[#e4e4e7] bg-white/80 backdrop-blur-md sticky top-0 z-50">
