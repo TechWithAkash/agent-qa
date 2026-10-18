@@ -1,6 +1,18 @@
 import "./globals.css";
 import Link from "next/link";
+import { Geist, VT323 } from "next/font/google";
 import { ShieldCheck, Activity, Terminal, ArrowUpRight } from "lucide-react";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const vt323 = VT323({
+  weight: "400",
+  variable: "--font-vt323",
+  subsets: ["latin"],
+});
 
 export const metadata = {
   title: "DRISHTI AI — Autonomous AI QA Platform",
@@ -10,7 +22,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className={`${geistSans.variable} ${vt323.variable} h-full`}>
       <body className="min-h-full flex flex-col antialiased bg-[#fafafa] text-[#09090b]">
         {/* Top Navigation - Vostride Clean Light Theme */}
         <header className="border-b border-[#e4e4e7] bg-white/80 backdrop-blur-md sticky top-0 z-50">
