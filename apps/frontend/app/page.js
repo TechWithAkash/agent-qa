@@ -127,27 +127,27 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="relative w-full overflow-hidden">
+    <div className="relative w-full overflow-hidden bg-[#fafafa]">
       {/* =========================================================================
-          HERO SECTION with TECHNICAL VISUALIZATION
+          HERO SECTION with TECHNICAL VISUALIZATION (Vostride Light Mode)
           ========================================================================= */}
-      <section className="mx-auto max-w-7xl px-6 pt-12 pb-16 lg:pt-16 lg:pb-24">
+      <section className="mx-auto max-w-7xl px-6 pt-12 pb-16 lg:pt-16 lg:pb-20">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
           {/* Left Hero Content */}
           <div className="space-y-6 text-center lg:col-span-7 lg:text-left">
-            <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3.5 py-1.5 text-xs font-semibold text-indigo-400">
-              <ShieldCheck className="h-3.5 w-3.5 text-indigo-400" />
-              <span>Autonomous AI QA Platform &bull; Track IM-02</span>
+            <div className="inline-flex items-center gap-2 rounded-full border border-orange-200/90 bg-orange-50 px-3.5 py-1.5 text-xs font-semibold text-orange-800">
+              <ShieldCheck className="h-3.5 w-3.5 text-[#FF9500]" />
+              <span>Autonomous AI QA Platform &bull; iMocha Track IM-02</span>
             </div>
 
-            <h1 className="text-4xl font-extrabold tracking-tight text-[var(--text-primary)] sm:text-5xl lg:text-6xl leading-[1.08]">
+            <h1 className="text-4xl font-extrabold tracking-tight text-[#09090b] sm:text-5xl lg:text-6xl leading-[1.08]">
               Autonomous Testing. <br />
-              <span className="text-indigo-400">
+              <span className="text-[#FF9500]">
                 Zero Scripting. Proven Bugs.
               </span>
             </h1>
 
-            <p className="mx-auto max-w-2xl text-base font-normal leading-relaxed text-[var(--text-secondary)] sm:text-lg lg:mx-0">
+            <p className="mx-auto max-w-2xl text-base font-normal leading-relaxed text-zinc-600 sm:text-lg lg:mx-0">
               DRISHTI AI autonomously explores any web application, models real user journeys, plans grounded scenarios with an Assertion DSL, and validates defects through <strong>3&times; clean browser replay</strong>.
             </p>
 
@@ -168,24 +168,24 @@ export default function LandingPage() {
                 }}
                 className="btn-secondary flex items-center gap-2 px-5 py-3 text-sm cursor-pointer"
               >
-                <Globe className="h-4 w-4 text-indigo-400" />
+                <Globe className="h-4 w-4 text-[#FF9500]" />
                 <span>Test Live Web App</span>
               </button>
             </div>
 
             {/* Clean Platform Highlights */}
-            <div className="grid max-w-lg grid-cols-3 gap-6 pt-6 border-t border-[var(--border-subtle)] mx-auto lg:mx-0 text-left">
+            <div className="grid max-w-lg grid-cols-3 gap-6 pt-6 border-t border-[#e4e4e7] mx-auto lg:mx-0 text-left">
               <div>
-                <div className="text-sm font-bold text-[var(--text-primary)]">Full Exploration</div>
-                <div className="text-xs text-[var(--text-muted)] mt-0.5">Routes, forms, buttons</div>
+                <div className="text-sm font-bold text-zinc-900">Full Exploration</div>
+                <div className="text-xs text-zinc-500 mt-0.5">Routes, forms, buttons</div>
               </div>
               <div>
-                <div className="text-sm font-bold text-emerald-400">Zero Flakiness</div>
-                <div className="text-xs text-[var(--text-muted)] mt-0.5">3&times; clean replay proof</div>
+                <div className="text-sm font-bold text-emerald-600">Zero Flakiness</div>
+                <div className="text-xs text-zinc-500 mt-0.5">3&times; clean replay proof</div>
               </div>
               <div>
-                <div className="text-sm font-bold text-indigo-400">CI / CD Ready</div>
-                <div className="text-xs text-[var(--text-muted)] mt-0.5">Pytest test codegen</div>
+                <div className="text-sm font-bold text-zinc-900">CI / CD Ready</div>
+                <div className="text-xs text-zinc-500 mt-0.5">Pytest test codegen</div>
               </div>
             </div>
           </div>
@@ -201,31 +201,31 @@ export default function LandingPage() {
           AUTONOMOUS QA LAUNCHPAD (Primary Clean Workspace)
           ========================================================================= */}
       <section id="operation-workspace" className="mx-auto max-w-7xl px-6 py-10 scroll-mt-20">
-        <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-8 shadow-xl md:p-10">
+        <div className="rounded-2xl border border-[#e4e4e7] bg-white p-8 shadow-sm md:p-10">
           {/* Header & Presets */}
-          <div className="flex flex-col justify-between gap-4 border-b border-[var(--border-subtle)] pb-6 md:flex-row md:items-center">
+          <div className="flex flex-col justify-between gap-4 border-b border-[#e4e4e7] pb-6 md:flex-row md:items-center">
             <div>
               <div className="flex items-center gap-2.5 mb-1">
                 <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
+                <h2 className="text-xl font-bold tracking-tight text-zinc-900">
                   Autonomous QA Launchpad
                 </h2>
               </div>
-              <p className="text-xs text-[var(--text-secondary)]">
+              <p className="text-xs text-zinc-500">
                 Enter any website URL to autonomously explore, model user journeys, and detect real defects.
               </p>
             </div>
 
             {/* Presets Segmented Controls */}
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs text-[var(--text-muted)] mr-1 hidden sm:inline">Presets:</span>
+              <span className="text-xs text-zinc-400 mr-1 hidden sm:inline">Presets:</span>
               <button
                 type="button"
                 onClick={() => handlePreset("designrip")}
                 className={`rounded-lg px-3 py-1.5 text-xs font-semibold border transition-all cursor-pointer ${
                   targetUrl === "https://designrip.in"
-                    ? "border-indigo-500/50 bg-indigo-600/20 text-indigo-300"
-                    : "border-[var(--border-subtle)] bg-[var(--surface-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                    ? "border-black bg-black text-white shadow-xs"
+                    : "border-[#e4e4e7] bg-white text-zinc-700 hover:border-zinc-400 hover:bg-zinc-50"
                 }`}
               >
                 Live App (designrip.in)
@@ -235,8 +235,8 @@ export default function LandingPage() {
                 onClick={() => handlePreset("custom")}
                 className={`rounded-lg px-3 py-1.5 text-xs font-semibold border transition-all cursor-pointer ${
                   targetUrl === "" || targetUrl === "https://example.com"
-                    ? "border-indigo-500/50 bg-indigo-600/20 text-indigo-300"
-                    : "border-[var(--border-subtle)] bg-[var(--surface-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                    ? "border-black bg-black text-white shadow-xs"
+                    : "border-[#e4e4e7] bg-white text-zinc-700 hover:border-zinc-400 hover:bg-zinc-50"
                 }`}
               >
                 New Custom URL
@@ -246,8 +246,8 @@ export default function LandingPage() {
                 onClick={() => handlePreset("github")}
                 className={`rounded-lg px-3 py-1.5 text-xs font-semibold border transition-all cursor-pointer ${
                   targetUrl.includes("github.com")
-                    ? "border-indigo-500/50 bg-indigo-600/20 text-indigo-300"
-                    : "border-[var(--border-subtle)] bg-[var(--surface-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                    ? "border-black bg-black text-white shadow-xs"
+                    : "border-[#e4e4e7] bg-white text-zinc-700 hover:border-zinc-400 hover:bg-zinc-50"
                 }`}
               >
                 GitHub Repository
@@ -257,8 +257,8 @@ export default function LandingPage() {
                 onClick={() => handlePreset("shoplite")}
                 className={`rounded-lg px-3 py-1.5 text-xs font-semibold border transition-all cursor-pointer ${
                   targetUrl.includes("3001")
-                    ? "border-indigo-500/50 bg-indigo-600/20 text-indigo-300"
-                    : "border-[var(--border-subtle)] bg-[var(--surface-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                    ? "border-black bg-black text-white shadow-xs"
+                    : "border-[#e4e4e7] bg-white text-zinc-700 hover:border-zinc-400 hover:bg-zinc-50"
                 }`}
               >
                 ShopLite Benchmark (Local)
@@ -269,8 +269,8 @@ export default function LandingPage() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">
             {error && (
-              <div className="flex items-center gap-3 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300">
-                <AlertTriangle className="h-4 w-4 text-rose-400 shrink-0" />
+              <div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-xs text-red-700">
+                <AlertTriangle className="h-4 w-4 text-red-600 shrink-0" />
                 <span>{error}</span>
               </div>
             )}
@@ -280,9 +280,9 @@ export default function LandingPage() {
               <div className="space-y-2 md:col-span-8">
                 <label
                   htmlFor="target-url"
-                  className="flex items-center gap-2 text-xs font-semibold tracking-wider text-[var(--text-secondary)] uppercase"
+                  className="flex items-center gap-2 text-xs font-bold tracking-wider text-zinc-700 uppercase"
                 >
-                  <Globe className="h-3.5 w-3.5 text-indigo-400" />
+                  <Globe className="h-3.5 w-3.5 text-[#FF9500]" />
                   <span>Target Web URL or GitHub Repository</span>
                 </label>
                 <input
@@ -299,9 +299,9 @@ export default function LandingPage() {
               <div className="space-y-2 md:col-span-4">
                 <label
                   htmlFor="mode-select"
-                  className="flex items-center gap-2 text-xs font-semibold tracking-wider text-[var(--text-secondary)] uppercase"
+                  className="flex items-center gap-2 text-xs font-bold tracking-wider text-zinc-700 uppercase"
                 >
-                  <Sliders className="h-3.5 w-3.5 text-indigo-400" />
+                  <Sliders className="h-3.5 w-3.5 text-[#FF9500]" />
                   <span>Execution Mode</span>
                 </label>
                 <select
@@ -321,12 +321,12 @@ export default function LandingPage() {
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="target-description"
-                  className="flex items-center gap-2 text-xs font-semibold tracking-wider text-[var(--text-secondary)] uppercase"
+                  className="flex items-center gap-2 text-xs font-bold tracking-wider text-zinc-700 uppercase"
                 >
-                  <FileCheck className="h-3.5 w-3.5 text-indigo-400" />
+                  <FileCheck className="h-3.5 w-3.5 text-[#FF9500]" />
                   <span>Testing Guidelines & Behavioral Expectations</span>
                 </label>
-                <span className="font-mono text-xs text-[var(--text-muted)]">
+                <span className="font-mono text-xs text-zinc-400">
                   {description.length} chars
                 </span>
               </div>
@@ -341,26 +341,26 @@ export default function LandingPage() {
             </div>
 
             {/* SEC-1 Authorization Checkbox */}
-            <div className="flex items-start gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-4">
+            <div className="flex items-start gap-3 rounded-xl border border-[#e4e4e7] bg-zinc-50 p-4">
               <input
                 id="attestation-check"
                 type="checkbox"
                 checked={attestation}
                 onChange={(e) => setAttestation(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-[var(--border-strong)] bg-[var(--surface-tertiary)] text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                className="mt-0.5 h-4 w-4 rounded border-zinc-300 text-black focus:ring-black cursor-pointer"
               />
               <label
                 htmlFor="attestation-check"
-                className="text-xs leading-relaxed text-[var(--text-secondary)] cursor-pointer select-none"
+                className="text-xs leading-relaxed text-zinc-600 cursor-pointer select-none"
               >
-                <strong className="text-[var(--text-primary)]">Authorization Attestation (SEC-1 Required):</strong> I confirm that I am authorized to test this target URL and that this run operates in a controlled non-production environment.
+                <strong className="text-zinc-900">Authorization Attestation (SEC-1 Required):</strong> I confirm that I am authorized to test this target URL and that this run operates in a controlled non-production environment.
               </label>
             </div>
 
             {/* Submit Action Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-[var(--border-subtle)]">
-              <div className="flex items-center gap-2 font-mono text-xs text-[var(--text-muted)]">
-                <Activity className="h-4 w-4 text-emerald-400 animate-pulse" />
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-[#e4e4e7]">
+              <div className="flex items-center gap-2 font-mono text-xs text-zinc-500">
+                <Activity className="h-4 w-4 text-emerald-600 animate-pulse" />
                 <span>Chromium Engine: Ready &bull; Isolated Contexts: Ready</span>
               </div>
 
@@ -377,7 +377,7 @@ export default function LandingPage() {
                   </>
                 ) : (
                   <>
-                    <Play className="h-4 w-4 fill-current" />
+                    <Play className="h-4 w-4 fill-current text-[#FF9500]" />
                     <span>Launch Autonomous QA Run</span>
                   </>
                 )}
@@ -390,49 +390,49 @@ export default function LandingPage() {
       {/* =========================================================================
           FEATURE PILLARS: WHY DRISHTI IS DIFFERENT
           ========================================================================= */}
-      <section className="mx-auto max-w-7xl px-6 py-16 border-t border-[var(--border-subtle)]">
+      <section className="mx-auto max-w-7xl px-6 py-16 border-t border-[#e4e4e7]">
         <div className="mx-auto max-w-2xl text-center mb-12">
-          <h2 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl mb-3">
+          <h2 className="text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl mb-3">
             Engineered for Precision & Zero Flakiness
           </h2>
-          <p className="text-xs text-[var(--text-secondary)] leading-relaxed sm:text-sm">
+          <p className="text-xs text-zinc-600 leading-relaxed sm:text-sm">
             Deterministic state graph exploration combined with grounded assertion planning.
           </p>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-6 transition-all hover:border-[var(--border-strong)]">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-indigo-500/20 bg-indigo-500/10 text-indigo-400">
+          <div className="rounded-xl border border-[#e4e4e7] bg-white p-6 shadow-xs transition-all hover:border-zinc-400">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-orange-200 bg-orange-50 text-[#FF9500]">
               <Compass className="h-5 w-5" />
             </div>
-            <h3 className="text-sm font-bold text-[var(--text-primary)] mb-2">
+            <h3 className="text-sm font-bold text-zinc-900 mb-2">
               1. Deterministic Frontier Crawler
             </h3>
-            <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+            <p className="text-xs text-zinc-600 leading-relaxed">
               Explores routes, links, and forms with DOM fingerprinting. Maps actual interactive elements without hallucinated paths.
             </p>
           </div>
 
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-6 transition-all hover:border-[var(--border-strong)]">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-indigo-500/20 bg-indigo-500/10 text-indigo-400">
+          <div className="rounded-xl border border-[#e4e4e7] bg-white p-6 shadow-xs transition-all hover:border-zinc-400">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-orange-200 bg-orange-50 text-[#FF9500]">
               <RotateCcw className="h-5 w-5" />
             </div>
-            <h3 className="text-sm font-bold text-[var(--text-primary)] mb-2">
+            <h3 className="text-sm font-bold text-zinc-900 mb-2">
               2. 3&times; Replay Verification
             </h3>
-            <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+            <p className="text-xs text-zinc-600 leading-relaxed">
               Every failure must reproduce across 3 consecutive fresh browser contexts before being confirmed, eliminating false alarms.
             </p>
           </div>
 
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-6 transition-all hover:border-[var(--border-strong)]">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-indigo-500/20 bg-indigo-500/10 text-indigo-400">
+          <div className="rounded-xl border border-[#e4e4e7] bg-white p-6 shadow-xs transition-all hover:border-zinc-400">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-orange-200 bg-orange-50 text-[#FF9500]">
               <Code2 className="h-5 w-5" />
             </div>
-            <h3 className="text-sm font-bold text-[var(--text-primary)] mb-2">
+            <h3 className="text-sm font-bold text-zinc-900 mb-2">
               3. Pytest Regression Codegen
             </h3>
-            <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+            <p className="text-xs text-zinc-600 leading-relaxed">
               Translates verified user journeys into standalone, runnable <code>pytest-playwright</code> test scripts that integrate directly into CI/CD.
             </p>
           </div>
@@ -443,12 +443,12 @@ export default function LandingPage() {
           BENCHMARK PROOF BANNER
           ========================================================================= */}
       <section className="mx-auto max-w-7xl px-6 py-8 mb-12">
-        <div className="flex flex-col items-center justify-between gap-6 rounded-2xl border border-indigo-500/20 bg-gradient-to-r from-indigo-950/20 via-[var(--surface-primary)] to-[var(--surface-primary)] p-7 md:flex-row">
+        <div className="flex flex-col items-center justify-between gap-6 rounded-2xl border border-[#e4e4e7] bg-white p-7 shadow-xs md:flex-row">
           <div className="space-y-1 text-center md:text-left">
-            <h3 className="text-base font-bold text-[var(--text-primary)]">
+            <h3 className="text-base font-bold text-zinc-900">
               Standardized Benchmark Evaluation
             </h3>
-            <p className="max-w-xl text-xs text-[var(--text-secondary)]">
+            <p className="max-w-xl text-xs text-zinc-500">
               Evaluated against standardized planted defect benchmarks with ground-truth verification.
             </p>
           </div>

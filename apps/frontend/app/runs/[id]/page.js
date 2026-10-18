@@ -108,7 +108,7 @@ export default function RunConsolePage() {
   return (
     <Suspense
       fallback={
-        <div className="p-16 text-center text-[var(--text-secondary)] font-mono text-xs">
+        <div className="p-16 text-center text-zinc-500 font-mono text-xs bg-[#fafafa]">
           Connecting to Autonomous Multi-Agent Swarm...
         </div>
       }
@@ -760,17 +760,17 @@ def test_j07_transport_security_and_console(page: Page):
   const qualityScorePercent = Math.round((passingJourneysCount / dynamicJourneys.length) * 100);
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-8 w-full flex-1 flex flex-col space-y-6">
+    <div className="mx-auto max-w-7xl px-6 py-8 w-full flex-1 flex flex-col space-y-6 bg-[#fafafa]">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-300 shadow-md">
+        <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs text-emerald-800 shadow-xs">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
             <span>{toastMessage}</span>
           </div>
           <button
             onClick={() => setToastMessage(null)}
-            className="text-[11px] text-emerald-400 hover:text-white underline cursor-pointer"
+            className="text-[11px] text-emerald-700 hover:text-black underline cursor-pointer"
           >
             Dismiss
           </button>
@@ -778,26 +778,26 @@ def test_j07_transport_security_and_console(page: Page):
       )}
 
       {/* =========================================================================
-          EXECUTIVE QA VERDICT & SUMMARY HEADER
+          EXECUTIVE QA VERDICT & SUMMARY HEADER (Vostride Light Mode)
           ========================================================================= */}
-      <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-6 shadow-xl">
+      <div className="rounded-2xl border border-[#e4e4e7] bg-white p-6 shadow-xs">
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-start">
           <div className="flex items-start gap-4">
             <div
               className={`flex h-12 w-12 items-center justify-center rounded-xl border shrink-0 ${
                 isBlocker
-                  ? "border-rose-500/30 bg-rose-500/10 text-rose-400"
+                  ? "border-red-200 bg-red-50 text-red-600"
                   : isWarning
-                  ? "border-amber-500/30 bg-amber-500/10 text-amber-400"
-                  : "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                  ? "border-amber-200 bg-amber-50 text-amber-600"
+                  : "border-emerald-200 bg-emerald-50 text-emerald-600"
               }`}
             >
               {isBlocker ? (
-                <AlertTriangle className="h-6 w-6 text-rose-400" />
+                <AlertTriangle className="h-6 w-6 text-red-600" />
               ) : isWarning ? (
-                <AlertTriangle className="h-6 w-6 text-amber-400" />
+                <AlertTriangle className="h-6 w-6 text-amber-600" />
               ) : (
-                <ShieldCheck className="h-6 w-6 text-emerald-400" />
+                <ShieldCheck className="h-6 w-6 text-emerald-600" />
               )}
             </div>
 
@@ -806,19 +806,19 @@ def test_j07_transport_security_and_console(page: Page):
                 <span
                   className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-bold tracking-wider uppercase ${
                     isBlocker
-                      ? "border-rose-500/30 bg-rose-500/10 text-rose-400"
+                      ? "border-red-200 bg-red-50 text-red-700"
                       : isWarning
-                      ? "border-amber-500/30 bg-amber-500/10 text-amber-300"
-                      : "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                      ? "border-amber-200 bg-amber-50 text-amber-800"
+                      : "border-emerald-200 bg-emerald-50 text-emerald-700"
                   }`}
                 >
                   <span
                     className={`h-1.5 w-1.5 rounded-full ${
                       isBlocker
-                        ? "bg-rose-400 animate-pulse"
+                        ? "bg-red-500 animate-pulse"
                         : isWarning
-                        ? "bg-amber-400 animate-pulse"
-                        : "bg-emerald-400"
+                        ? "bg-amber-500 animate-pulse"
+                        : "bg-emerald-500"
                     }`}
                   ></span>
                   {isBlocker
@@ -827,35 +827,35 @@ def test_j07_transport_security_and_console(page: Page):
                     ? `QA Verdict: AUDIT OBSERVATIONS FLAGGED (${warningObservationsCount} WARNING${warningObservationsCount > 1 ? "S" : ""})`
                     : "QA Verdict: READY TO SHIP (ALL PASS)"}
                 </span>
-                <span className="font-mono text-xs text-[var(--text-muted)]">{runId}</span>
+                <span className="font-mono text-xs text-zinc-400">{runId}</span>
               </div>
 
-              <h1 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
+              <h1 className="text-xl font-bold text-zinc-900 flex items-center gap-2">
                 <span>QA Audit:</span>
-                <span className="text-indigo-400">{targetHostname}</span>
+                <span className="text-[#FF9500]">{targetHostname}</span>
               </h1>
 
-              <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--text-secondary)]">
+              <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-500">
                 <span className="flex items-center gap-1">
-                  <Globe className="h-3.5 w-3.5 text-indigo-400" />
+                  <Globe className="h-3.5 w-3.5 text-zinc-400" />
                   <a
                     href={targetUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="hover:text-[var(--text-primary)] underline flex items-center gap-1"
+                    className="hover:text-black underline flex items-center gap-1 text-zinc-700"
                   >
                     <span>{targetUrl}</span>
                     <ExternalLink className="h-2.5 w-2.5 opacity-60" />
                   </a>
                 </span>
-                <span className="text-[var(--border-strong)]">&bull;</span>
-                <span className="font-mono text-[11px] text-emerald-400 flex items-center gap-1">
-                  <Lock className="h-3 w-3" /> TLS Verified
+                <span className="text-zinc-300">&bull;</span>
+                <span className="font-mono text-[11px] text-emerald-700 flex items-center gap-1">
+                  <Lock className="h-3 w-3 text-emerald-600" /> TLS Verified
                 </span>
-                <span className="text-[var(--border-strong)]">&bull;</span>
-                <span className="font-mono text-[11px]">Latency: {telemetry?.latency_ms || 28}ms</span>
-                <span className="text-[var(--border-strong)]">&bull;</span>
-                <span className="text-[var(--text-muted)] text-[11px]">
+                <span className="text-zinc-300">&bull;</span>
+                <span className="font-mono text-[11px] text-zinc-600">Latency: {telemetry?.latency_ms || 28}ms</span>
+                <span className="text-zinc-300">&bull;</span>
+                <span className="text-zinc-400 text-[11px]">
                   Stack: {telemetry?.tech_stack?.slice(0, 3).join(", ") || "Web Application"}
                 </span>
               </div>
@@ -869,19 +869,19 @@ def test_j07_transport_security_and_console(page: Page):
                 setInspectedAgentIdx(6);
                 setShowAgentModal(true);
               }}
-              className="btn-secondary flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold cursor-pointer hover:border-indigo-500/50 hover:bg-indigo-500/10 transition-colors"
+              className="btn-secondary flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold cursor-pointer"
               title="Inspect autonomous multi-agent swarm telemetry and pipeline trace"
             >
-              <Workflow className="h-3.5 w-3.5 text-indigo-400" />
+              <Workflow className="h-3.5 w-3.5 text-[#FF9500]" />
               <span>Agent Workflow (7)</span>
             </button>
 
             <button
               onClick={handleRetestAll}
               disabled={retestingAll}
-              className="btn-secondary flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold cursor-pointer hover:border-indigo-500/50 transition-colors"
+              className="btn-secondary flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold cursor-pointer"
             >
-              <RotateCcw className={`h-3.5 w-3.5 ${retestingAll ? "animate-spin text-indigo-400" : ""}`} />
+              <RotateCcw className={`h-3.5 w-3.5 ${retestingAll ? "animate-spin text-zinc-600" : ""}`} />
               <span>{retestingAll ? "Agents Running..." : "Re-run QA Suite"}</span>
             </button>
 
@@ -896,50 +896,50 @@ def test_j07_transport_security_and_console(page: Page):
         </div>
 
         {/* Dynamic Quality Metrics Bar */}
-        <div className="mt-6 grid grid-cols-2 gap-4 border-t border-[var(--border-subtle)] pt-6 md:grid-cols-4">
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-4">
-            <div className="text-[11px] font-semibold tracking-wider text-[var(--text-muted)] uppercase">
+        <div className="mt-6 grid grid-cols-2 gap-4 border-t border-[#e4e4e7] pt-6 md:grid-cols-4">
+          <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50/70 p-4">
+            <div className="text-[11px] font-bold tracking-wider text-zinc-500 uppercase">
               Quality Score
             </div>
             <div className="mt-1 flex items-baseline gap-2">
               <span
                 className={`font-mono text-2xl font-bold ${
-                  isBlocker ? "text-rose-400" : isWarning ? "text-amber-400" : "text-emerald-400"
+                  isBlocker ? "text-red-600" : isWarning ? "text-amber-600" : "text-emerald-600"
                 }`}
               >
                 {qualityScorePercent}%
               </span>
-              <span className="text-xs text-[var(--text-secondary)]">
+              <span className="text-xs text-zinc-500">
                 {isBlocker ? "High Risk" : isWarning ? "Audit Flagged" : "Production Grade"}
               </span>
             </div>
           </div>
 
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-4">
-            <div className="text-[11px] font-semibold tracking-wider text-[var(--text-muted)] uppercase">
+          <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50/70 p-4">
+            <div className="text-[11px] font-bold tracking-wider text-zinc-500 uppercase">
               Journeys Tested
             </div>
             <div className="mt-1 flex items-baseline gap-2">
-              <span className="font-mono text-2xl font-bold text-[var(--text-primary)]">
+              <span className="font-mono text-2xl font-bold text-zinc-900">
                 {passingJourneysCount} / {dynamicJourneys.length}
               </span>
-              <span className="text-xs text-[var(--text-secondary)]">Passed</span>
+              <span className="text-xs text-zinc-500">Passed</span>
             </div>
           </div>
 
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-4">
-            <div className="text-[11px] font-semibold tracking-wider text-[var(--text-muted)] uppercase">
+          <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50/70 p-4">
+            <div className="text-[11px] font-bold tracking-wider text-zinc-500 uppercase">
               Confirmed Defects
             </div>
             <div className="mt-1 flex items-baseline gap-2">
               <span
                 className={`font-mono text-2xl font-bold ${
-                  isBlocker ? "text-rose-400" : isWarning ? "text-amber-400" : "text-emerald-400"
+                  isBlocker ? "text-red-600" : isWarning ? "text-amber-600" : "text-emerald-600"
                 }`}
               >
                 {confirmedDefectsCount}
               </span>
-              <span className="text-xs text-[var(--text-secondary)]">
+              <span className="text-xs text-zinc-500">
                 {isBlocker
                   ? `${blockerDefectsCount} Blocker`
                   : isWarning
@@ -949,15 +949,15 @@ def test_j07_transport_security_and_console(page: Page):
             </div>
           </div>
 
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-4">
-            <div className="text-[11px] font-semibold tracking-wider text-[var(--text-muted)] uppercase">
+          <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50/70 p-4">
+            <div className="text-[11px] font-bold tracking-wider text-zinc-500 uppercase">
               Discovered Topology
             </div>
             <div className="mt-1 flex items-baseline gap-2">
-              <span className="font-mono text-2xl font-bold text-indigo-400">
+              <span className="font-mono text-2xl font-bold text-zinc-900">
                 {model?.routes?.length || 1}
               </span>
-              <span className="text-xs text-[var(--text-secondary)]">
+              <span className="text-xs text-zinc-500">
                 Routes &bull; {model?.buttons?.length || 0} Locators
               </span>
             </div>
@@ -969,35 +969,35 @@ def test_j07_transport_security_and_console(page: Page):
           AUTONOMOUS MULTI-AGENT SWARM SEQUENTIAL EXECUTION MODAL
           ========================================================================= */}
       {shouldShowModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
-          <div className="relative w-full max-w-2xl rounded-2xl border border-[var(--border-subtle)] bg-[#0b0e14] p-6 sm:p-7 shadow-2xl flex flex-col space-y-5 my-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
+          <div className="relative w-full max-w-2xl rounded-2xl border border-[#e4e4e7] bg-white p-6 sm:p-7 shadow-2xl flex flex-col space-y-5 my-auto text-zinc-900">
             {/* Modal Header */}
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 shrink-0">
+                <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 border border-orange-200 text-[#FF9500] shrink-0">
                   <Workflow className="h-5 w-5 animate-pulse" />
                   <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500"></span>
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF9500] opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#FF9500]"></span>
                   </span>
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-base font-bold text-[var(--text-primary)]">
+                    <h2 className="text-base font-bold text-zinc-900">
                       Autonomous Multi-Agent Swarm
                     </h2>
-                    <span className="rounded bg-indigo-500/15 border border-indigo-500/30 px-2 py-0.5 text-[10px] font-mono text-indigo-300">
+                    <span className="rounded bg-orange-50 border border-orange-200 px-2 py-0.5 text-[10px] font-mono text-orange-700 font-bold">
                       7 Agents
                     </span>
                   </div>
-                  <p className="text-xs text-[var(--text-secondary)]">
-                    Auditing target: <span className="text-indigo-400 font-medium">{targetHostname}</span>
+                  <p className="text-xs text-zinc-500">
+                    Auditing target: <span className="text-zinc-900 font-semibold">{targetHostname}</span>
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                <span className="font-mono text-xs text-[var(--text-muted)]">
+                <span className="font-mono text-xs text-zinc-500">
                   {isAllAgentsComplete
                     ? "7 of 7 Agents Complete"
                     : `Agent ${Math.min(displayAgentIdx + 1, 7)} of 7`}
@@ -1007,7 +1007,7 @@ def test_j07_transport_security_and_console(page: Page):
                     setShowAgentModal(false);
                     setModalDismissed(true);
                   }}
-                  className="rounded-lg p-1.5 text-[var(--text-muted)] hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
+                  className="rounded-lg p-1.5 text-zinc-400 hover:text-black hover:bg-zinc-100 transition-colors cursor-pointer"
                   title="Close modal"
                 >
                   <X className="h-4 w-4" />
@@ -1016,9 +1016,9 @@ def test_j07_transport_security_and_console(page: Page):
             </div>
 
             {/* Linear Progress Bar */}
-            <div className="w-full bg-[var(--surface-secondary)] h-1.5 rounded-full overflow-hidden border border-white/[0.05]">
+            <div className="w-full bg-zinc-100 h-1.5 rounded-full overflow-hidden border border-zinc-200">
               <div
-                className="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full transition-all duration-500 rounded-full"
+                className="bg-gradient-to-r from-zinc-900 via-[#FF9500] to-emerald-500 h-full transition-all duration-500 rounded-full"
                 style={{
                   width: `${
                     isAllAgentsComplete
@@ -1047,17 +1047,17 @@ def test_j07_transport_security_and_console(page: Page):
                     <div
                       className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-mono font-bold transition-all ${
                         isPast
-                          ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-400"
+                          ? "bg-emerald-50 border border-emerald-300 text-emerald-700"
                           : isCurrent
-                          ? "bg-indigo-500/25 border border-indigo-500/60 text-indigo-300 ring-2 ring-indigo-500/30 animate-pulse"
-                          : "bg-[var(--surface-secondary)] border border-[var(--border-subtle)] text-[var(--text-muted)]"
+                          ? "bg-black border border-black text-white ring-2 ring-black/20 animate-pulse"
+                          : "bg-zinc-100 border border-zinc-200 text-zinc-500"
                       }`}
                     >
                       {isPast ? <Check className="h-3.5 w-3.5" /> : idx + 1}
                     </div>
                     <span
                       className={`text-[9px] font-mono tracking-tight uppercase truncate max-w-[56px] text-center ${
-                        isSelected ? "text-indigo-300 font-semibold" : "text-[var(--text-muted)]"
+                        isSelected ? "text-black font-bold" : "text-zinc-500"
                       }`}
                     >
                       {ag.tag.split(" ")[0]}
@@ -1068,46 +1068,46 @@ def test_j07_transport_security_and_console(page: Page):
             </div>
 
             {/* Active Agent Spotlight Hero Card */}
-            <div className="rounded-xl border border-indigo-500/30 bg-gradient-to-b from-[#121622] to-[#0c0e15] p-5 shadow-lg relative overflow-hidden space-y-4">
+            <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-5 shadow-xs relative overflow-hidden space-y-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3.5">
-                  <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/15 border border-indigo-500/40 text-indigo-400 shrink-0">
-                    <ActiveAgentIcon className="h-6 w-6 text-indigo-400" />
+                  <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-white border border-[#e4e4e7] text-zinc-900 shrink-0 shadow-2xs">
+                    <ActiveAgentIcon className="h-6 w-6 text-zinc-800" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-mono text-[10px] uppercase tracking-wider text-indigo-400 font-bold bg-indigo-500/10 border border-indigo-500/25 px-2 py-0.5 rounded">
+                      <span className="font-mono text-[10px] uppercase tracking-wider text-orange-700 font-bold bg-orange-50 border border-orange-200 px-2 py-0.5 rounded">
                         {activeAgent.tag}
                       </span>
-                      <span className="text-xs text-[var(--text-muted)] font-mono">
+                      <span className="text-xs text-zinc-400 font-mono">
                         Agent {displayAgentIdx + 1} of 7
                       </span>
                     </div>
-                    <h3 className="text-base font-bold text-[var(--text-primary)]">
+                    <h3 className="text-base font-bold text-zinc-900">
                       {activeAgent.name}
                     </h3>
-                    <p className="text-xs text-indigo-300/80 font-medium">{activeAgent.role}</p>
+                    <p className="text-xs text-zinc-600 font-medium">{activeAgent.role}</p>
                   </div>
                 </div>
 
                 <div className="shrink-0">
                   {isAllAgentsComplete ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 font-mono text-[11px] font-bold text-emerald-300">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 font-mono text-[11px] font-bold text-emerald-700">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
                       <span>VERIFIED</span>
                     </span>
                   ) : currentAgentIndex === displayAgentIdx ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/20 border border-indigo-500/40 px-3 py-1 font-mono text-[11px] font-bold text-indigo-300 animate-pulse">
-                      <RotateCcw className="h-3 w-3 animate-spin" />
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-black text-white px-3 py-1 font-mono text-[11px] font-bold animate-pulse">
+                      <RotateCcw className="h-3 w-3 animate-spin text-[#FF9500]" />
                       <span>ACTIVE</span>
                     </span>
                   ) : currentAgentIndex > displayAgentIdx ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-0.5 font-mono text-[10px] font-bold text-emerald-400">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 font-mono text-[10px] font-bold text-emerald-700">
                       <Check className="h-3 w-3" />
                       <span>COMPLETED</span>
                     </span>
                   ) : (
-                    <span className="rounded bg-[var(--surface-secondary)] border border-[var(--border-subtle)] px-2.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
+                    <span className="rounded bg-zinc-200/70 border border-zinc-200 px-2.5 py-0.5 font-mono text-[10px] text-zinc-500">
                       STANDBY
                     </span>
                   )}
@@ -1115,8 +1115,8 @@ def test_j07_transport_security_and_console(page: Page):
               </div>
 
               {/* Plain English Action Explanation */}
-              <div className="rounded-lg bg-[var(--surface-secondary)]/60 border border-[var(--border-subtle)] p-3.5 text-xs text-[var(--text-secondary)] leading-relaxed">
-                <span className="text-indigo-400 font-semibold block mb-1 text-[11px]">
+              <div className="rounded-lg bg-white border border-[#e4e4e7] p-3.5 text-xs text-zinc-600 leading-relaxed shadow-2xs">
+                <span className="text-zinc-900 font-bold block mb-1 text-[11px]">
                   Current Autonomous Action:
                 </span>
                 <p>
@@ -1128,11 +1128,11 @@ def test_j07_transport_security_and_console(page: Page):
             </div>
 
             {/* Live Telemetry Micro-Feed */}
-            <div className="rounded-xl border border-[var(--border-subtle)] bg-[#050608] p-3.5 font-mono text-xs shadow-inner">
-              <div className="flex items-center justify-between border-b border-white/[0.06] pb-2 mb-2 text-[10px] text-[var(--text-muted)]">
+            <div className="rounded-xl border border-zinc-800 bg-[#0c0d12] p-3.5 font-mono text-xs shadow-inner">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-2 mb-2 text-[10px] text-zinc-400">
                 <div className="flex items-center gap-1.5">
-                  <Terminal className="h-3 w-3 text-indigo-400" />
-                  <span className="text-[var(--text-secondary)] font-semibold">
+                  <Terminal className="h-3 w-3 text-orange-400" />
+                  <span className="text-zinc-200 font-semibold">
                     Live Sandbox Telemetry Stream
                   </span>
                 </div>
@@ -1146,17 +1146,17 @@ def test_j07_transport_security_and_console(page: Page):
                 {events.length > 0 ? (
                   events.slice(-5).map((ev, i) => (
                     <div key={ev.seq || i} className="flex items-start gap-2 leading-relaxed">
-                      <span className="text-[var(--text-muted)] shrink-0 text-[9px]">
+                      <span className="text-zinc-500 shrink-0 text-[9px]">
                         {ev.ts ? new Date(ev.ts).toLocaleTimeString() : "--:--:--"}
                       </span>
-                      <span className="rounded bg-indigo-500/15 border border-indigo-500/30 px-1 py-0.2 text-[9px] text-indigo-300 shrink-0">
+                      <span className="rounded bg-zinc-800 border border-zinc-700 px-1 py-0.2 text-[9px] text-orange-300 shrink-0">
                         [{ev.stage || "S1"}]
                       </span>
-                      <span className="text-[var(--text-secondary)] truncate">{ev.message}</span>
+                      <span className="text-zinc-300 truncate">{ev.message}</span>
                     </div>
                   ))
                 ) : (
-                  <div className="text-[var(--text-muted)] text-center py-2">
+                  <div className="text-zinc-500 text-center py-2">
                     Initializing isolated browser sandbox and preflight probe...
                   </div>
                 )}
@@ -1171,15 +1171,15 @@ def test_j07_transport_security_and_console(page: Page):
                     setShowAgentModal(false);
                     setModalDismissed(true);
                   }}
-                  className="btn-primary w-full py-3 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-indigo-600/20"
+                  className="btn-primary w-full py-3 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>View Executive QA Report &amp; Flaws</span>
                   <ArrowRight className="h-4 w-4" />
                 </button>
               ) : (
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-                    <RotateCcw className="h-3.5 w-3.5 animate-spin text-indigo-400" />
+                  <div className="flex items-center gap-2 text-xs text-zinc-500">
+                    <RotateCcw className="h-3.5 w-3.5 animate-spin text-[#FF9500]" />
                     <span>Executing sequential agent audits across isolated browser sandboxes...</span>
                   </div>
                   <button
@@ -1187,7 +1187,7 @@ def test_j07_transport_security_and_console(page: Page):
                       setShowAgentModal(false);
                       setModalDismissed(true);
                     }}
-                    className="text-xs text-indigo-400 hover:text-white underline cursor-pointer"
+                    className="text-xs text-zinc-900 font-semibold hover:underline cursor-pointer"
                   >
                     Peek at Report
                   </button>
@@ -1199,29 +1199,31 @@ def test_j07_transport_security_and_console(page: Page):
       )}
 
       {/* =========================================================================
-          EXECUTIVE QA REPORT — CLEAN, INTUITIVE, TABBED ARCHITECTURE
+          EXECUTIVE QA REPORT — VOSTRIDE LIGHT TABBED ARCHITECTURE
           ========================================================================= */}
       <div className="space-y-6">
         {/* Sleek Segmented Tab Navigation */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] pb-4">
-          <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-1 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e4e4e7] pb-4">
+          <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-[#e4e4e7] bg-white p-1 text-xs shadow-xs">
             <button
               onClick={() => setActiveReportTab("flaws")}
               className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
                 activeReportTab === "flaws"
-                  ? "bg-indigo-600 text-white shadow-sm font-semibold"
-                  : "text-[var(--text-secondary)] hover:text-white hover:bg-white/[0.04]"
+                  ? "bg-black text-white shadow-xs font-semibold"
+                  : "text-zinc-600 hover:text-black hover:bg-zinc-50"
               }`}
             >
               <AlertTriangle className="h-3.5 w-3.5" />
               <span>Defects &amp; Observations</span>
               <span
                 className={`ml-1 rounded px-1.5 py-0.2 text-[10px] font-mono font-bold ${
-                  isBlocker
-                    ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                  activeReportTab === "flaws"
+                    ? "bg-white/20 text-white"
+                    : isBlocker
+                    ? "bg-red-50 text-red-700 border border-red-200"
                     : isWarning
-                    ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                    : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                    ? "bg-amber-50 text-amber-800 border border-amber-200"
+                    : "bg-emerald-50 text-emerald-700 border border-emerald-200"
                 }`}
               >
                 {confirmedDefectsCount}
@@ -1232,13 +1234,17 @@ def test_j07_transport_security_and_console(page: Page):
               onClick={() => setActiveReportTab("journeys")}
               className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
                 activeReportTab === "journeys"
-                  ? "bg-indigo-600 text-white shadow-sm font-semibold"
-                  : "text-[var(--text-secondary)] hover:text-white hover:bg-white/[0.04]"
+                  ? "bg-black text-white shadow-xs font-semibold"
+                  : "text-zinc-600 hover:text-black hover:bg-zinc-50"
               }`}
             >
               <ListChecks className="h-3.5 w-3.5" />
               <span>Audited User Journeys</span>
-              <span className="ml-1 rounded bg-white/10 px-1.5 py-0.2 text-[10px] font-mono text-[var(--text-secondary)]">
+              <span
+                className={`ml-1 rounded px-1.5 py-0.2 text-[10px] font-mono ${
+                  activeReportTab === "journeys" ? "bg-white/20 text-white" : "bg-zinc-100 text-zinc-600"
+                }`}
+              >
                 {passingJourneysCount}/{dynamicJourneys.length}
               </span>
             </button>
@@ -1247,8 +1253,8 @@ def test_j07_transport_security_and_console(page: Page):
               onClick={() => setActiveReportTab("preview")}
               className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
                 activeReportTab === "preview"
-                  ? "bg-indigo-600 text-white shadow-sm font-semibold"
-                  : "text-[var(--text-secondary)] hover:text-white hover:bg-white/[0.04]"
+                  ? "bg-black text-white shadow-xs font-semibold"
+                  : "text-zinc-600 hover:text-black hover:bg-zinc-50"
               }`}
             >
               <Monitor className="h-3.5 w-3.5" />
@@ -1259,8 +1265,8 @@ def test_j07_transport_security_and_console(page: Page):
               onClick={() => setActiveReportTab("pytest")}
               className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
                 activeReportTab === "pytest"
-                  ? "bg-indigo-600 text-white shadow-sm font-semibold"
-                  : "text-[var(--text-secondary)] hover:text-white hover:bg-white/[0.04]"
+                  ? "bg-black text-white shadow-xs font-semibold"
+                  : "text-zinc-600 hover:text-black hover:bg-zinc-50"
               }`}
             >
               <FileCode2 className="h-3.5 w-3.5" />
@@ -1271,8 +1277,8 @@ def test_j07_transport_security_and_console(page: Page):
               onClick={() => setActiveReportTab("tools")}
               className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
                 activeReportTab === "tools"
-                  ? "bg-indigo-600 text-white shadow-sm font-semibold"
-                  : "text-[var(--text-secondary)] hover:text-white hover:bg-white/[0.04]"
+                  ? "bg-black text-white shadow-xs font-semibold"
+                  : "text-zinc-600 hover:text-black hover:bg-zinc-50"
               }`}
             >
               <Sparkles className="h-3.5 w-3.5" />
@@ -1280,19 +1286,19 @@ def test_j07_transport_security_and_console(page: Page):
             </button>
           </div>
 
-          <div className="text-xs text-[var(--text-muted)] font-mono hidden md:block">
-            Target: <span className="text-indigo-400 font-semibold">{targetHostname}</span>
+          <div className="text-xs text-zinc-500 font-mono hidden md:block">
+            Target: <span className="text-zinc-900 font-semibold">{targetHostname}</span>
           </div>
         </div>
 
         {/* =========================================================================
-            TAB 1: DEFECTS & SECURITY OBSERVATIONS
+            TAB 1: DEFECTS & SECURITY OBSERVATIONS (Vostride Light Theme)
             ========================================================================= */}
         {activeReportTab === "flaws" && (
           <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[var(--border-subtle)] pb-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#e4e4e7] pb-4">
               <div>
-                <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+                <h3 className="text-base font-bold text-zinc-900 flex items-center gap-2">
                   <span>
                     {isBlocker
                       ? "Confirmed Blocker Defects"
@@ -1303,16 +1309,16 @@ def test_j07_transport_security_and_console(page: Page):
                   <span
                     className={`rounded border px-2 py-0.5 text-[11px] font-mono font-bold ${
                       isBlocker
-                        ? "bg-rose-500/15 border-rose-500/30 text-rose-300"
+                        ? "bg-red-50 border-red-200 text-red-700"
                         : isWarning
-                        ? "bg-amber-500/15 border-amber-500/30 text-amber-300"
-                        : "bg-emerald-500/15 border-emerald-500/30 text-emerald-300"
+                        ? "bg-amber-50 border-amber-200 text-amber-800"
+                        : "bg-emerald-50 border-emerald-200 text-emerald-700"
                     }`}
                   >
                     {findings.length} {findings.length === 1 ? "Item" : "Items"}
                   </span>
                 </h3>
-                <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                <p className="text-xs text-zinc-500 mt-0.5">
                   Audited across 3× isolated headless browser replay passes to eliminate false positives
                 </p>
               </div>
@@ -1320,10 +1326,10 @@ def test_j07_transport_security_and_console(page: Page):
               <span
                 className={`rounded-full border px-3 py-1 font-mono text-[10px] font-bold ${
                   isBlocker
-                    ? "border-rose-500/30 bg-rose-500/10 text-rose-400"
+                    ? "border-red-200 bg-red-50 text-red-700"
                     : isWarning
-                    ? "border-amber-500/30 bg-amber-500/10 text-amber-400"
-                    : "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                    ? "border-amber-200 bg-amber-50 text-amber-800"
+                    : "border-emerald-200 bg-emerald-50 text-emerald-700"
                 }`}
               >
                 3/3 REPLAY PROVEN
@@ -1336,24 +1342,20 @@ def test_j07_transport_security_and_console(page: Page):
                 {findings.map((f, idx) => (
                   <div
                     key={f.id || idx}
-                    className={`rounded-2xl border p-5 sm:p-6 space-y-4 bg-[var(--surface-primary)] shadow-md transition-all ${
-                      f.severity === "high" || f.severity === "critical"
-                        ? "border-rose-500/30"
-                        : "border-amber-500/30"
-                    }`}
+                    className="rounded-2xl border border-[#e4e4e7] p-5 sm:p-6 space-y-4 bg-white shadow-xs transition-all hover:border-zinc-300"
                   >
-                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] pb-3">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 pb-3">
                       <div className="flex items-center gap-2.5">
                         <span
                           className={`font-mono text-xs font-bold px-2.5 py-0.5 rounded-md border ${
                             f.severity === "high" || f.severity === "critical"
-                              ? "text-rose-400 bg-rose-500/15 border-rose-500/30"
-                              : "text-amber-300 bg-amber-500/15 border-amber-500/30"
+                              ? "text-red-700 bg-red-50 border-red-200"
+                              : "text-amber-800 bg-amber-50 border-amber-200"
                           }`}
                         >
                           {f.id || `BUG-${idx + 1}`}
                         </span>
-                        <h4 className="text-sm font-bold text-[var(--text-primary)]">
+                        <h4 className="text-sm font-bold text-zinc-900">
                           {f.title || f.classification_reason}
                         </h4>
                       </div>
@@ -1361,16 +1363,16 @@ def test_j07_transport_security_and_console(page: Page):
                         <span
                           className={`rounded-md px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase border ${
                             f.severity === "high" || f.severity === "critical"
-                              ? "bg-rose-500/10 border-rose-500/25 text-rose-400"
-                              : "bg-amber-500/10 border-amber-500/25 text-amber-300"
+                              ? "bg-red-50 border-red-200 text-red-700"
+                              : "bg-amber-50 border-amber-200 text-amber-800"
                           }`}
                         >
                           {f.severity || "warning"}
                         </span>
-                        <span className="rounded-md bg-[var(--surface-secondary)] border border-[var(--border-subtle)] px-2.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
+                        <span className="rounded-md bg-zinc-100 border border-zinc-200 px-2.5 py-0.5 font-mono text-[10px] text-zinc-600">
                           {f.journey || "User Journey"}
                         </span>
-                        <span className="rounded-md bg-indigo-500/10 border border-indigo-500/30 px-2.5 py-0.5 font-mono text-[10px] text-indigo-300 font-semibold">
+                        <span className="rounded-md bg-orange-50 border border-orange-200 px-2.5 py-0.5 font-mono text-[10px] text-[#FF9500] font-bold">
                           {f.replay_rate || "3/3 Verified"}
                         </span>
                       </div>
@@ -1378,19 +1380,19 @@ def test_j07_transport_security_and_console(page: Page):
 
                     {/* Expected vs Actual Side-by-Side */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                      <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/[0.04] p-4 space-y-1">
-                        <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">
+                      <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 space-y-1">
+                        <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">
                           Expected Invariant Behavior:
                         </span>
-                        <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed font-sans">
+                        <p className="text-[12px] text-zinc-800 leading-relaxed font-sans">
                           {f.expected}
                         </p>
                       </div>
-                      <div className="rounded-xl border border-rose-500/25 bg-rose-500/[0.04] p-4 space-y-1">
-                        <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider block">
+                      <div className="rounded-xl border border-red-200 bg-red-50/50 p-4 space-y-1">
+                        <span className="text-[10px] font-bold text-red-700 uppercase tracking-wider block">
                           Actual Observed Symptom:
                         </span>
-                        <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed font-sans">
+                        <p className="text-[12px] text-zinc-800 leading-relaxed font-sans">
                           {f.actual}
                         </p>
                       </div>
@@ -1399,10 +1401,10 @@ def test_j07_transport_security_and_console(page: Page):
                     {/* Steps to Reproduce */}
                     {f.trigger_steps && f.trigger_steps.length > 0 && (
                       <div className="space-y-1.5">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] block">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">
                           Deterministic Steps to Reproduce:
                         </span>
-                        <ol className="space-y-1 list-decimal list-inside text-xs text-[var(--text-secondary)] font-mono bg-[#080a0f] p-3.5 rounded-xl border border-[var(--border-subtle)]">
+                        <ol className="space-y-1 list-decimal list-inside text-xs text-zinc-800 font-mono bg-zinc-50 p-3.5 rounded-xl border border-[#e4e4e7]">
                           {f.trigger_steps.map((st, sIdx) => (
                             <li key={sIdx} className="leading-relaxed">
                               {st}
@@ -1414,38 +1416,38 @@ def test_j07_transport_security_and_console(page: Page):
 
                     {/* Technical Evidence Trace */}
                     {f.evidence && (
-                      <div className="rounded-xl border border-[var(--border-subtle)] bg-[#050608] p-3.5 font-mono text-xs">
-                        <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] block mb-1">
+                      <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-3.5 font-mono text-xs">
+                        <span className="text-[10px] uppercase font-bold text-zinc-500 block mb-1">
                           Technical Evidence Trace:
                         </span>
-                        <p className="text-indigo-300 break-all text-[11px] leading-relaxed">{f.evidence}</p>
+                        <p className="text-zinc-800 break-all text-[11px] leading-relaxed">{f.evidence}</p>
                       </div>
                     )}
 
                     {/* Visual Screenshot & Location of Anomaly Pinpoint */}
                     {f.anomaly_location && (
-                      <div className="rounded-xl border border-[var(--border-subtle)] bg-[#07090e] p-4 space-y-3">
+                      <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-4 space-y-3">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <Camera className="h-4 w-4 text-indigo-400" />
-                            <span className="text-xs font-bold text-[var(--text-primary)]">
+                            <Camera className="h-4 w-4 text-[#FF9500]" />
+                            <span className="text-xs font-bold text-zinc-900">
                               Visual Workflow Screenshot &amp; Location of Anomaly
                             </span>
-                            <span className="rounded bg-rose-500/15 border border-rose-500/30 px-2 py-0.5 text-[10px] font-mono text-rose-300 font-bold flex items-center gap-1">
+                            <span className="rounded bg-red-50 border border-red-200 px-2 py-0.5 text-[10px] font-mono text-red-700 font-bold flex items-center gap-1">
                               <Crosshair className="h-3 w-3 animate-spin" />
                               <span>Pinpoint Active</span>
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--text-muted)]">
-                            <span>Screen: <span className="text-indigo-300">{f.anomaly_location.screen}</span></span>
+                          <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-500">
+                            <span>Screen: <span className="text-zinc-900 font-semibold">{f.anomaly_location.screen}</span></span>
                             <span>&bull;</span>
-                            <span>Target: <span className="text-rose-300 font-semibold">{f.anomaly_location.selector}</span></span>
+                            <span>Target: <span className="text-red-700 font-semibold">{f.anomaly_location.selector}</span></span>
                           </div>
                         </div>
 
                         {/* Screenshot Canvas with Real Website Visual Render and Neon Bounding Box */}
-                        <div className="relative overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[#090b10] shadow-2xl h-[320px] sm:h-[360px] flex items-center justify-center group">
+                        <div className="relative overflow-hidden rounded-xl border border-[#e4e4e7] bg-white shadow-xs h-[320px] sm:h-[360px] flex items-center justify-center group">
                           {/* Live Target Web Page Render Sandbox or Actual Capture */}
                           {targetUrl.includes("wealthwise") ? (
                             <img
@@ -1463,12 +1465,12 @@ def test_j07_transport_security_and_console(page: Page):
                             />
                           )}
 
-                          {/* Gradient Vignette Border */}
-                          <div className="absolute inset-0 border border-white/10 pointer-events-none shadow-inner" />
+                          {/* Subtle Vignette Border */}
+                          <div className="absolute inset-0 border border-black/5 pointer-events-none" />
 
                           {/* DYNAMIC ANOMALY BOUNDING BOX WITH TARGET CROSSHAIR */}
                           <div
-                            className="absolute rounded-lg border-2 border-rose-500 bg-rose-500/20 shadow-[0_0_30px_rgba(244,63,94,0.6)] transition-all duration-300 flex items-start justify-end p-1.5 pointer-events-none"
+                            className="absolute rounded-lg border-2 border-red-500 bg-red-500/15 shadow-[0_0_24px_rgba(239,68,68,0.4)] transition-all duration-300 flex items-start justify-end p-1.5 pointer-events-none"
                             style={{
                               left: `${f.anomaly_location.x ?? 25}%`,
                               top: `${f.anomaly_location.y ?? 35}%`,
@@ -1477,25 +1479,25 @@ def test_j07_transport_security_and_console(page: Page):
                             }}
                           >
                             {/* Anomaly Badge / Tooltip */}
-                            <div className="flex items-center gap-1.5 rounded bg-rose-950/95 border border-rose-500 px-2.5 py-1 text-[10px] font-mono font-bold text-rose-200 shadow-xl -mt-4 mr-1">
-                              <Crosshair className="h-3.5 w-3.5 text-rose-400 animate-spin" />
+                            <div className="flex items-center gap-1.5 rounded bg-black/95 border border-red-500 px-2.5 py-1 text-[10px] font-mono font-bold text-white shadow-xl -mt-4 mr-1">
+                              <Crosshair className="h-3.5 w-3.5 text-red-400 animate-spin" />
                               <span>LOCATION OF ANOMALY: {f.id}</span>
                             </div>
 
                             {/* Target Crosshairs in corner */}
-                            <span className="absolute -bottom-1 -left-1 h-3 w-3 border-b-2 border-l-2 border-rose-400"></span>
-                            <span className="absolute -top-1 -right-1 h-3 w-3 border-t-2 border-r-2 border-rose-400"></span>
-                            <span className="absolute -bottom-1 -right-1 h-3 w-3 border-b-2 border-r-2 border-rose-400"></span>
-                            <span className="absolute -top-1 -left-1 h-3 w-3 border-t-2 border-l-2 border-rose-400"></span>
+                            <span className="absolute -bottom-1 -left-1 h-3 w-3 border-b-2 border-l-2 border-red-500"></span>
+                            <span className="absolute -top-1 -right-1 h-3 w-3 border-t-2 border-r-2 border-red-500"></span>
+                            <span className="absolute -bottom-1 -right-1 h-3 w-3 border-b-2 border-r-2 border-red-500"></span>
+                            <span className="absolute -top-1 -left-1 h-3 w-3 border-t-2 border-l-2 border-red-500"></span>
                           </div>
 
                           {/* Bottom descriptor pill */}
-                          <div className="absolute bottom-3 left-4 right-4 bg-[#090b10]/90 backdrop-blur-md border border-white/15 rounded-lg p-2.5 flex items-center justify-between text-xs font-mono shadow-xl">
-                            <span className="text-[var(--text-secondary)] truncate">
-                              Detected anomaly: <span className="text-rose-400 font-bold">{f.anomaly_location.description}</span>
+                          <div className="absolute bottom-3 left-4 right-4 bg-white/95 backdrop-blur-md border border-[#e4e4e7] rounded-lg p-2.5 flex items-center justify-between text-xs font-mono shadow-md text-zinc-900">
+                            <span className="truncate">
+                              Detected anomaly: <span className="text-red-600 font-bold">{f.anomaly_location.description}</span>
                             </span>
-                            <span className="text-[10px] text-indigo-300 shrink-0 ml-2">
-                              Selector: <code className="text-white">{f.anomaly_location.selector}</code> [x: {f.anomaly_location.x}%, y: {f.anomaly_location.y}%]
+                            <span className="text-[10px] text-zinc-500 shrink-0 ml-2">
+                              Selector: <code className="text-black font-semibold">{f.anomaly_location.selector}</code> [x: {f.anomaly_location.x}%, y: {f.anomaly_location.y}%]
                             </span>
                           </div>
                         </div>
@@ -1505,53 +1507,53 @@ def test_j07_transport_security_and_console(page: Page):
                 ))}
               </div>
             ) : (
-              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.04] p-8 text-center space-y-2">
-                <CheckCircle2 className="h-8 w-8 text-emerald-400 mx-auto mb-2" />
-                <h4 className="text-base font-bold text-[var(--text-primary)]">Zero Defects Detected</h4>
-                <p className="text-xs text-[var(--text-secondary)] max-w-md mx-auto">
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-8 text-center space-y-2">
+                <CheckCircle2 className="h-8 w-8 text-emerald-600 mx-auto mb-2" />
+                <h4 className="text-base font-bold text-zinc-900">Zero Defects Detected</h4>
+                <p className="text-xs text-zinc-600 max-w-md mx-auto">
                   The target application passed all autonomous navigation, form submission, and security invariant assertions without any anomalies.
                 </p>
               </div>
             )}
 
             {/* Environment Health Summary Card */}
-            <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-5 space-y-3">
-              <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
+            <div className="rounded-2xl border border-[#e4e4e7] bg-white p-5 space-y-3 shadow-xs">
+              <div className="flex items-center justify-between border-b border-[#e4e4e7] pb-3">
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-700">
                     Environment Health &amp; Endpoint Telemetry
                   </h4>
-                  <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
+                  <p className="text-[11px] text-zinc-400 mt-0.5">
                     Live endpoint reachability, TLS verification, and server response time
                   </p>
                 </div>
-                <span className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-400">
+                <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-700">
                   HEALTHY
                 </span>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-3">
-                  <span className="block text-[10px] text-[var(--text-muted)]">HTTP Status</span>
-                  <span className="font-mono text-xs font-bold text-emerald-400">
+                <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-3">
+                  <span className="block text-[10px] text-zinc-400">HTTP Status</span>
+                  <span className="font-mono text-xs font-bold text-emerald-700">
                     {telemetry?.status_code || 200} OK
                   </span>
                 </div>
-                <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-3">
-                  <span className="block text-[10px] text-[var(--text-muted)]">Response Latency</span>
-                  <span className="font-mono text-xs font-bold text-[var(--text-primary)]">
+                <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-3">
+                  <span className="block text-[10px] text-zinc-400">Response Latency</span>
+                  <span className="font-mono text-xs font-bold text-zinc-900">
                     {telemetry?.latency_ms || 28}ms
                   </span>
                 </div>
-                <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-3">
-                  <span className="block text-[10px] text-[var(--text-muted)]">Transport</span>
-                  <span className="font-mono text-xs font-bold text-indigo-300">
+                <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-3">
+                  <span className="block text-[10px] text-zinc-400">Transport</span>
+                  <span className="font-mono text-xs font-bold text-zinc-900">
                     {targetUrl.startsWith("https://") ? "TLS 1.3 Active" : "HTTP Plain"}
                   </span>
                 </div>
-                <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-3">
-                  <span className="block text-[10px] text-[var(--text-muted)]">Interactive Elements</span>
-                  <span className="font-mono text-xs font-bold text-[var(--text-secondary)]">
+                <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-3">
+                  <span className="block text-[10px] text-zinc-400">Interactive Elements</span>
+                  <span className="font-mono text-xs font-bold text-zinc-900">
                     {(model?.buttons?.length || 0) + (model?.inputs?.length || 0)} Locators
                   </span>
                 </div>
@@ -1561,20 +1563,20 @@ def test_j07_transport_security_and_console(page: Page):
         )}
 
         {/* =========================================================================
-            TAB 2: AUDITED USER JOURNEYS
+            TAB 2: AUDITED USER JOURNEYS (Vostride Light Theme)
             ========================================================================= */}
         {activeReportTab === "journeys" && (
           <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[var(--border-subtle)] pb-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#e4e4e7] pb-4">
               <div>
-                <h3 className="text-base font-bold text-[var(--text-primary)]">
+                <h3 className="text-base font-bold text-zinc-900">
                   Audited User Journeys &amp; Invariant Tests
                 </h3>
-                <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                <p className="text-xs text-zinc-500 mt-0.5">
                   Autonomous scenario formulation tested against live authentication gateways and interactive targets
                 </p>
               </div>
-              <span className="font-mono text-xs text-[var(--text-muted)] bg-[var(--surface-secondary)] border border-[var(--border-subtle)] px-3 py-1 rounded-lg">
+              <span className="font-mono text-xs text-zinc-600 bg-zinc-100 border border-zinc-200 px-3 py-1 rounded-lg">
                 {passingJourneysCount} of {dynamicJourneys.length} Passed
               </span>
             </div>
@@ -1585,20 +1587,20 @@ def test_j07_transport_security_and_console(page: Page):
                 return (
                   <div
                     key={j.id}
-                    className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] overflow-hidden transition-all hover:border-indigo-500/30"
+                    className="rounded-2xl border border-[#e4e4e7] bg-white overflow-hidden transition-all hover:border-zinc-300 shadow-xs"
                   >
                     <div
                       onClick={() => setExpandedJourney(isExpanded ? null : j.id)}
-                      className="flex items-center justify-between p-4 cursor-pointer hover:bg-white/[0.02]"
+                      className="flex items-center justify-between p-4 cursor-pointer hover:bg-zinc-50/60 transition-colors"
                     >
                       <div className="flex items-center gap-3.5">
                         <div
                           className={`flex h-6 w-6 items-center justify-center rounded-full shrink-0 ${
                             j.status === "DEFECT DETECTED"
-                              ? "bg-rose-500/20 text-rose-400"
+                              ? "bg-red-50 text-red-600 border border-red-200"
                               : j.status === "POLICY WARNING"
-                              ? "bg-amber-500/20 text-amber-300"
-                              : "bg-emerald-500/20 text-emerald-400"
+                              ? "bg-amber-50 text-amber-600 border border-amber-200"
+                              : "bg-emerald-50 text-emerald-600 border border-emerald-200"
                           }`}
                         >
                           {j.status === "DEFECT DETECTED" ? (
@@ -1611,12 +1613,12 @@ def test_j07_transport_security_and_console(page: Page):
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <h4 className="text-xs sm:text-sm font-semibold text-[var(--text-primary)]">{j.title}</h4>
-                            <span className="text-[10px] text-[var(--text-muted)] font-mono bg-white/[0.05] px-1.5 py-0.5 rounded">
+                            <h4 className="text-xs sm:text-sm font-semibold text-zinc-900">{j.title}</h4>
+                            <span className="text-[10px] text-zinc-500 font-mono bg-zinc-100 border border-zinc-200 px-1.5 py-0.5 rounded">
                               {j.category}
                             </span>
                           </div>
-                          <span className="text-[11px] font-mono text-indigo-300">
+                          <span className="text-[11px] font-mono text-zinc-600">
                             Target: {j.target}
                           </span>
                         </div>
@@ -1626,32 +1628,32 @@ def test_j07_transport_security_and_console(page: Page):
                         <span
                           className={`rounded-md px-2.5 py-0.5 font-mono text-[10px] font-bold ${
                             j.status === "DEFECT DETECTED"
-                              ? "border border-rose-500/30 bg-rose-500/10 text-rose-400"
+                              ? "border border-red-200 bg-red-50 text-red-700"
                               : j.status === "POLICY WARNING"
-                              ? "border border-amber-500/30 bg-amber-500/10 text-amber-300"
-                              : "border border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                              ? "border border-amber-200 bg-amber-50 text-amber-800"
+                              : "border border-emerald-200 bg-emerald-50 text-emerald-700"
                           }`}
                         >
                           {j.status}
                         </span>
                         {isExpanded ? (
-                          <ChevronUp className="h-4 w-4 text-[var(--text-muted)]" />
+                          <ChevronUp className="h-4 w-4 text-zinc-400" />
                         ) : (
-                          <ChevronDown className="h-4 w-4 text-[var(--text-muted)]" />
+                          <ChevronDown className="h-4 w-4 text-zinc-400" />
                         )}
                       </div>
                     </div>
 
                     {isExpanded && (
-                      <div className="border-t border-[var(--border-subtle)] bg-[#050608] p-4 text-xs font-mono space-y-3">
-                        <div className="text-[12px] text-[var(--text-secondary)] font-sans">{j.details}</div>
+                      <div className="border-t border-[#e4e4e7] bg-zinc-50/60 p-4 text-xs font-mono space-y-3">
+                        <div className="text-[12px] text-zinc-700 font-sans leading-relaxed">{j.details}</div>
                         <div>
-                          <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] block mb-1.5">
+                          <span className="text-[10px] uppercase font-bold text-zinc-500 block mb-1.5">
                             Executed Playwright Invariant Assertions:
                           </span>
                           <div className="space-y-1.5">
                             {j.assertions.map((ast, i) => (
-                              <div key={i} className="text-indigo-300 text-[11px] bg-[#0c0f17] p-2 rounded-lg border border-white/[0.05]">
+                              <div key={i} className="text-zinc-800 text-[11px] bg-white p-2 rounded-lg border border-[#e4e4e7] shadow-2xs font-mono">
                                 &gt; {ast}
                               </div>
                             ))}
@@ -1663,23 +1665,23 @@ def test_j07_transport_security_and_console(page: Page):
                           const screens = getWorkflowScreens(j);
                           return (
                             <div>
-                              <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] block mb-1.5 flex items-center gap-1.5">
-                                <Camera className="h-3.5 w-3.5 text-indigo-400" />
+                              <span className="text-[10px] uppercase font-bold text-zinc-500 block mb-1.5 flex items-center gap-1.5">
+                                <Camera className="h-3.5 w-3.5 text-[#FF9500]" />
                                 <span>Workflow Step Screenshot Capture:</span>
                               </span>
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                                 {/* Pre-Action Actual Render */}
-                                <div className="rounded-xl border border-white/10 bg-[#090b12] p-3 space-y-2">
+                                <div className="rounded-xl border border-[#e4e4e7] bg-white p-3 space-y-2 shadow-xs">
                                   <div className="flex items-center justify-between text-[10px]">
-                                    <span className="font-bold text-white flex items-center gap-1.5">
-                                      <Camera className="h-3 w-3 text-indigo-400" />
+                                    <span className="font-bold text-zinc-900 flex items-center gap-1.5">
+                                      <Camera className="h-3 w-3 text-zinc-400" />
                                       <span>Pre-Action State Screenshot</span>
                                     </span>
-                                    <span className="text-emerald-400 font-mono font-bold text-[9px] bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                                    <span className="text-emerald-700 font-mono font-bold text-[9px] bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
                                       {screens.pre.badge}
                                     </span>
                                   </div>
-                                  <div className="h-44 sm:h-52 rounded-lg overflow-hidden border border-white/10 bg-[#090b10] relative flex items-center justify-center">
+                                  <div className="h-44 sm:h-52 rounded-lg overflow-hidden border border-[#e4e4e7] bg-zinc-100 relative flex items-center justify-center">
                                     {screens.pre.isImage ? (
                                       <img
                                         src={screens.pre.src}
@@ -1695,33 +1697,33 @@ def test_j07_transport_security_and_console(page: Page):
                                         loading="lazy"
                                       />
                                     )}
-                                    <div className="absolute bottom-1 left-2 bg-black/85 px-2 py-0.5 rounded text-[9px] font-mono text-white/90 border border-white/10 max-w-[90%] truncate">
+                                    <div className="absolute bottom-1 left-2 bg-black/85 px-2 py-0.5 rounded text-[9px] font-mono text-white border border-black max-w-[90%] truncate">
                                       {screens.pre.target}
                                     </div>
                                   </div>
-                                  <div className="text-[10px] text-[var(--text-muted)] font-mono truncate px-1">
+                                  <div className="text-[10px] text-zinc-500 font-mono truncate px-1">
                                     {screens.pre.caption}
                                   </div>
                                 </div>
 
                                 {/* Post-Interaction Actual Render */}
-                                <div className="rounded-xl border border-white/10 bg-[#090b12] p-3 space-y-2">
+                                <div className="rounded-xl border border-[#e4e4e7] bg-white p-3 space-y-2 shadow-xs">
                                   <div className="flex items-center justify-between text-[10px]">
-                                    <span className="font-bold text-white flex items-center gap-1.5">
-                                      <Camera className="h-3 w-3 text-indigo-400" />
+                                    <span className="font-bold text-zinc-900 flex items-center gap-1.5">
+                                      <Camera className="h-3 w-3 text-zinc-400" />
                                       <span>Post-Interaction State Screenshot</span>
                                     </span>
                                     <span
                                       className={`font-mono font-bold text-[9px] px-1.5 py-0.5 rounded border ${
                                         j.status === "DEFECT DETECTED"
-                                          ? "text-rose-400 bg-rose-500/10 border-rose-500/20"
-                                          : "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+                                          ? "text-red-700 bg-red-50 border-red-200"
+                                          : "text-emerald-700 bg-emerald-50 border-emerald-200"
                                       }`}
                                     >
                                       {screens.post.badge}
                                     </span>
                                   </div>
-                                  <div className="h-44 sm:h-52 rounded-lg overflow-hidden border border-white/10 bg-[#090b10] relative flex items-center justify-center">
+                                  <div className="h-44 sm:h-52 rounded-lg overflow-hidden border border-[#e4e4e7] bg-zinc-100 relative flex items-center justify-center">
                                     {screens.post.isImage ? (
                                       <img
                                         src={screens.post.src}
@@ -1737,11 +1739,11 @@ def test_j07_transport_security_and_console(page: Page):
                                         loading="lazy"
                                       />
                                     )}
-                                    <div className="absolute bottom-1 left-2 bg-black/85 px-2 py-0.5 rounded text-[9px] font-mono text-white/90 border border-white/10 max-w-[90%] truncate">
+                                    <div className="absolute bottom-1 left-2 bg-black/85 px-2 py-0.5 rounded text-[9px] font-mono text-white border border-black max-w-[90%] truncate">
                                       {screens.post.target}
                                     </div>
                                   </div>
-                                  <div className="text-[10px] text-[var(--text-muted)] font-mono truncate px-1">
+                                  <div className="text-[10px] text-zinc-500 font-mono truncate px-1">
                                     {screens.post.caption}
                                   </div>
                                 </div>
@@ -1759,26 +1761,26 @@ def test_j07_transport_security_and_console(page: Page):
         )}
 
         {/* =========================================================================
-            TAB 3: LIVE BROWSER PREVIEW & LOCATORS
+            TAB 3: LIVE BROWSER PREVIEW & LOCATORS (Vostride Light Theme)
             ========================================================================= */}
         {activeReportTab === "preview" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Left 8 cols: Interactive Browser Mockup */}
-            <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-5 lg:col-span-8 space-y-4 shadow-xl">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[var(--border-subtle)] pb-3">
+            <div className="rounded-2xl border border-[#e4e4e7] bg-white p-5 lg:col-span-8 space-y-4 shadow-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#e4e4e7] pb-3">
                 <div className="flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-indigo-400" />
-                  <h3 className="text-sm font-bold text-[var(--text-primary)]">
+                  <Eye className="h-4 w-4 text-[#FF9500]" />
+                  <h3 className="text-sm font-bold text-zinc-900">
                     Live Target Web Preview
                   </h3>
                 </div>
 
                 {/* Viewport switcher */}
-                <div className="flex items-center gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-secondary)] p-1">
+                <div className="flex items-center gap-1 rounded-lg border border-[#e4e4e7] bg-zinc-100 p-1">
                   <button
                     onClick={() => setViewportMode("desktop")}
                     className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors cursor-pointer ${
-                      viewportMode === "desktop" ? "bg-indigo-600 text-white font-medium" : "text-[var(--text-muted)] hover:text-white"
+                      viewportMode === "desktop" ? "bg-black text-white font-medium shadow-xs" : "text-zinc-600 hover:text-black"
                     }`}
                   >
                     <Monitor className="h-3.5 w-3.5" />
@@ -1787,7 +1789,7 @@ def test_j07_transport_security_and_console(page: Page):
                   <button
                     onClick={() => setViewportMode("tablet")}
                     className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors cursor-pointer ${
-                      viewportMode === "tablet" ? "bg-indigo-600 text-white font-medium" : "text-[var(--text-muted)] hover:text-white"
+                      viewportMode === "tablet" ? "bg-black text-white font-medium shadow-xs" : "text-zinc-600 hover:text-black"
                     }`}
                   >
                     <Tablet className="h-3.5 w-3.5" />
@@ -1796,7 +1798,7 @@ def test_j07_transport_security_and_console(page: Page):
                   <button
                     onClick={() => setViewportMode("mobile")}
                     className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors cursor-pointer ${
-                      viewportMode === "mobile" ? "bg-indigo-600 text-white font-medium" : "text-[var(--text-muted)] hover:text-white"
+                      viewportMode === "mobile" ? "bg-black text-white font-medium shadow-xs" : "text-zinc-600 hover:text-black"
                     }`}
                   >
                     <Smartphone className="h-3.5 w-3.5" />
@@ -1806,13 +1808,13 @@ def test_j07_transport_security_and_console(page: Page):
               </div>
 
               {/* Interactive Address Bar & Quick Navigation Bar */}
-              <div className="flex flex-col gap-2 rounded-xl border border-[var(--border-subtle)] bg-[#0c0f18] p-2.5">
+              <div className="flex flex-col gap-2 rounded-xl border border-[#e4e4e7] bg-zinc-50 p-2.5">
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1 text-[var(--text-muted)]">
+                  <div className="flex items-center gap-1 text-zinc-500">
                     <button
                       onClick={() => handleNavigatePreview("/")}
                       title="Navigate to Home"
-                      className="p-1 rounded hover:bg-white/10 text-white/70 hover:text-white transition-colors cursor-pointer"
+                      className="p-1 rounded hover:bg-zinc-200 text-zinc-600 hover:text-black transition-colors cursor-pointer"
                     >
                       <RotateCcw className="h-3.5 w-3.5" />
                     </button>
@@ -1824,10 +1826,10 @@ def test_j07_transport_security_and_console(page: Page):
                       e.preventDefault();
                       if (previewUrlInput) handleNavigatePreview(previewUrlInput);
                     }}
-                    className="flex-1 flex items-center gap-2 rounded-lg border border-white/10 bg-black/60 px-3 py-1 text-xs font-mono"
+                    className="flex-1 flex items-center gap-2 rounded-lg border border-[#e4e4e7] bg-white px-3 py-1 text-xs font-mono shadow-2xs"
                   >
-                    <Lock className="h-3 w-3 text-emerald-400 shrink-0" />
-                    <span className="text-[var(--text-muted)] shrink-0">
+                    <Lock className="h-3 w-3 text-emerald-600 shrink-0" />
+                    <span className="text-zinc-400 shrink-0">
                       {targetUrl.replace(/\/$/, "")}
                     </span>
                     <input
@@ -1835,11 +1837,11 @@ def test_j07_transport_security_and_console(page: Page):
                       value={previewUrlInput !== "" ? previewUrlInput : previewRoute}
                       onChange={(e) => setPreviewUrlInput(e.target.value)}
                       placeholder={previewRoute}
-                      className="w-full bg-transparent text-emerald-300 outline-none placeholder:text-emerald-400/50 font-mono text-xs"
+                      className="w-full bg-transparent text-zinc-900 outline-none placeholder:text-zinc-400 font-mono text-xs font-medium"
                     />
                     <button
                       type="submit"
-                      className="px-2 py-0.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-sans text-[10px] font-bold cursor-pointer shrink-0 transition-colors"
+                      className="px-2 py-0.5 rounded bg-black hover:bg-zinc-800 text-white font-sans text-[10px] font-bold cursor-pointer shrink-0 transition-colors"
                     >
                       Navigate
                     </button>
@@ -1848,7 +1850,7 @@ def test_j07_transport_security_and_console(page: Page):
 
                 {/* Quick Route Nav Pills */}
                 <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 pt-1 text-[11px] font-sans">
-                  <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] shrink-0 mr-1">
+                  <span className="text-[10px] uppercase font-bold text-zinc-400 shrink-0 mr-1">
                     Routes:
                   </span>
                   {[
@@ -1870,8 +1872,8 @@ def test_j07_transport_security_and_console(page: Page):
                         }}
                         className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all shrink-0 cursor-pointer flex items-center gap-1 ${
                           isActive
-                            ? "bg-indigo-600 text-white shadow-sm border border-indigo-400/40"
-                            : "bg-white/[0.04] text-[var(--text-secondary)] hover:text-white hover:bg-white/[0.08] border border-white/[0.06]"
+                            ? "bg-black text-white shadow-xs border border-black font-semibold"
+                            : "bg-white text-zinc-700 hover:text-black hover:bg-zinc-100 border border-[#e4e4e7]"
                         }`}
                       >
                         <span>{tab.label}</span>
@@ -1882,24 +1884,24 @@ def test_j07_transport_security_and_console(page: Page):
               </div>
 
               {/* Embedded Live Browser Frame */}
-              <div className="overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-black shadow-inner">
-                <div className="flex h-8 items-center justify-between bg-[var(--surface-secondary)] px-3 font-mono text-[11px] text-[var(--text-muted)]">
+              <div className="overflow-hidden rounded-xl border border-[#e4e4e7] bg-white shadow-xs">
+                <div className="flex h-8 items-center justify-between bg-zinc-100 border-b border-[#e4e4e7] px-3 font-mono text-[11px] text-zinc-500">
                   <div className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-rose-500/80"></span>
-                    <span className="h-2 w-2 rounded-full bg-amber-500/80"></span>
-                    <span className="h-2 w-2 rounded-full bg-emerald-500/80"></span>
-                    <span className="ml-2 truncate max-w-[340px] text-[var(--text-secondary)]">
+                    <span className="h-2 w-2 rounded-full bg-red-400"></span>
+                    <span className="h-2 w-2 rounded-full bg-amber-400"></span>
+                    <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
+                    <span className="ml-2 truncate max-w-[340px] text-zinc-700 font-medium">
                       {targetUrl.replace(/\/$/, "")}
                       {previewRoute.startsWith("/") ? previewRoute : "/" + previewRoute}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     {isNavigatingPreview && (
-                      <span className="text-indigo-400 font-mono text-[10px] animate-pulse">
+                      <span className="text-orange-600 font-mono text-[10px] animate-pulse font-bold">
                         NAVIGATING...
                       </span>
                     )}
-                    <span className="text-emerald-400 font-bold text-[10px]">REAL-TIME RENDER</span>
+                    <span className="text-emerald-700 font-bold text-[10px]">REAL-TIME RENDER</span>
                   </div>
                 </div>
 
@@ -1913,15 +1915,15 @@ def test_j07_transport_security_and_console(page: Page):
                   }`}
                 >
                   {isNavigatingPreview && (
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-xs z-20 flex flex-col items-center justify-center gap-2 font-mono text-xs text-indigo-300">
-                      <span className="h-5 w-5 rounded-full border-2 border-indigo-400 border-t-transparent animate-spin"></span>
+                    <div className="absolute inset-0 bg-white/70 backdrop-blur-2xs z-20 flex flex-col items-center justify-center gap-2 font-mono text-xs text-zinc-900">
+                      <span className="h-5 w-5 rounded-full border-2 border-black border-t-transparent animate-spin"></span>
                       <span>Dispatching Chromium Context to {previewRoute}...</span>
                     </div>
                   )}
 
                   {targetUrl ? (
                     targetUrl.includes("wealthwise") ? (
-                      <div className="h-full w-full relative overflow-y-auto bg-[#090b10] flex flex-col items-center">
+                      <div className="h-full w-full relative overflow-y-auto bg-zinc-100 flex flex-col items-center">
                         <img
                           src={
                             previewRoute.includes("signup")
@@ -1935,10 +1937,10 @@ def test_j07_transport_security_and_console(page: Page):
                               : "/screenshots/wealthwise-home.png"
                           }
                           alt={`WealthWise Live Render for ${previewRoute}`}
-                          className="w-full object-cover object-top select-none shadow-2xl"
+                          className="w-full object-cover object-top select-none shadow-sm"
                         />
-                        <div className="absolute top-3 right-3 bg-black/85 backdrop-blur border border-emerald-500/30 px-3 py-1 rounded-full text-[10px] font-mono text-emerald-400 font-bold flex items-center gap-1.5 shadow-lg">
-                          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur border border-[#e4e4e7] px-3 py-1 rounded-full text-[10px] font-mono text-emerald-700 font-bold flex items-center gap-1.5 shadow-sm">
+                          <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
                           <span>
                             {previewRoute.includes("signup")
                               ? "ROUTE: /auth/signup (SIGN-UP FORM)"
@@ -1969,8 +1971,8 @@ def test_j07_transport_security_and_console(page: Page):
                       />
                     )
                   ) : (
-                    <div className="flex h-full w-full flex-col items-center justify-center font-mono text-xs text-[var(--text-muted)] gap-2">
-                      <span className="h-4 w-4 rounded-full border-2 border-indigo-400 border-t-transparent animate-spin"></span>
+                    <div className="flex h-full w-full flex-col items-center justify-center font-mono text-xs text-zinc-400 gap-2">
+                      <span className="h-4 w-4 rounded-full border-2 border-black border-t-transparent animate-spin"></span>
                       <span>Loading live browser viewport...</span>
                     </div>
                   )}
@@ -1979,12 +1981,12 @@ def test_j07_transport_security_and_console(page: Page):
             </div>
 
             {/* Right 4 cols: Discovered Locators Matrix */}
-            <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-5 lg:col-span-4 space-y-4 shadow-xl">
-              <div className="border-b border-[var(--border-subtle)] pb-3">
-                <h4 className="text-sm font-bold text-[var(--text-primary)]">
+            <div className="rounded-2xl border border-[#e4e4e7] bg-white p-5 lg:col-span-4 space-y-4 shadow-xs">
+              <div className="border-b border-[#e4e4e7] pb-3">
+                <h4 className="text-sm font-bold text-zinc-900">
                   Discovered Locators ({model?.buttons?.length || 0})
                 </h4>
-                <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                <p className="text-xs text-zinc-500 mt-0.5">
                   Click any locator to navigate preview & copy selector
                 </p>
               </div>
@@ -2015,17 +2017,17 @@ def test_j07_transport_security_and_console(page: Page):
                             handleNavigatePreview("/");
                           }
                         }}
-                        className="group flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-2.5 text-xs transition-all hover:border-indigo-500/50 hover:bg-[var(--surface-secondary)] cursor-pointer"
+                        className="group flex items-center justify-between rounded-xl border border-[#e4e4e7] bg-zinc-50/80 p-2.5 text-xs transition-all hover:border-black hover:bg-white cursor-pointer shadow-2xs"
                       >
                         <div className="truncate pr-2">
-                          <span className="block truncate font-semibold text-[var(--text-primary)]">
+                          <span className="block truncate font-semibold text-zinc-900">
                             {btn}
                           </span>
-                          <code className="font-mono text-[10px] text-indigo-300/80">{sel}</code>
+                          <code className="font-mono text-[10px] text-zinc-600">{sel}</code>
                         </div>
-                        <span className="text-[var(--text-muted)] group-hover:text-indigo-300 shrink-0">
+                        <span className="text-zinc-400 group-hover:text-black shrink-0">
                           {copiedSelector === sel ? (
-                            <Check className="h-4 w-4 text-emerald-400" />
+                            <Check className="h-4 w-4 text-emerald-600" />
                           ) : (
                             <Copy className="h-4 w-4" />
                           )}
@@ -2034,7 +2036,7 @@ def test_j07_transport_security_and_console(page: Page):
                     );
                   })
                 ) : (
-                  <div className="text-xs text-[var(--text-muted)] text-center py-6">
+                  <div className="text-xs text-zinc-400 text-center py-6">
                     Locators will appear here once synthesized.
                   </div>
                 )}
@@ -2044,17 +2046,17 @@ def test_j07_transport_security_and_console(page: Page):
         )}
 
         {/* =========================================================================
-            TAB 4: STANDALONE PYTEST TEST SUITE
+            TAB 4: STANDALONE PYTEST TEST SUITE (Vostride Light Theme)
             ========================================================================= */}
         {activeReportTab === "pytest" && (
-          <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-6 space-y-4 shadow-xl">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[var(--border-subtle)] pb-4">
+          <div className="rounded-2xl border border-[#e4e4e7] bg-white p-6 space-y-4 shadow-xs">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#e4e4e7] pb-4">
               <div>
-                <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <FileCode2 className="h-4 w-4 text-indigo-400" />
+                <h3 className="text-base font-bold text-zinc-900 flex items-center gap-2">
+                  <FileCode2 className="h-4 w-4 text-[#FF9500]" />
                   <span>Standalone Pytest-Playwright Test Suite</span>
                 </h3>
-                <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                <p className="text-xs text-zinc-500 mt-0.5">
                   Self-contained executable Python test artifact generated with real target locators
                 </p>
               </div>
@@ -2064,7 +2066,7 @@ def test_j07_transport_security_and_console(page: Page):
                   onClick={() => copyToClipboard(computedPlaywrightCode, "code")}
                   className="btn-secondary flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold cursor-pointer"
                 >
-                  {copiedCode ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copiedCode ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
                   <span>{copiedCode ? "Copied" : "Copy Code"}</span>
                 </button>
 
@@ -2079,34 +2081,34 @@ def test_j07_transport_security_and_console(page: Page):
             </div>
 
             {/* Code container */}
-            <div className="max-h-[500px] overflow-y-auto rounded-xl border border-[var(--border-subtle)] bg-[#050608] p-4 font-mono text-xs text-indigo-300 leading-relaxed shadow-inner">
+            <div className="max-h-[500px] overflow-y-auto rounded-xl border border-zinc-800 bg-[#0c0d12] p-4 font-mono text-xs text-zinc-200 leading-relaxed shadow-inner">
               <pre>{computedPlaywrightCode}</pre>
             </div>
 
             {/* Terminal Run Instructions */}
-            <div className="rounded-xl border border-white/[0.08] bg-[#080b12] p-3.5 font-mono text-xs text-[var(--text-secondary)] flex items-center justify-between">
+            <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-3.5 font-mono text-xs text-zinc-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-[var(--text-muted)]">$</span>
-                <span className="text-emerald-400">pytest -v test_{targetHostname.replace(/[^a-zA-Z0-9]/g, "_")}.py --headed</span>
+                <span className="text-zinc-400">$</span>
+                <span className="text-zinc-900 font-semibold">pytest -v test_{targetHostname.replace(/[^a-zA-Z0-9]/g, "_")}.py --headed</span>
               </div>
-              <span className="text-[10px] text-[var(--text-muted)]">Run Locally</span>
+              <span className="text-[10px] text-zinc-500 font-bold uppercase">Run Locally</span>
             </div>
           </div>
         )}
 
         {/* =========================================================================
-            TAB 5: AUTONOMOUS QA TOOLS & SELF-HEALING
+            TAB 5: AUTONOMOUS QA TOOLS & SELF-HEALING (Vostride Light Theme)
             ========================================================================= */}
         {activeReportTab === "tools" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             {/* Card 1: Ask QA Agent */}
-            <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-6 space-y-4 shadow-xl">
-              <div className="border-b border-[var(--border-subtle)] pb-3">
-                <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-indigo-400" />
+            <div className="rounded-2xl border border-[#e4e4e7] bg-white p-6 space-y-4 shadow-xs">
+              <div className="border-b border-[#e4e4e7] pb-3">
+                <h3 className="text-base font-bold text-zinc-900 flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-[#FF9500]" />
                   <span>Ask QA Agent (Natural Language Test)</span>
                 </h3>
-                <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                <p className="text-xs text-zinc-500 mt-0.5">
                   Execute ad-hoc validation on the live application in natural language
                 </p>
               </div>
@@ -2136,17 +2138,17 @@ def test_j07_transport_security_and_console(page: Page):
                 </div>
 
                 {stepResult && (
-                  <div className="rounded-xl border border-indigo-500/30 bg-[#06080d] p-3.5 font-mono text-xs">
-                    <div className="flex items-center justify-between text-emerald-400 font-bold mb-1">
+                  <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-3.5 font-mono text-xs">
+                    <div className="flex items-center justify-between text-emerald-700 font-bold mb-1">
                       <span className="flex items-center gap-1.5">
-                        <Check className="h-3.5 w-3.5" />
+                        <Check className="h-3.5 w-3.5 text-emerald-600" />
                         <span>Step Executed Successfully</span>
                       </span>
-                      <span className="text-[10px] text-[var(--text-muted)]">
+                      <span className="text-[10px] text-zinc-400">
                         {stepResult.latency_ms || 24}ms
                       </span>
                     </div>
-                    <div className="text-[var(--text-secondary)] text-[11px] font-sans">
+                    <div className="text-zinc-700 text-[11px] font-sans">
                       {stepResult.reasoning || "Natural language intent compiled to Playwright assertion and executed against live DOM."}
                     </div>
                   </div>
@@ -2155,14 +2157,14 @@ def test_j07_transport_security_and_console(page: Page):
             </div>
 
             {/* Card 2: Self-Healing Engine */}
-            <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-6 space-y-4 shadow-xl">
-              <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
+            <div className="rounded-2xl border border-[#e4e4e7] bg-white p-6 space-y-4 shadow-xs">
+              <div className="flex items-center justify-between border-b border-[#e4e4e7] pb-3">
                 <div>
-                  <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
-                    <Wand2 className="h-4 w-4 text-indigo-400" />
+                  <h3 className="text-base font-bold text-zinc-900 flex items-center gap-2">
+                    <Wand2 className="h-4 w-4 text-[#FF9500]" />
                     <span>Self-Healing Engine (Locator Drift)</span>
                   </h3>
-                  <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                  <p className="text-xs text-zinc-500 mt-0.5">
                     Recovers broken locators using semantic role hierarchy without test failure
                   </p>
                 </div>
@@ -2170,9 +2172,9 @@ def test_j07_transport_security_and_console(page: Page):
                 <button
                   onClick={handleTriggerSelfHealing}
                   disabled={isHealing}
-                  className="flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-3 py-1.5 text-xs font-semibold text-indigo-300 hover:bg-indigo-500/20 transition-colors cursor-pointer disabled:opacity-50 shrink-0"
+                  className="btn-secondary flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold cursor-pointer disabled:opacity-50 shrink-0"
                 >
-                  <Wand2 className={`h-3.5 w-3.5 ${isHealing ? "animate-spin" : ""}`} />
+                  <Wand2 className={`h-3.5 w-3.5 ${isHealing ? "animate-spin text-[#FF9500]" : ""}`} />
                   <span>{isHealing ? "Recovering..." : "Simulate Drift"}</span>
                 </button>
               </div>
@@ -2180,22 +2182,22 @@ def test_j07_transport_security_and_console(page: Page):
               <div className="space-y-2">
                 {healedChains.length > 0 ? (
                   healedChains.map((hc, idx) => (
-                    <div key={idx} className="rounded-xl border border-indigo-500/30 bg-[var(--surface-secondary)] p-3 text-xs font-mono">
+                    <div key={idx} className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-3 text-xs font-mono">
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-rose-400 line-through">{hc.broken_selector}</span>
-                          <span className="text-[var(--text-muted)]">&rarr;</span>
-                          <span className="font-bold text-emerald-400">{hc.healed_selector}</span>
+                          <span className="text-red-600 line-through">{hc.broken_selector}</span>
+                          <span className="text-zinc-400">&rarr;</span>
+                          <span className="font-bold text-emerald-700">{hc.healed_selector}</span>
                         </div>
-                        <span className="rounded bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
+                        <span className="rounded bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
                           RECOVERED ({hc.recovery_latency_ms || 18}ms)
                         </span>
                       </div>
-                      <p className="text-[11px] text-[var(--text-secondary)] font-sans">{hc.recovery_strategy || "Recovered via semantic role & accessible name match"}</p>
+                      <p className="text-[11px] text-zinc-600 font-sans">{hc.recovery_strategy || "Recovered via semantic role & accessible name match"}</p>
                     </div>
                   ))
                 ) : (
-                  <div className="rounded-xl border border-dashed border-[var(--border-subtle)] p-6 text-center text-xs text-[var(--text-muted)]">
+                  <div className="rounded-xl border border-dashed border-[#e4e4e7] p-6 text-center text-xs text-zinc-400">
                     Click &quot;Simulate Drift&quot; to test autonomous locator recovery.
                   </div>
                 )}
