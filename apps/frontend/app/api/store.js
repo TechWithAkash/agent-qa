@@ -3,6 +3,7 @@
 // Persistent Agent Memory, Action Caching, and Real-time Browser Observation.
 
 import * as cheerio from "cheerio";
+import { crawlWithPlaywright, captureRouteScreenshot } from "./playwright-service";
 
 if (!globalThis.__drishtiStore) {
   globalThis.__drishtiStore = {
@@ -301,6 +302,41 @@ async function executeDynamicPipeline(runId, targetUrl, config) {
         discoveredRoutes.add(r)
       );
     } else {
+      // Execute live Playwright exploration for real target website
+      try {
+        emitEvent(runId, "S2", "playwright_launch", `Playwright Chromium browser context launched (1280x800)`);
+        const pwCrawl = await crawlWithPlaywright(targetUrl);
+        if (pwCrawl && pwCrawl.routes && pwCrawl.routes.length > 0) {
+          pwCrawl.routes.forEach((r) => discoveredRoutes.add(r));
+          if (pwCrawl.pageTitle && pwCrawl.pageTitle !== hostname) {
+            pageTitle = pwCrawl.pageTitle;
+          }
+          pwCrawl.buttons.forEach((b) => {
+            if (!buttons.includes(b)) buttons.push(b);
+          });
+          pwCrawl.inputs.forEach((inp) => {
+            if (!inputs.some((existing) => existing.name === inp.name)) inputs.push(inp);
+          });
+          pwCrawl.headings.forEach((h) => {
+            if (!headings.some((existing) => existing.text === h.text)) headings.push(h);
+          });
+          emitEvent(
+            runId,
+            "S2",
+            "playwright_crawled",
+            `Playwright real-time navigation verified ${pwCrawl.routes.length} live routes: ${pwCrawl.routes.slice(0, 5).join(", ")}`
+          );
+
+          // Pre-warm screenshots asynchronously for top routes
+          const keyRoutes = Array.from(discoveredRoutes).slice(0, 4);
+          for (const kr of keyRoutes) {
+            captureRouteScreenshot(targetUrl, kr).catch(() => {});
+          }
+        }
+      } catch (pwErr) {
+        console.error("Playwright crawl error in store.js:", pwErr.message);
+      }
+
       if (discoveredRoutes.size <= 2 && headings.length > 0) {
         headings.slice(0, 5).forEach((h) => {
           const slug = h.text

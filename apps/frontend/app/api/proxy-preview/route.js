@@ -16,6 +16,12 @@ export async function GET(req) {
 
     // Serve authentic full website views for audited domains
     if (urlToFetch.toLowerCase().includes("padmora")) {
+      const urlObj = new URL(urlToFetch);
+      const isRoot = urlObj.pathname === "/" || urlObj.pathname === "";
+      const imgSrc = isRoot
+        ? "/screenshots/padmora-home.png"
+        : `/api/screenshot?url=${encodeURIComponent(urlToFetch)}`;
+
       return new NextResponse(
         `<!DOCTYPE html>
         <html>
@@ -28,7 +34,7 @@ export async function GET(req) {
             </style>
           </head>
           <body>
-            <img src="/screenshots/padmora-home.png" alt="Padmora Sarees by Yashi - Mohar Collection" />
+            <img src="${imgSrc}" alt="Padmora Sarees - ${urlObj.pathname}" />
           </body>
         </html>`,
         {
