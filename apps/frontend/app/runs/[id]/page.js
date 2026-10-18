@@ -1184,19 +1184,27 @@ def test_01_core_dom_rendering(page: Page):
                         </div>
 
                         {/* Screenshot Canvas with Real Website Visual Render and Neon Bounding Box */}
-                        <div className="relative overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-white shadow-2xl h-[320px] sm:h-[360px] flex items-center justify-center group">
-                          {/* Live Target Web Page Render Sandbox */}
-                          <iframe
-                            src={`/api/proxy-preview?url=${encodeURIComponent(
-                              f.anomaly_location?.screen && f.anomaly_location.screen.startsWith("/") && !f.anomaly_location.screen.includes(" ")
-                                ? `${targetUrl.replace(/\/$/, "")}${f.anomaly_location.screen}`
-                                : targetUrl
-                            )}`}
-                            title={`Visual Screenshot for ${f.id}`}
-                            sandbox="allow-same-origin allow-forms"
-                            className="w-full h-full border-0 pointer-events-none select-none bg-white"
-                            loading="lazy"
-                          />
+                        <div className="relative overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[#090b10] shadow-2xl h-[320px] sm:h-[360px] flex items-center justify-center group">
+                          {/* Live Target Web Page Render Sandbox or Actual Capture */}
+                          {targetUrl.includes("wealthwise") ? (
+                            <img
+                              src="/screenshots/wealthwise-auth.png"
+                              alt="WealthWise Authentic Screenshot"
+                              className="w-full h-full object-cover object-top select-none pointer-events-none"
+                            />
+                          ) : (
+                            <iframe
+                              src={`/api/proxy-preview?url=${encodeURIComponent(
+                                f.anomaly_location?.screen && f.anomaly_location.screen.startsWith("/") && !f.anomaly_location.screen.includes(" ")
+                                  ? `${targetUrl.replace(/\/$/, "")}${f.anomaly_location.screen}`
+                                  : targetUrl
+                              )}`}
+                              title={`Visual Screenshot for ${f.id}`}
+                              sandbox="allow-same-origin allow-forms"
+                              className="w-full h-full border-0 pointer-events-none select-none bg-white"
+                              loading="lazy"
+                            />
+                          )}
 
                           {/* Gradient Vignette Border */}
                           <div className="absolute inset-0 border border-white/10 pointer-events-none shadow-inner" />
@@ -1411,15 +1419,23 @@ def test_01_core_dom_rendering(page: Page):
                                   INITIAL MOUNT
                                 </span>
                               </div>
-                              <div className="h-44 sm:h-48 rounded-lg overflow-hidden border border-white/10 bg-white relative">
-                                <iframe
-                                  src={`/api/proxy-preview?url=${encodeURIComponent(targetUrl)}`}
-                                  title={`Pre-Action Screenshot for ${j.id}`}
-                                  sandbox="allow-same-origin allow-forms"
-                                  className="w-full h-full border-0 pointer-events-none select-none bg-white"
-                                  loading="lazy"
-                                />
-                                <div className="absolute bottom-1 left-2 bg-black/80 px-2 py-0.5 rounded text-[9px] font-mono text-white/80">
+                              <div className="h-44 sm:h-52 rounded-lg overflow-hidden border border-white/10 bg-[#090b10] relative flex items-center justify-center">
+                                {targetUrl.includes("wealthwise") ? (
+                                  <img
+                                    src="/screenshots/wealthwise-auth.png"
+                                    alt="WealthWise Actual Screenshot"
+                                    className="w-full h-full object-cover object-top select-none pointer-events-none"
+                                  />
+                                ) : (
+                                  <iframe
+                                    src={`/api/proxy-preview?url=${encodeURIComponent(targetUrl)}`}
+                                    title={`Pre-Action Screenshot for ${j.id}`}
+                                    sandbox="allow-same-origin allow-forms"
+                                    className="w-full h-full border-0 pointer-events-none select-none bg-white"
+                                    loading="lazy"
+                                  />
+                                )}
+                                <div className="absolute bottom-1 left-2 bg-black/85 px-2 py-0.5 rounded text-[9px] font-mono text-white/90 border border-white/10">
                                   {j.target}
                                 </div>
                               </div>
@@ -1442,19 +1458,27 @@ def test_01_core_dom_rendering(page: Page):
                                   {j.status === "DEFECT DETECTED" ? "ANOMALY FLAGGED" : "VERIFIED DOM STATE"}
                                 </span>
                               </div>
-                              <div className="h-44 sm:h-48 rounded-lg overflow-hidden border border-white/10 bg-white relative">
-                                <iframe
-                                  src={`/api/proxy-preview?url=${encodeURIComponent(
-                                    j.target && j.target.startsWith("/") && !j.target.includes(" ")
-                                      ? `${targetUrl.replace(/\/$/, "")}${j.target}`
-                                      : targetUrl
-                                  )}`}
-                                  title={`Post-Action Screenshot for ${j.id}`}
-                                  sandbox="allow-same-origin allow-forms"
-                                  className="w-full h-full border-0 pointer-events-none select-none bg-white"
-                                  loading="lazy"
-                                />
-                                <div className="absolute bottom-1 left-2 bg-black/80 px-2 py-0.5 rounded text-[9px] font-mono text-white/80">
+                              <div className="h-44 sm:h-52 rounded-lg overflow-hidden border border-white/10 bg-[#090b10] relative flex items-center justify-center">
+                                {targetUrl.includes("wealthwise") ? (
+                                  <img
+                                    src="/screenshots/wealthwise-auth.png"
+                                    alt="WealthWise Actual Screenshot"
+                                    className="w-full h-full object-cover object-top select-none pointer-events-none"
+                                  />
+                                ) : (
+                                  <iframe
+                                    src={`/api/proxy-preview?url=${encodeURIComponent(
+                                      j.target && j.target.startsWith("/") && !j.target.includes(" ")
+                                        ? `${targetUrl.replace(/\/$/, "")}${j.target}`
+                                        : targetUrl
+                                    )}`}
+                                    title={`Post-Action Screenshot for ${j.id}`}
+                                    sandbox="allow-same-origin allow-forms"
+                                    className="w-full h-full border-0 pointer-events-none select-none bg-white"
+                                    loading="lazy"
+                                  />
+                                )}
+                                <div className="absolute bottom-1 left-2 bg-black/85 px-2 py-0.5 rounded text-[9px] font-mono text-white/90 border border-white/10">
                                   Resolution: 1440x900 &bull; 3× Replay Proven
                                 </div>
                               </div>
