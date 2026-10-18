@@ -1070,49 +1070,49 @@ def test_j07_transport_security_and_console(page: Page):
 
         {/* Dynamic Quality Metrics Bar */}
         <div className="mt-6 grid grid-cols-2 gap-4 border-t border-[#e4e4e7] pt-6 md:grid-cols-4">
-          <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50/70 p-4">
-            <div className="text-[11px] font-bold tracking-wider text-zinc-500 uppercase">
+          <div className="rounded-xl border border-[#e4e4e7] bg-white p-4.5 shadow-2xs">
+            <div className="text-xs font-bold tracking-wider text-zinc-500 uppercase">
               Quality Score
             </div>
-            <div className="mt-1 flex items-baseline gap-2">
+            <div className="mt-1.5 flex items-baseline gap-2">
               <span
-                className={`font-mono text-2xl font-bold ${
+                className={`text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums ${
                   isBlocker ? "text-red-600" : isWarning ? "text-amber-600" : "text-emerald-600"
                 }`}
               >
                 {qualityScorePercent}%
               </span>
-              <span className="text-xs text-zinc-500">
+              <span className="text-xs font-semibold text-zinc-600">
                 {isBlocker ? "High Risk" : isWarning ? "Audit Flagged" : "Production Grade"}
               </span>
             </div>
           </div>
 
-          <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50/70 p-4">
-            <div className="text-[11px] font-bold tracking-wider text-zinc-500 uppercase">
+          <div className="rounded-xl border border-[#e4e4e7] bg-white p-4.5 shadow-2xs">
+            <div className="text-xs font-bold tracking-wider text-zinc-500 uppercase">
               Journeys Tested
             </div>
-            <div className="mt-1 flex items-baseline gap-2">
-              <span className="font-mono text-2xl font-bold text-zinc-900">
+            <div className="mt-1.5 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums text-zinc-900">
                 {passingJourneysCount} / {dynamicJourneys.length}
               </span>
-              <span className="text-xs text-zinc-500">Passed</span>
+              <span className="text-xs font-semibold text-zinc-600">Passed</span>
             </div>
           </div>
 
-          <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50/70 p-4">
-            <div className="text-[11px] font-bold tracking-wider text-zinc-500 uppercase">
+          <div className="rounded-xl border border-[#e4e4e7] bg-white p-4.5 shadow-2xs">
+            <div className="text-xs font-bold tracking-wider text-zinc-500 uppercase">
               Confirmed Defects
             </div>
-            <div className="mt-1 flex items-baseline gap-2">
+            <div className="mt-1.5 flex items-baseline gap-2">
               <span
-                className={`font-mono text-2xl font-bold ${
+                className={`text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums ${
                   isBlocker ? "text-red-600" : isWarning ? "text-amber-600" : "text-emerald-600"
                 }`}
               >
                 {confirmedDefectsCount}
               </span>
-              <span className="text-xs text-zinc-500">
+              <span className="text-xs font-semibold text-zinc-600">
                 {isBlocker
                   ? `${blockerDefectsCount} Blocker`
                   : isWarning
@@ -1122,15 +1122,15 @@ def test_j07_transport_security_and_console(page: Page):
             </div>
           </div>
 
-          <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50/70 p-4">
-            <div className="text-[11px] font-bold tracking-wider text-zinc-500 uppercase">
+          <div className="rounded-xl border border-[#e4e4e7] bg-white p-4.5 shadow-2xs">
+            <div className="text-xs font-bold tracking-wider text-zinc-500 uppercase">
               Discovered Topology
             </div>
-            <div className="mt-1 flex items-baseline gap-2">
-              <span className="font-mono text-2xl font-bold text-zinc-900">
+            <div className="mt-1.5 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums text-zinc-900">
                 {model?.routes?.length || 1}
               </span>
-              <span className="text-xs text-zinc-500">
+              <span className="text-xs font-semibold text-zinc-600">
                 Routes &bull; {model?.buttons?.length || 0} Locators
               </span>
             </div>
@@ -2461,7 +2461,7 @@ def test_j07_transport_security_and_console(page: Page):
                     onChange={(e) => setCustomStepText(e.target.value)}
                     placeholder={`e.g. Verify sign-up flow on "${signupRoute}" or Click button "${primaryButton}"...`}
                     onKeyDown={(e) => e.key === "Enter" && handleExecuteNLStep(customStepText)}
-                    className="input-base w-full flex-1 text-xs font-mono"
+                    className="w-full flex-1 text-sm font-sans text-zinc-900 placeholder:text-zinc-400 font-normal px-4 py-2.5 rounded-xl border border-[#e4e4e7] bg-white focus:border-black focus:outline-none focus:ring-1 focus:ring-black transition-all"
                   />
                   <button
                     onClick={() => handleExecuteNLStep(customStepText)}

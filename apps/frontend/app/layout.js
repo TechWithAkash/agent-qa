@@ -1,17 +1,18 @@
 import "./globals.css";
 import Link from "next/link";
-import { Geist, VT323 } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { ShieldCheck, Activity, Terminal, ArrowUpRight } from "lucide-react";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const vt323 = VT323({
-  weight: "400",
-  variable: "--font-vt323",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata = {
@@ -22,12 +23,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${vt323.variable} h-full`}>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} h-full`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=VT323&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </head>
@@ -43,7 +44,7 @@ export default function RootLayout({ children }) {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="font-semibold text-[#09090b] tracking-tight">DRISHTI</span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-orange-50 text-[#FF9500] border border-orange-200/80 font-bold">
+                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-orange-100 text-orange-800 border border-orange-300 font-bold">
                     AI
                   </span>
                 </div>
@@ -51,7 +52,7 @@ export default function RootLayout({ children }) {
 
               <div className="hidden sm:block h-3.5 w-px bg-[#e4e4e7] mx-1" />
 
-              <span className="hidden sm:inline-block text-[11px] text-zinc-500 font-medium tracking-tight">
+              <span className="hidden sm:inline-block text-xs font-semibold text-zinc-600 tracking-tight">
                 Autonomous AI QA Agent
               </span>
             </div>
