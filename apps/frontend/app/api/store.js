@@ -748,6 +748,15 @@ async function executeDynamicPipeline(runId, targetUrl, config) {
           severity: "medium",
           replay_rate: "3/3 (100% Verified)",
           classification_reason: `Internal navigation route '${dl.route}' returned HTTP 404 Not Found dead page`,
+          anomaly_location: {
+            selector: `a[href='${dl.route}']`,
+            description: `Broken anchor link pointing to dead 404 route: ${dl.route}`,
+            screen: "Navigation Bar / Body",
+            x: 20,
+            y: 15 + i * 10,
+            w: 35,
+            h: 6,
+          },
           trigger_steps: [
             `Navigate to ${targetUrl}`,
             `Locate anchor tag with href='${dl.route}'`,
@@ -837,6 +846,15 @@ async function executeDynamicPipeline(runId, targetUrl, config) {
             severity: "medium",
             replay_rate: "3/3 (100% Verified)",
             classification_reason: `Input element lacks HTML5 type='email' attribute. Form allows submitting malformed email strings without client-side format rejection.`,
+            anomaly_location: {
+              selector: `input[name='${inp.name || inp.placeholder}']`,
+              description: `Input allows unconstrained text without email syntax enforcement`,
+              screen: "Active Form View",
+              x: 25,
+              y: 40 + idx * 8,
+              w: 50,
+              h: 7,
+            },
             trigger_steps: [
               `Navigate to ${targetUrl}`,
               `Locate input element with placeholder '${inp.placeholder}'`,
