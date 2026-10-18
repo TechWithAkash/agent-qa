@@ -19,18 +19,23 @@ echo -e "${BLUE}====================================================${NC}"
 echo -e "${BLUE}        DRISHTI AI — Autonomous QA Agent            ${NC}"
 echo -e "${BLUE}====================================================${NC}"
 
-# Check if Docker is running
-if docker info >/dev/null 2>&1; then
-    echo -e "${GREEN}✓ Docker daemon detected.${NC}"
-    echo -e "${YELLOW}Starting full stack via Docker Compose...${NC}"
-    echo -e "Services: MongoDB, Backend API, Runner Agent, Frontend, ShopLite"
-    echo ""
-    docker compose up --build
-    exit 0
+# Check for explicit Docker flag
+if [ "$1" == "--docker" ]; then
+    if docker info >/dev/null 2>&1; then
+        echo -e "${GREEN}✓ Docker daemon detected.${NC}"
+        echo -e "${YELLOW}Starting full stack via Docker Compose...${NC}"
+        echo -e "Services: MongoDB, Backend API, Runner Agent, Frontend, ShopLite"
+        echo ""
+        docker compose up --build
+        exit 0
+    else
+        echo -e "${RED}✗ Docker daemon is not running. Please start Docker Desktop or run without --docker.${NC}"
+        exit 1
+    fi
 fi
 
-# Fallback: Run natively on machine without Docker
-echo -e "${YELLOW}! Docker is not running. Starting local development servers...${NC}"
+echo -e "${GREEN}Starting high-speed local development servers (ShopLite + DRISHTI Dashboard)...${NC}"
+echo -e "${YELLOW}(Tip: Run './run.sh --docker' if you want full multi-container Docker mode)${NC}"
 echo ""
 
 # Cleanup background processes on exit

@@ -1,0 +1,12 @@
+{
+  "name": "drishti-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DRISHTI AI — Autonomous QA Agent Platform",
+  "scripts": {
+    "dev": "npm --prefix apps/frontend run dev",
+    "build": "npm --prefix apps/frontend run build",
+    "start": "npm --prefix apps/frontend run start",
+    "shoplite": "node apps/shoplite/src/index.js"
+  }
+}
