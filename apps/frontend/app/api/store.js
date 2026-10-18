@@ -97,17 +97,35 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 async function executeDynamicPipeline(runId, targetUrl, config) {
   try {
     const isShopLite = targetUrl.includes("3001") || targetUrl.includes("shoplite");
+    const isGitHub = targetUrl.includes("github.com");
+    let githubRepo = null; // { owner, repo, defaultBranch }
+    if (isGitHub) {
+      try {
+        const u = new URL(targetUrl);
+        const parts = u.pathname.replace(/^\/|\/$/g, "").split("/");
+        if (parts.length >= 2) {
+          githubRepo = { owner: parts[0], repo: parts[1] };
+        }
+      } catch (e) {}
+    }
     const parsedUrl = new URL(targetUrl);
     const hostname = parsedUrl.hostname;
 
     // -------------------------------------------------------------------------
     // S1: Input and Preflight Probe
     // -------------------------------------------------------------------------
-    emitEvent(runId, "S1", "stage_started", `Stage S1: Preflight health probe initiated on ${targetUrl}`);
+    emitEvent(
+      runId,
+      "S1",
+      "stage_started",
+      isGitHub
+        ? `Stage S1: GitHub repository probe initiated for ${githubRepo?.owner}/${githubRepo?.repo}`
+        : `Stage S1: Preflight health probe initiated on ${targetUrl}`
+    );
     updateRunStage(runId, "S1", "preflight");
 
     let latencyMs = 28;
-    let pageTitle = "Web Application";
+    let pageTitle = isGitHub ? `${githubRepo?.owner}/${githubRepo?.repo} (GitHub)` : "Web Application";
     let metaDescription = "";
     let htmlContent = "";
     let httpStatus = 200;
@@ -140,6 +158,31 @@ async function executeDynamicPipeline(runId, targetUrl, config) {
     } catch (err) {
       latencyMs = Date.now() - probeStart;
       console.error("Probe error:", err.message);
+    }
+
+    // If GitHub, fetch package.json or repo meta to detect real tech stack & deployed demo
+    let githubPackageJson = null;
+    let githubReadme = "";
+    if (isGitHub && githubRepo) {
+      detectedTech.push("GitHub Repository");
+      try {
+        const rawPkgRes = await fetch(`https://raw.githubusercontent.com/${githubRepo.owner}/${githubRepo.repo}/main/package.json`);
+        if (rawPkgRes.ok) {
+          githubPackageJson = await rawPkgRes.json();
+          if (githubPackageJson.dependencies?.next || githubPackageJson.devDependencies?.next) detectedTech.push("Next.js");
+          if (githubPackageJson.dependencies?.react) detectedTech.push("React");
+          if (githubPackageJson.dependencies?.vue) detectedTech.push("Vue");
+          if (githubPackageJson.dependencies?.tailwindcss) detectedTech.push("Tailwind CSS");
+          if (githubPackageJson.dependencies?.playwright || githubPackageJson.devDependencies?.playwright) detectedTech.push("Playwright");
+        }
+      } catch (e) {}
+
+      try {
+        const rawReadmeRes = await fetch(`https://raw.githubusercontent.com/${githubRepo.owner}/${githubRepo.repo}/main/README.md`);
+        if (rawReadmeRes.ok) {
+          githubReadme = await rawReadmeRes.text();
+        }
+      } catch (e) {}
     }
 
     // Parse HTML with Cheerio if available
@@ -588,6 +631,15 @@ async function executeDynamicPipeline(runId, targetUrl, config) {
           severity: "medium",
           replay_rate: "3/3 (100% Verified)",
           classification_reason: "Malformed email 'invalid-email-address' accepted without rejection",
+          anomaly_location: {
+            selector: "input[name='email']",
+            description: "Email input element accepts malformed syntax",
+            screen: "/signup",
+            x: 28, // % from left
+            y: 42, // % from top
+            w: 44, // % width
+            h: 8,  // % height
+          },
           trigger_steps: [
             "Navigate to /signup",
             "Fill email field with malformed value 'invalid-email-address'",
@@ -608,6 +660,15 @@ async function executeDynamicPipeline(runId, targetUrl, config) {
           severity: "high",
           replay_rate: "3/3 (100% Verified)",
           classification_reason: "Duplicate registration threw uncaught 500 error: 'Duplicate key constraint violation'",
+          anomaly_location: {
+            selector: "#signup-form",
+            description: "Uncaught 500 error boundary during duplicate account collision",
+            screen: "/signup",
+            x: 25,
+            y: 35,
+            w: 50,
+            h: 40,
+          },
           trigger_steps: [
             "Register user with email 'dup@example.com'",
             "Attempt to register second user with same email 'dup@example.com'",
@@ -626,6 +687,15 @@ async function executeDynamicPipeline(runId, targetUrl, config) {
           severity: "medium",
           replay_rate: "3/3 (100% Verified)",
           classification_reason: "Login with uppercase email rejected with 401 (violates case-insensitive rule)",
+          anomaly_location: {
+            selector: "input[name='email']",
+            description: "Email input enforces case-sensitive matching causing 401",
+            screen: "/login",
+            x: 28,
+            y: 40,
+            w: 44,
+            h: 8,
+          },
           trigger_steps: [
             "Register account with lowercase email 'caseuser@example.com'",
             "Navigate to /login",
@@ -645,6 +715,15 @@ async function executeDynamicPipeline(runId, targetUrl, config) {
           severity: "low",
           replay_rate: "3/3 (100% Verified)",
           classification_reason: "Forgot password link returned HTTP 404 dead link",
+          anomaly_location: {
+            selector: "a[href='/forgot-password']",
+            description: "Anchor link navigates to non-existent 404 route",
+            screen: "/login",
+            x: 48,
+            y: 62,
+            w: 24,
+            h: 6,
+          },
           trigger_steps: [
             "Navigate to /login",
             "Locate and click 'Forgot password?' anchor link (href='/forgot-password')",
@@ -692,6 +771,15 @@ async function executeDynamicPipeline(runId, targetUrl, config) {
           severity: "low",
           replay_rate: "3/3 (100% Verified)",
           classification_reason: `Server response lacks 'Content-Security-Policy' header, leaving client DOM vulnerable to cross-site script injection`,
+          anomaly_location: {
+            selector: "meta[http-equiv='Content-Security-Policy']",
+            description: "Missing security policy in HTTP response headers & head element",
+            screen: "HTTP Egress / Head",
+            x: 10,
+            y: 5,
+            w: 80,
+            h: 12,
+          },
           trigger_steps: [
             `Dispatch HTTP GET request to ${targetUrl}`,
             `Inspect response headers for 'Content-Security-Policy'`,
@@ -714,6 +802,15 @@ async function executeDynamicPipeline(runId, targetUrl, config) {
           severity: "low",
           replay_rate: "3/3 (100% Verified)",
           classification_reason: `Server lacks 'X-Content-Type-Options: nosniff', which allows user-agents to perform MIME-type sniffing vulnerabilities`,
+          anomaly_location: {
+            selector: "HTTP Transport Headers",
+            description: "MIME sniffing protection header is absent from server egress",
+            screen: "Network Layer",
+            x: 10,
+            y: 20,
+            w: 80,
+            h: 12,
+          },
           trigger_steps: [
             `Dispatch HTTP GET request to ${targetUrl}`,
             `Inspect response headers for 'X-Content-Type-Options'`,

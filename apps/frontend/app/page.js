@@ -53,6 +53,15 @@ export default function LandingPage() {
       setMode("sandbox");
       setAttestation(true);
       setError(null);
+    } else if (type === "github") {
+      setTargetUrl("https://github.com/TechWithAkash/agent-qa");
+      setDescription(`# GitHub Repository Audit Rules
+- Codebase Analysis: Discover routes, interactive components, forms, and dependencies.
+- Frontend Invariants: Verify build entrypoint, manifest, and accessible DOM anchors.
+- Security Policies: Inspect secrets leakage, CSP configuration, and package vulnerabilities.`);
+      setMode("sandbox");
+      setAttestation(true);
+      setError(null);
     } else {
       setTargetUrl("");
       setDescription(DEFAULT_RULES);
@@ -234,6 +243,17 @@ export default function LandingPage() {
               </button>
               <button
                 type="button"
+                onClick={() => handlePreset("github")}
+                className={`rounded-lg px-3 py-1.5 text-xs font-semibold border transition-all cursor-pointer ${
+                  targetUrl.includes("github.com")
+                    ? "border-indigo-500/50 bg-indigo-600/20 text-indigo-300"
+                    : "border-[var(--border-subtle)] bg-[var(--surface-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                }`}
+              >
+                GitHub Repository
+              </button>
+              <button
+                type="button"
                 onClick={() => handlePreset("shoplite")}
                 className={`rounded-lg px-3 py-1.5 text-xs font-semibold border transition-all cursor-pointer ${
                   targetUrl.includes("3001")
@@ -263,15 +283,15 @@ export default function LandingPage() {
                   className="flex items-center gap-2 text-xs font-semibold tracking-wider text-[var(--text-secondary)] uppercase"
                 >
                   <Globe className="h-3.5 w-3.5 text-indigo-400" />
-                  <span>Target Application URL</span>
+                  <span>Target Web URL or GitHub Repository</span>
                 </label>
                 <input
                   id="target-url"
-                  type="url"
+                  type="text"
                   required
                   value={targetUrl}
                   onChange={(e) => setTargetUrl(e.target.value)}
-                  placeholder="https://your-website.com"
+                  placeholder="e.g. https://github.com/owner/repo or https://your-website.com"
                   className="input-base w-full"
                 />
               </div>
