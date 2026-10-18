@@ -106,7 +106,11 @@ export default function LandingPage() {
       }
 
       const data = await res.json();
-      router.push(`/runs/${data.run_id}`);
+      if (data?.run_id) {
+        window.location.href = `/runs/${data.run_id}`;
+      } else {
+        router.push("/runs");
+      }
     } catch (err) {
       setError(err.message);
       setLoading(false);

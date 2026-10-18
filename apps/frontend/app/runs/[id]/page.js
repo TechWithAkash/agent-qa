@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, use, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
   CheckCircle2,
@@ -93,23 +94,23 @@ const MULTI_AGENT_PIPELINE = [
   },
 ];
 
-export default function RunConsolePage({ params }) {
+export default function RunConsolePage() {
   return (
     <Suspense
       fallback={
         <div className="p-16 text-center text-[var(--text-secondary)] font-mono text-xs">
-          Loading Autonomous QA Console...
+          Connecting to Autonomous Multi-Agent Swarm...
         </div>
       }
     >
-      <RunConsoleContent params={params} />
+      <RunConsoleContent />
     </Suspense>
   );
 }
 
-function RunConsoleContent({ params }) {
-  const unwrappedParams = use(params);
-  const runId = unwrappedParams.id;
+function RunConsoleContent() {
+  const params = useParams();
+  const runId = params?.id;
 
   const [run, setRun] = useState(null);
   const [events, setEvents] = useState([]);
