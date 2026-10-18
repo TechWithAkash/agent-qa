@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import MultiAgentSwarmModal from "../../components/MultiAgentSwarmModal";
 import {
   CheckCircle2,
   AlertTriangle,
@@ -1141,239 +1142,23 @@ def test_j07_transport_security_and_console(page: Page):
       {/* =========================================================================
           AUTONOMOUS MULTI-AGENT SWARM SEQUENTIAL EXECUTION MODAL
           ========================================================================= */}
-      {shouldShowModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
-          <div className="relative w-full max-w-3xl sm:max-w-4xl rounded-2xl border border-[#e4e4e7] bg-white p-6 sm:p-8 shadow-2xl flex flex-col space-y-6 my-auto text-zinc-900">
-            {/* Modal Header */}
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-center gap-3.5">
-                <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-orange-50 border border-orange-200 text-[#FF9500] shrink-0">
-                  <Workflow className="h-6 w-6 animate-pulse" />
-                  <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF9500] opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#FF9500]"></span>
-                  </span>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2.5">
-                    <h2 className="text-lg sm:text-xl font-bold text-zinc-900">
-                      Autonomous Multi-Agent Swarm
-                    </h2>
-                    <span className="rounded-md bg-orange-100 border border-orange-300 px-2.5 py-0.5 text-xs font-mono text-orange-800 font-bold">
-                      7 Agents
-                    </span>
-                  </div>
-                  <p className="text-sm text-zinc-600 mt-0.5">
-                    Auditing target: <span className="text-zinc-900 font-semibold">{targetHostname}</span>
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <span className="font-mono text-xs sm:text-sm text-zinc-600 font-medium">
-                  {isAllAgentsComplete
-                    ? "7 of 7 Agents Complete"
-                    : `Agent ${Math.min(displayAgentIdx + 1, 7)} of 7`}
-                </span>
-                <button
-                  onClick={() => {
-                    setShowAgentModal(false);
-                    setModalDismissed(true);
-                  }}
-                  className="rounded-lg p-2 text-zinc-400 hover:text-black hover:bg-zinc-100 transition-colors cursor-pointer"
-                  title="Close modal"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Linear Progress Bar */}
-            <div className="w-full bg-zinc-100 h-2 rounded-full overflow-hidden border border-zinc-200">
-              <div
-                className="bg-gradient-to-r from-zinc-900 via-[#FF9500] to-emerald-500 h-full transition-all duration-500 rounded-full"
-                style={{
-                  width: `${
-                    isAllAgentsComplete
-                      ? 100
-                      : Math.min(100, Math.round(((displayAgentIdx + 1) / 7) * 100))
-                  }%`,
-                }}
-              />
-            </div>
-
-            {/* Enhanced 7-Node Horizontal Stepper with Clear Labels */}
-            <div className="grid grid-cols-7 gap-2 px-1">
-              {MULTI_AGENT_PIPELINE.map((ag, idx) => {
-                const isPast =
-                  (isAllAgentsComplete && liveReplayStep === null) || currentAgentIndex > idx;
-                const isCurrent = !isAllAgentsComplete && currentAgentIndex === idx;
-                const isSelected = displayAgentIdx === idx;
-                return (
-                  <button
-                    key={ag.key}
-                    onClick={() => setInspectedAgentIdx(idx)}
-                    className={`flex flex-col items-center gap-2 transition-all cursor-pointer ${
-                      isSelected ? "scale-105" : "opacity-75 hover:opacity-100"
-                    }`}
-                  >
-                    <div
-                      className={`flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full text-xs sm:text-sm font-mono font-bold transition-all ${
-                        isPast
-                          ? "bg-emerald-50 border-2 border-emerald-400 text-emerald-700 shadow-2xs"
-                          : isCurrent
-                          ? "bg-black border-2 border-black text-white ring-4 ring-black/15 animate-pulse shadow-xs"
-                          : "bg-zinc-100 border border-zinc-300 text-zinc-600"
-                      }`}
-                    >
-                      {isPast ? <Check className="h-4 w-4 text-emerald-600" /> : idx + 1}
-                    </div>
-                    <span
-                      className={`text-xs sm:text-[13px] tracking-tight text-center w-full truncate ${
-                        isSelected
-                          ? "text-zinc-950 font-bold"
-                          : isPast
-                          ? "text-emerald-800 font-semibold"
-                          : "text-zinc-600 font-medium"
-                      }`}
-                    >
-                      {ag.shortLabel || ag.tag.split(" ")[0]}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Active Agent Spotlight Hero Card */}
-            <div className="rounded-xl border border-[#e4e4e7] bg-zinc-50 p-5 sm:p-6 shadow-xs relative overflow-hidden space-y-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-4">
-                  <div className="relative flex h-13 w-13 items-center justify-center rounded-xl bg-white border border-[#e4e4e7] text-zinc-900 shrink-0 shadow-xs">
-                    <ActiveAgentIcon className="h-7 w-7 text-zinc-800" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2.5 mb-1.5">
-                      <span className="font-mono text-xs uppercase tracking-wider text-orange-800 font-bold bg-orange-100 border border-orange-300 px-2.5 py-0.5 rounded-md">
-                        {activeAgent.tag}
-                      </span>
-                      <span className="text-xs text-zinc-500 font-mono font-medium">
-                        Agent {displayAgentIdx + 1} of 7
-                      </span>
-                    </div>
-                    <h3 className="text-lg sm:text-xl font-bold text-zinc-900">
-                      {activeAgent.name}
-                    </h3>
-                    <p className="text-sm text-zinc-600 font-medium mt-0.5">{activeAgent.role}</p>
-                  </div>
-                </div>
-
-                <div className="shrink-0">
-                  {isAllAgentsComplete ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-300 px-3.5 py-1.5 font-mono text-xs font-bold text-emerald-700 shadow-2xs">
-                      <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                      <span>VERIFIED</span>
-                    </span>
-                  ) : currentAgentIndex === displayAgentIdx ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-black text-white px-3.5 py-1.5 font-mono text-xs font-bold animate-pulse shadow-xs">
-                      <RotateCcw className="h-3.5 w-3.5 animate-spin text-[#FF9500]" />
-                      <span>ACTIVE</span>
-                    </span>
-                  ) : currentAgentIndex > displayAgentIdx ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 font-mono text-xs font-bold text-emerald-700">
-                      <Check className="h-3.5 w-3.5" />
-                      <span>COMPLETED</span>
-                    </span>
-                  ) : (
-                    <span className="rounded bg-zinc-200/70 border border-zinc-200 px-3 py-1 font-mono text-xs text-zinc-500 font-medium">
-                      STANDBY
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Plain English Action Explanation */}
-              <div className="rounded-lg bg-white border border-[#e4e4e7] p-4 text-sm text-zinc-800 leading-relaxed shadow-2xs">
-                <span className="text-zinc-900 font-bold block mb-1 text-xs uppercase tracking-wide">
-                  Current Autonomous Action:
-                </span>
-                <p className="text-zinc-700 font-normal leading-relaxed text-sm sm:text-[15px]">
-                  {activeAgent.actionSummary
-                    ? activeAgent.actionSummary(targetHostname)
-                    : activeAgent.description}
-                </p>
-              </div>
-            </div>
-
-            {/* Live Telemetry Micro-Feed with Crisp, High-Contrast Typography */}
-            <div className="rounded-xl border border-zinc-800 bg-[#0c0d12] p-4 font-mono shadow-inner">
-              <div className="flex items-center justify-between border-b border-zinc-800 pb-2.5 mb-3 text-xs sm:text-sm text-zinc-400">
-                <div className="flex items-center gap-2">
-                  <Terminal className="h-4 w-4 text-orange-400" />
-                  <span className="text-zinc-100 font-bold">
-                    Live Sandbox Telemetry Stream
-                  </span>
-                </div>
-                <span className="text-emerald-400 flex items-center gap-1.5 text-xs font-semibold">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span>Streaming Events ({events.length})</span>
-                </span>
-              </div>
-
-              <div className="max-h-[170px] overflow-y-auto space-y-2.5 pr-1 font-mono text-xs sm:text-[13px]">
-                {events.length > 0 ? (
-                  events.slice(-6).map((ev, i) => (
-                    <div key={ev.seq || i} className="flex items-start gap-2.5 leading-relaxed">
-                      <span className="text-zinc-400 shrink-0 text-xs font-normal">
-                        {ev.ts ? new Date(ev.ts).toLocaleTimeString() : "--:--:--"}
-                      </span>
-                      <span className="rounded bg-zinc-800 border border-zinc-700 px-1.5 py-0.5 text-xs font-bold text-amber-300 shrink-0">
-                        [{ev.stage || "S1"}]
-                      </span>
-                      <span className="text-zinc-100 font-medium break-words leading-relaxed">{ev.message}</span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-zinc-400 text-center py-3 text-xs sm:text-sm">
-                    Initializing isolated browser sandbox and preflight probe...
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Modal Bottom Action */}
-            <div className="pt-1">
-              {isAllAgentsComplete ? (
-                <button
-                  onClick={() => {
-                    setShowAgentModal(false);
-                    setModalDismissed(true);
-                  }}
-                  className="btn-primary w-full py-3 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <span>View Executive QA Report &amp; Flaws</span>
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              ) : (
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs text-zinc-500">
-                    <RotateCcw className="h-3.5 w-3.5 animate-spin text-[#FF9500]" />
-                    <span>Executing sequential agent audits across isolated browser sandboxes...</span>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setShowAgentModal(false);
-                      setModalDismissed(true);
-                    }}
-                    className="text-xs text-zinc-900 font-semibold hover:underline cursor-pointer"
-                  >
-                    Peek at Report
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      <MultiAgentSwarmModal
+        isOpen={shouldShowModal}
+        onClose={() => {
+          setShowAgentModal(false);
+          setModalDismissed(true);
+        }}
+        targetHostname={targetHostname}
+        targetUrl={targetUrl}
+        pipeline={MULTI_AGENT_PIPELINE}
+        currentAgentIndex={currentAgentIndex}
+        displayAgentIdx={displayAgentIdx}
+        setInspectedAgentIdx={setInspectedAgentIdx}
+        isAllAgentsComplete={isAllAgentsComplete}
+        activeAgent={activeAgent}
+        events={events}
+        liveReplayStep={liveReplayStep}
+      />
 
       {/* =========================================================================
           EXECUTIVE QA REPORT — VOSTRIDE LIGHT TABBED ARCHITECTURE
