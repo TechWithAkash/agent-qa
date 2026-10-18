@@ -23,6 +23,14 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${vt323.variable} h-full`}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=VT323&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="min-h-full flex flex-col antialiased bg-[#fafafa] text-[#09090b]">
         {/* Top Navigation - Vostride Clean Light Theme */}
         <header className="border-b border-[#e4e4e7] bg-white/80 backdrop-blur-md sticky top-0 z-50">

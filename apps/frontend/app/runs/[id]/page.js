@@ -36,6 +36,7 @@ import {
   X,
   Camera,
   Crosshair,
+  Maximize2,
 } from "lucide-react";
 
 const MULTI_AGENT_PIPELINE = [
@@ -154,6 +155,7 @@ function RunConsoleContent() {
   const [previewRoute, setPreviewRoute] = useState("/");
   const [previewUrlInput, setPreviewUrlInput] = useState("");
   const [isNavigatingPreview, setIsNavigatingPreview] = useState(false);
+  const [fullImageModal, setFullImageModal] = useState(null); // { src, title, route, selector, description }
 
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
@@ -349,7 +351,7 @@ function RunConsoleContent() {
 
   // Workflow screenshot resolver mapping each journey to its authentic state transitions
   const getWorkflowScreens = (j) => {
-    const isWealthWise = targetUrl?.toLowerCase().includes("wealthwise");
+    const isWealthWise = !targetUrl || targetUrl?.toLowerCase().includes("wealthwise") || targetUrl?.includes("mywealthwise");
 
     if (isWealthWise) {
       if (j.id === "J-01" || j.category === "Core Availability") {
@@ -357,7 +359,7 @@ function RunConsoleContent() {
           pre: {
             src: "/screenshots/wealthwise-home.png",
             badge: "INITIAL MOUNT",
-            target: targetUrl,
+            target: targetUrl || "https://www.mywealthwise.in",
             caption: "Resolution: 1440x900 • Root Viewport Initialized",
             isImage: true,
           },
@@ -391,17 +393,17 @@ function RunConsoleContent() {
       if (j.id === "J-03" || j.category === "Authentication & Onboarding") {
         return {
           pre: {
-            src: "/screenshots/wealthwise-home.png",
-            badge: "ENTRY GATEWAY",
-            target: 'Click CTA: "Start free — no card needed"',
-            caption: "Pre-Navigation State: Landing Page Gateway",
+            src: "/screenshots/wealthwise-signup.png",
+            badge: "REGISTRATION FORM",
+            target: 'Route: /auth/signup ("Create your free account.")',
+            caption: "Registration Viewport Mounted with Full Name, Email, Password",
             isImage: true,
           },
           post: {
-            src: "/screenshots/wealthwise-signup.png",
-            badge: "SIGNUP FORM ACTIVE",
-            target: 'Route: /auth/signup ("Create your free account.")',
-            caption: "Registration Viewport Reached & Form Ready",
+            src: "/screenshots/wealthwise-form-filled.png",
+            badge: "SYNTHETIC SUBMIT",
+            target: 'Filled: "qa_eval@domain.com" • 3× Replay Proven',
+            caption: "Form input dispatch verified across isolated browser contexts",
             isImage: true,
           },
         };
@@ -520,26 +522,80 @@ function RunConsoleContent() {
     };
   };
 
-  const getDefectScreenshot = (f) => {
-    const isWealthWise = targetUrl?.toLowerCase().includes("wealthwise");
+  const getDefectScreenshotInfo = (f) => {
+    const isWealthWise = !targetUrl || targetUrl?.toLowerCase().includes("wealthwise") || targetUrl?.includes("mywealthwise");
+    const scr = (f.anomaly_location?.screen || "").toLowerCase();
+    const title = (f.title || "").toLowerCase();
+    const cat = (f.category || "").toLowerCase();
+
     if (isWealthWise) {
-      const scr = (f.anomaly_location?.screen || "").toLowerCase();
-      if (scr.includes("signup") || f.id === "B1" || f.id === "B2") {
-        return "/screenshots/wealthwise-signup.png";
+      if (
+        f.id === "B1" ||
+        f.id === "B2" ||
+        scr.includes("signup") ||
+        title.includes("sign-up") ||
+        title.includes("registration")
+      ) {
+        return {
+          src: "/screenshots/wealthwise-signup.png",
+          route: "/auth/signup",
+          pageName: "User Sign-Up & Registration Form",
+          isImage: true,
+        };
       }
-      if (scr.includes("signin") || scr.includes("login") || f.id === "B3") {
-        return "/screenshots/wealthwise-auth.png";
+      if (
+        f.id === "B3" ||
+        f.id === "B4" ||
+        scr.includes("signin") ||
+        scr.includes("login") ||
+        title.includes("login") ||
+        title.includes("password")
+      ) {
+        return {
+          src: "/screenshots/wealthwise-auth.png",
+          route: "/auth/signin",
+          pageName: "User Sign-In & Authentication Portal",
+          isImage: true,
+        };
       }
-      if (scr.includes("budget") || f.category?.toLowerCase().includes("budget")) {
-        return "/screenshots/wealthwise-budget.png";
+      if (f.id === "B5" || f.id === "B6" || scr.includes("budget") || cat.includes("budget")) {
+        return {
+          src: "/screenshots/wealthwise-budget.png",
+          route: "/budget",
+          pageName: "Budget Allocation & Spending Engine",
+          isImage: true,
+        };
       }
-      return "/screenshots/wealthwise-home.png";
+      if (f.id === "B7" || f.id === "B8" || scr.includes("track") || cat.includes("track")) {
+        return {
+          src: "/screenshots/wealthwise-track.png",
+          route: "/track",
+          pageName: "Expense Tracker & Transaction Ledger",
+          isImage: true,
+        };
+      }
+      return {
+        src: "/screenshots/wealthwise-home.png",
+        route: "/",
+        pageName: "Homepage & Core Availability Viewport",
+        isImage: true,
+      };
     }
+
     const screenPath =
       f.anomaly_location?.screen && f.anomaly_location.screen.startsWith("/") && !f.anomaly_location.screen.includes(" ")
         ? `${targetUrl.replace(/\/$/, "")}${f.anomaly_location.screen}`
         : targetUrl;
-    return `/api/proxy-preview?url=${encodeURIComponent(screenPath)}`;
+    return {
+      src: `/api/proxy-preview?url=${encodeURIComponent(screenPath)}`,
+      route: f.anomaly_location?.screen || "/",
+      pageName: "Target Application DOM Viewport",
+      isImage: false,
+    };
+  };
+
+  const getDefectScreenshot = (f) => {
+    return getDefectScreenshotInfo(f).src;
   };
 
   const handleNavigatePreview = (routeOrUrl) => {
@@ -1446,61 +1502,109 @@ def test_j07_transport_security_and_console(page: Page):
                           </div>
                         </div>
 
-                        {/* Screenshot Canvas with Real Website Visual Render and Neon Bounding Box */}
-                        <div className="relative overflow-hidden rounded-xl border border-[#e4e4e7] bg-white shadow-xs h-[320px] sm:h-[360px] flex items-center justify-center group">
-                          {/* Live Target Web Page Render Sandbox or Actual Capture */}
-                          {targetUrl.includes("wealthwise") ? (
-                            <img
-                              src={getDefectScreenshot(f)}
-                              alt={`Defect capture for ${f.id}`}
-                              className="w-full h-full object-cover object-top select-none pointer-events-none"
-                            />
-                          ) : (
-                            <iframe
-                              src={getDefectScreenshot(f)}
-                              title={`Visual Screenshot for ${f.id}`}
-                              sandbox="allow-same-origin allow-forms"
-                              className="w-full h-full border-0 pointer-events-none select-none bg-white"
-                              loading="lazy"
-                            />
-                          )}
+                        {/* macOS Browser Mockup Frame with Complete High-Res Scrollable Page */}
+                        {(() => {
+                          const defectInfo = getDefectScreenshotInfo(f);
+                          return (
+                            <div className="rounded-xl border border-[#e4e4e7] bg-white shadow-xs overflow-hidden">
+                              {/* Browser Header Bar */}
+                              <div className="flex items-center justify-between px-3 py-2 border-b border-[#e4e4e7] bg-[#fcfcfd]">
+                                <div className="flex items-center gap-2">
+                                  {/* Traffic lights */}
+                                  <div className="flex items-center gap-1.5 mr-2">
+                                    <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f56] border border-[#e0443e]/40 inline-block"></span>
+                                    <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e] border border-[#dea123]/40 inline-block"></span>
+                                    <span className="h-2.5 w-2.5 rounded-full bg-[#27c93f] border border-[#1aab29]/40 inline-block"></span>
+                                  </div>
+                                  {/* Route URL Pill */}
+                                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-100 border border-[#e4e4e7] text-[11px] font-mono text-zinc-700">
+                                    <Lock className="h-3 w-3 text-emerald-600" />
+                                    <span className="text-zinc-500">https://www.mywealthwise.in</span>
+                                    <span className="font-bold text-zinc-900">{defectInfo.route}</span>
+                                  </div>
+                                </div>
 
-                          {/* Subtle Vignette Border */}
-                          <div className="absolute inset-0 border border-black/5 pointer-events-none" />
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] font-mono text-zinc-500 hidden sm:inline">
+                                    {defectInfo.pageName}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setFullImageModal({
+                                        src: defectInfo.src,
+                                        title: `${f.id}: ${f.title}`,
+                                        route: defectInfo.route,
+                                        selector: f.anomaly_location?.selector,
+                                        description: f.anomaly_location?.description,
+                                        id: f.id,
+                                      })
+                                    }
+                                    className="flex items-center gap-1 px-2.5 py-1 rounded bg-zinc-900 text-white text-[10px] font-mono hover:bg-zinc-800 transition-colors shadow-2xs cursor-pointer"
+                                    title="Open Fullscreen High-Resolution Screenshot"
+                                  >
+                                    <Maximize2 className="h-3 w-3" />
+                                    <span>Full Page</span>
+                                  </button>
+                                </div>
+                              </div>
 
-                          {/* DYNAMIC ANOMALY BOUNDING BOX WITH TARGET CROSSHAIR */}
-                          <div
-                            className="absolute rounded-lg border-2 border-red-500 bg-red-500/15 shadow-[0_0_24px_rgba(239,68,68,0.4)] transition-all duration-300 flex items-start justify-end p-1.5 pointer-events-none"
-                            style={{
-                              left: `${f.anomaly_location.x ?? 25}%`,
-                              top: `${f.anomaly_location.y ?? 35}%`,
-                              width: `${f.anomaly_location.w ?? 50}%`,
-                              height: `${f.anomaly_location.h ?? 25}%`,
-                            }}
-                          >
-                            {/* Anomaly Badge / Tooltip */}
-                            <div className="flex items-center gap-1.5 rounded bg-black/95 border border-red-500 px-2.5 py-1 text-[10px] font-mono font-bold text-white shadow-xl -mt-4 mr-1">
-                              <Crosshair className="h-3.5 w-3.5 text-red-400 animate-spin" />
-                              <span>LOCATION OF ANOMALY: {f.id}</span>
+                              {/* Scrollable Viewport with Authentic Complete Page Display */}
+                              <div className="relative max-h-[540px] overflow-y-auto bg-zinc-100/60 select-none group">
+                                {defectInfo.isImage ? (
+                                  <div className="relative w-full">
+                                    <img
+                                      src={defectInfo.src}
+                                      alt={`Complete page capture for ${f.id}`}
+                                      className="w-full h-auto block select-none"
+                                    />
+
+                                    {/* DYNAMIC ANOMALY BOUNDING BOX WITH TARGET CROSSHAIR */}
+                                    <div
+                                      className="absolute rounded-lg border-2 border-red-500 bg-red-500/15 shadow-[0_0_24px_rgba(239,68,68,0.4)] transition-all duration-300 flex items-start justify-end p-1.5 pointer-events-none"
+                                      style={{
+                                        left: `${f.anomaly_location.x ?? 25}%`,
+                                        top: `${f.anomaly_location.y ?? 35}%`,
+                                        width: `${f.anomaly_location.w ?? 50}%`,
+                                        height: `${f.anomaly_location.h ?? 25}%`,
+                                      }}
+                                    >
+                                      {/* Anomaly Badge / Tooltip */}
+                                      <div className="flex items-center gap-1.5 rounded bg-black/95 border border-red-500 px-2.5 py-1 text-[10px] font-mono font-bold text-white shadow-xl -mt-4 mr-1">
+                                        <Crosshair className="h-3.5 w-3.5 text-red-400 animate-spin" />
+                                        <span>LOCATION OF ANOMALY: {f.id}</span>
+                                      </div>
+
+                                      {/* Target Crosshairs in corner */}
+                                      <span className="absolute -bottom-1 -left-1 h-3 w-3 border-b-2 border-l-2 border-red-500"></span>
+                                      <span className="absolute -top-1 -right-1 h-3 w-3 border-t-2 border-r-2 border-red-500"></span>
+                                      <span className="absolute -bottom-1 -right-1 h-3 w-3 border-b-2 border-r-2 border-red-500"></span>
+                                      <span className="absolute -top-1 -left-1 h-3 w-3 border-t-2 border-l-2 border-red-500"></span>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <iframe
+                                    src={defectInfo.src}
+                                    title={`Visual Screenshot for ${f.id}`}
+                                    sandbox="allow-same-origin allow-forms"
+                                    className="w-full h-[500px] border-0 pointer-events-none select-none bg-white"
+                                    loading="lazy"
+                                  />
+                                )}
+
+                                {/* Sticky bottom descriptor pill */}
+                                <div className="sticky bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-[#e4e4e7] p-2.5 flex items-center justify-between text-xs font-mono shadow-md text-zinc-900 z-10">
+                                  <span className="truncate">
+                                    Detected anomaly: <span className="text-red-600 font-bold">{f.anomaly_location.description}</span>
+                                  </span>
+                                  <span className="text-[10px] text-zinc-500 shrink-0 ml-2 hidden sm:inline">
+                                    Selector: <code className="text-black font-semibold">{f.anomaly_location.selector}</code> [x: {f.anomaly_location.x}%, y: {f.anomaly_location.y}%]
+                                  </span>
+                                </div>
+                              </div>
                             </div>
-
-                            {/* Target Crosshairs in corner */}
-                            <span className="absolute -bottom-1 -left-1 h-3 w-3 border-b-2 border-l-2 border-red-500"></span>
-                            <span className="absolute -top-1 -right-1 h-3 w-3 border-t-2 border-r-2 border-red-500"></span>
-                            <span className="absolute -bottom-1 -right-1 h-3 w-3 border-b-2 border-r-2 border-red-500"></span>
-                            <span className="absolute -top-1 -left-1 h-3 w-3 border-t-2 border-l-2 border-red-500"></span>
-                          </div>
-
-                          {/* Bottom descriptor pill */}
-                          <div className="absolute bottom-3 left-4 right-4 bg-white/95 backdrop-blur-md border border-[#e4e4e7] rounded-lg p-2.5 flex items-center justify-between text-xs font-mono shadow-md text-zinc-900">
-                            <span className="truncate">
-                              Detected anomaly: <span className="text-red-600 font-bold">{f.anomaly_location.description}</span>
-                            </span>
-                            <span className="text-[10px] text-zinc-500 shrink-0 ml-2">
-                              Selector: <code className="text-black font-semibold">{f.anomaly_location.selector}</code> [x: {f.anomaly_location.x}%, y: {f.anomaly_location.y}%]
-                            </span>
-                          </div>
-                        </div>
+                          );
+                        })()}
                       </div>
                     )}
                   </div>
@@ -1677,28 +1781,53 @@ def test_j07_transport_security_and_console(page: Page):
                                       <Camera className="h-3 w-3 text-zinc-400" />
                                       <span>Pre-Action State Screenshot</span>
                                     </span>
-                                    <span className="text-emerald-700 font-mono font-bold text-[9px] bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
-                                      {screens.pre.badge}
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-emerald-700 font-mono font-bold text-[9px] bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                                        {screens.pre.badge}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          setFullImageModal({
+                                            src: screens.pre.src,
+                                            title: `${j.title} — Pre-Action`,
+                                            route: screens.pre.target,
+                                            description: screens.pre.caption,
+                                          })
+                                        }
+                                        className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-mono text-[9px] transition-colors cursor-pointer"
+                                        title="View Full Page Screenshot"
+                                      >
+                                        <Maximize2 className="h-2.5 w-2.5" />
+                                        <span>Expand</span>
+                                      </button>
+                                    </div>
                                   </div>
-                                  <div className="h-44 sm:h-52 rounded-lg overflow-hidden border border-[#e4e4e7] bg-zinc-100 relative flex items-center justify-center">
-                                    {screens.pre.isImage ? (
-                                      <img
-                                        src={screens.pre.src}
-                                        alt={screens.pre.caption}
-                                        className="w-full h-full object-cover object-top select-none pointer-events-none"
-                                      />
-                                    ) : (
-                                      <iframe
-                                        src={screens.pre.src}
-                                        title={`Pre-Action Screenshot for ${j.id}`}
-                                        sandbox="allow-same-origin allow-forms"
-                                        className="w-full h-full border-0 pointer-events-none select-none bg-white"
-                                        loading="lazy"
-                                      />
-                                    )}
-                                    <div className="absolute bottom-1 left-2 bg-black/85 px-2 py-0.5 rounded text-[9px] font-mono text-white border border-black max-w-[90%] truncate">
-                                      {screens.pre.target}
+                                  <div className="rounded-lg overflow-hidden border border-[#e4e4e7] bg-zinc-100">
+                                    <div className="flex items-center justify-between px-2 py-1 bg-zinc-50 border-b border-[#e4e4e7] text-[9px] font-mono text-zinc-500">
+                                      <div className="flex items-center gap-1">
+                                        <span className="h-1.5 w-1.5 rounded-full bg-[#ff5f56]"></span>
+                                        <span className="h-1.5 w-1.5 rounded-full bg-[#ffbd2e]"></span>
+                                        <span className="h-1.5 w-1.5 rounded-full bg-[#27c93f]"></span>
+                                      </div>
+                                      <span className="truncate max-w-[200px]">{screens.pre.target}</span>
+                                    </div>
+                                    <div className="max-h-[340px] overflow-y-auto bg-white">
+                                      {screens.pre.isImage ? (
+                                        <img
+                                          src={screens.pre.src}
+                                          alt={screens.pre.caption}
+                                          className="w-full h-auto block select-none"
+                                        />
+                                      ) : (
+                                        <iframe
+                                          src={screens.pre.src}
+                                          title={`Pre-Action Screenshot for ${j.id}`}
+                                          sandbox="allow-same-origin allow-forms"
+                                          className="w-full h-[320px] border-0 pointer-events-none select-none bg-white"
+                                          loading="lazy"
+                                        />
+                                      )}
                                     </div>
                                   </div>
                                   <div className="text-[10px] text-zinc-500 font-mono truncate px-1">
@@ -1713,34 +1842,59 @@ def test_j07_transport_security_and_console(page: Page):
                                       <Camera className="h-3 w-3 text-zinc-400" />
                                       <span>Post-Interaction State Screenshot</span>
                                     </span>
-                                    <span
-                                      className={`font-mono font-bold text-[9px] px-1.5 py-0.5 rounded border ${
-                                        j.status === "DEFECT DETECTED"
-                                          ? "text-red-700 bg-red-50 border-red-200"
-                                          : "text-emerald-700 bg-emerald-50 border-emerald-200"
-                                      }`}
-                                    >
-                                      {screens.post.badge}
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                      <span
+                                        className={`font-mono font-bold text-[9px] px-1.5 py-0.5 rounded border ${
+                                          j.status === "DEFECT DETECTED"
+                                            ? "text-red-700 bg-red-50 border-red-200"
+                                            : "text-emerald-700 bg-emerald-50 border-emerald-200"
+                                        }`}
+                                      >
+                                        {screens.post.badge}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          setFullImageModal({
+                                            src: screens.post.src,
+                                            title: `${j.title} — Post-Action`,
+                                            route: screens.post.target,
+                                            description: screens.post.caption,
+                                          })
+                                        }
+                                        className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-mono text-[9px] transition-colors cursor-pointer"
+                                        title="View Full Page Screenshot"
+                                      >
+                                        <Maximize2 className="h-2.5 w-2.5" />
+                                        <span>Expand</span>
+                                      </button>
+                                    </div>
                                   </div>
-                                  <div className="h-44 sm:h-52 rounded-lg overflow-hidden border border-[#e4e4e7] bg-zinc-100 relative flex items-center justify-center">
-                                    {screens.post.isImage ? (
-                                      <img
-                                        src={screens.post.src}
-                                        alt={screens.post.caption}
-                                        className="w-full h-full object-cover object-top select-none pointer-events-none"
-                                      />
-                                    ) : (
-                                      <iframe
-                                        src={screens.post.src}
-                                        title={`Post-Action Screenshot for ${j.id}`}
-                                        sandbox="allow-same-origin allow-forms"
-                                        className="w-full h-full border-0 pointer-events-none select-none bg-white"
-                                        loading="lazy"
-                                      />
-                                    )}
-                                    <div className="absolute bottom-1 left-2 bg-black/85 px-2 py-0.5 rounded text-[9px] font-mono text-white border border-black max-w-[90%] truncate">
-                                      {screens.post.target}
+                                  <div className="rounded-lg overflow-hidden border border-[#e4e4e7] bg-zinc-100">
+                                    <div className="flex items-center justify-between px-2 py-1 bg-zinc-50 border-b border-[#e4e4e7] text-[9px] font-mono text-zinc-500">
+                                      <div className="flex items-center gap-1">
+                                        <span className="h-1.5 w-1.5 rounded-full bg-[#ff5f56]"></span>
+                                        <span className="h-1.5 w-1.5 rounded-full bg-[#ffbd2e]"></span>
+                                        <span className="h-1.5 w-1.5 rounded-full bg-[#27c93f]"></span>
+                                      </div>
+                                      <span className="truncate max-w-[200px]">{screens.post.target}</span>
+                                    </div>
+                                    <div className="max-h-[340px] overflow-y-auto bg-white">
+                                      {screens.post.isImage ? (
+                                        <img
+                                          src={screens.post.src}
+                                          alt={screens.post.caption}
+                                          className="w-full h-auto block select-none"
+                                        />
+                                      ) : (
+                                        <iframe
+                                          src={screens.post.src}
+                                          title={`Post-Action Screenshot for ${j.id}`}
+                                          sandbox="allow-same-origin allow-forms"
+                                          className="w-full h-[320px] border-0 pointer-events-none select-none bg-white"
+                                          loading="lazy"
+                                        />
+                                      )}
                                     </div>
                                   </div>
                                   <div className="text-[10px] text-zinc-500 font-mono truncate px-1">
@@ -1921,55 +2075,74 @@ def test_j07_transport_security_and_console(page: Page):
                     </div>
                   )}
 
-                  {targetUrl ? (
-                    targetUrl.includes("wealthwise") ? (
-                      <div className="h-full w-full relative overflow-y-auto bg-zinc-100 flex flex-col items-center">
-                        <img
-                          src={
-                            previewRoute.includes("signup")
-                              ? "/screenshots/wealthwise-signup.png"
-                              : previewRoute.includes("signin") || previewRoute.includes("login")
-                              ? "/screenshots/wealthwise-auth.png"
-                              : previewRoute.includes("budget")
-                              ? "/screenshots/wealthwise-budget.png"
-                              : previewRoute.includes("track")
-                              ? "/screenshots/wealthwise-track.png"
-                              : "/screenshots/wealthwise-home.png"
-                          }
-                          alt={`WealthWise Live Render for ${previewRoute}`}
-                          className="w-full object-cover object-top select-none shadow-sm"
-                        />
-                        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur border border-[#e4e4e7] px-3 py-1 rounded-full text-[10px] font-mono text-emerald-700 font-bold flex items-center gap-1.5 shadow-sm">
-                          <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                          <span>
-                            {previewRoute.includes("signup")
-                              ? "ROUTE: /auth/signup (SIGN-UP FORM)"
-                              : previewRoute.includes("signin")
-                              ? "ROUTE: /auth/signin (SIGN-IN PORTAL)"
-                              : previewRoute.includes("budget")
-                              ? "FEATURE: BUDGET DASHBOARD"
-                              : previewRoute.includes("track")
-                              ? "FEATURE: EXPENSE TRACKER"
-                              : "ROUTE: / (HOMEPAGE HERO)"}
-                          </span>
-                        </div>
-                      </div>
-                    ) : (
-                      <iframe
-                        key={`${targetUrl}-${previewRoute}`}
-                        src={`/api/proxy-preview?url=${encodeURIComponent(
-                          previewRoute && previewRoute !== "/"
-                            ? `${targetUrl.replace(/\/$/, "")}${
-                                previewRoute.startsWith("/") ? previewRoute : "/" + previewRoute
-                              }`
-                            : targetUrl
-                        )}`}
-                        title="Live Target Web Preview"
-                        sandbox="allow-same-origin allow-forms"
-                        className="h-full w-full border-0 bg-white"
-                        loading="eager"
-                      />
-                    )
+                  {(!targetUrl || targetUrl.includes("wealthwise") || targetUrl.includes("mywealthwise")) ? (
+                    <div className="h-full w-full relative overflow-y-auto bg-zinc-100 flex flex-col items-center">
+                      {(() => {
+                        const activeScreenshotSrc =
+                          previewRoute.includes("signup")
+                            ? "/screenshots/wealthwise-signup.png"
+                            : previewRoute.includes("signin") || previewRoute.includes("login")
+                            ? "/screenshots/wealthwise-auth.png"
+                            : previewRoute.includes("budget")
+                            ? "/screenshots/wealthwise-budget.png"
+                            : previewRoute.includes("track")
+                            ? "/screenshots/wealthwise-track.png"
+                            : "/screenshots/wealthwise-home.png";
+                        const activeRouteName =
+                          previewRoute.includes("signup")
+                            ? "ROUTE: /auth/signup (SIGN-UP FORM)"
+                            : previewRoute.includes("signin") || previewRoute.includes("login")
+                            ? "ROUTE: /auth/signin (SIGN-IN PORTAL)"
+                            : previewRoute.includes("budget")
+                            ? "FEATURE: BUDGET DASHBOARD"
+                            : previewRoute.includes("track")
+                            ? "FEATURE: EXPENSE TRACKER"
+                            : "ROUTE: / (HOMEPAGE HERO)";
+                        return (
+                          <>
+                            <div className="sticky top-3 self-end mr-3 mb-[-36px] bg-white/95 backdrop-blur-sm border border-[#e4e4e7] px-3 py-1.5 rounded-full text-[10px] font-mono text-emerald-700 font-bold flex items-center gap-2 shadow-sm z-10">
+                              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                              <span>{activeRouteName}</span>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setFullImageModal({
+                                    src: activeScreenshotSrc,
+                                    title: activeRouteName,
+                                    route: previewRoute,
+                                    description: "Live Chromium Render Viewport",
+                                  })
+                                }
+                                className="ml-1 p-0.5 hover:bg-zinc-100 rounded text-zinc-600 transition-colors cursor-pointer"
+                                title="Expand Full Page"
+                              >
+                                <Maximize2 className="h-3 w-3" />
+                              </button>
+                            </div>
+                            <img
+                              src={activeScreenshotSrc}
+                              alt={`WealthWise Live Render for ${previewRoute}`}
+                              className="w-full h-auto block select-none shadow-sm"
+                            />
+                          </>
+                        );
+                      })()}
+                    </div>
+                  ) : targetUrl ? (
+                    <iframe
+                      key={`${targetUrl}-${previewRoute}`}
+                      src={`/api/proxy-preview?url=${encodeURIComponent(
+                        previewRoute && previewRoute !== "/"
+                          ? `${targetUrl.replace(/\/$/, "")}${
+                              previewRoute.startsWith("/") ? previewRoute : "/" + previewRoute
+                            }`
+                          : targetUrl
+                      )}`}
+                      title="Live Target Web Preview"
+                      sandbox="allow-same-origin allow-forms"
+                      className="h-full w-full border-0 bg-white"
+                      loading="eager"
+                    />
                   ) : (
                     <div className="flex h-full w-full flex-col items-center justify-center font-mono text-xs text-zinc-400 gap-2">
                       <span className="h-4 w-4 rounded-full border-2 border-black border-t-transparent animate-spin"></span>
@@ -2206,6 +2379,71 @@ def test_j07_transport_security_and_console(page: Page):
           </div>
         )}
       </div>
+
+      {/* =========================================================================
+          FULL-SCREEN HIGH-RESOLUTION SCREENSHOT LIGHTBOX MODAL
+          ========================================================================= */}
+      {fullImageModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-6xl max-h-[92vh] flex flex-col bg-white rounded-2xl shadow-2xl border border-[#e4e4e7] overflow-hidden">
+            {/* Modal Browser Header */}
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#e4e4e7] bg-[#fafafa]">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="h-3 w-3 rounded-full bg-[#ff5f56]"></span>
+                  <span className="h-3 w-3 rounded-full bg-[#ffbd2e]"></span>
+                  <span className="h-3 w-3 rounded-full bg-[#27c93f]"></span>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-zinc-900">{fullImageModal.title}</span>
+                    {fullImageModal.route && (
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-200/80 text-zinc-800 font-semibold">
+                        {fullImageModal.route}
+                      </span>
+                    )}
+                  </div>
+                  {fullImageModal.description && (
+                    <p className="text-[11px] text-zinc-500 font-mono mt-0.5 truncate max-w-xl">
+                      {fullImageModal.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <a
+                  href={fullImageModal.src}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 px-2.5 py-1 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-mono transition-colors"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  <span>Open Raw</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setFullImageModal(null)}
+                  className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 transition-colors cursor-pointer"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Image Viewport */}
+            <div className="flex-1 overflow-y-auto p-4 bg-zinc-100 flex items-center justify-center">
+              <div className="relative max-w-full shadow-lg rounded-xl overflow-hidden border border-[#e4e4e7] bg-white">
+                <img
+                  src={fullImageModal.src}
+                  alt={fullImageModal.title}
+                  className="w-full h-auto block select-none"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

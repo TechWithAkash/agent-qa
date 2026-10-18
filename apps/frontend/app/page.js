@@ -31,15 +31,29 @@ export default function LandingPage() {
   const router = useRouter();
 
   // Primary operation form state
-  const [targetUrl, setTargetUrl] = useState("https://designrip.in");
-  const [description, setDescription] = useState(DEFAULT_RULES);
+  const [targetUrl, setTargetUrl] = useState("https://www.mywealthwise.in");
+  const [description, setDescription] = useState(`# WealthWise Ground-Truth Autonomous QA Rules
+
+- Sign-up Flow: Navigation to /auth/signup must render registration inputs; malformed emails rejected with 400.
+- Login Portal: Authentication at /auth/signin must support case-insensitive emails; forgot password link must resolve 200 OK.
+- Financial Dashboard: Budget and Expense tracking tabs must update dashboard metrics deterministically.`);
   const [mode, setMode] = useState("sandbox");
   const [attestation, setAttestation] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const handlePreset = (type) => {
-    if (type === "designrip") {
+    if (type === "wealthwise") {
+      setTargetUrl("https://www.mywealthwise.in");
+      setDescription(`# WealthWise Ground-Truth Autonomous QA Rules
+
+- Sign-up Flow: Navigation to /auth/signup must render registration inputs; malformed emails rejected with 400.
+- Login Portal: Authentication at /auth/signin must support case-insensitive emails; forgot password link must resolve 200 OK.
+- Financial Dashboard: Budget and Expense tracking tabs must update dashboard metrics deterministically.`);
+      setMode("sandbox");
+      setAttestation(true);
+      setError(null);
+    } else if (type === "designrip") {
       setTargetUrl("https://designrip.in");
       setDescription(DEFAULT_RULES);
       setMode("sandbox");
@@ -221,6 +235,17 @@ export default function LandingPage() {
               <span className="text-xs text-zinc-400 mr-1 hidden sm:inline">Presets:</span>
               <button
                 type="button"
+                onClick={() => handlePreset("wealthwise")}
+                className={`rounded-lg px-3 py-1.5 text-xs font-semibold border transition-all cursor-pointer ${
+                  targetUrl.includes("wealthwise")
+                    ? "border-black bg-black text-white shadow-xs"
+                    : "border-[#e4e4e7] bg-white text-zinc-700 hover:border-zinc-400 hover:bg-zinc-50"
+                }`}
+              >
+                WealthWise Live App
+              </button>
+              <button
+                type="button"
                 onClick={() => handlePreset("designrip")}
                 className={`rounded-lg px-3 py-1.5 text-xs font-semibold border transition-all cursor-pointer ${
                   targetUrl === "https://designrip.in"
@@ -228,7 +253,7 @@ export default function LandingPage() {
                     : "border-[#e4e4e7] bg-white text-zinc-700 hover:border-zinc-400 hover:bg-zinc-50"
                 }`}
               >
-                Live App (designrip.in)
+                DesignRip.in
               </button>
               <button
                 type="button"
