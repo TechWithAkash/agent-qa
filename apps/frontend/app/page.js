@@ -272,7 +272,7 @@ export default function LandingPage() {
                   value={targetUrl}
                   onChange={(e) => setTargetUrl(e.target.value)}
                   placeholder="https://your-website.com"
-                  className="input-base"
+                  className="input-base w-full"
                 />
               </div>
 
@@ -288,7 +288,7 @@ export default function LandingPage() {
                   id="mode-select"
                   value={mode}
                   onChange={(e) => setMode(e.target.value)}
-                  className="input-base text-xs"
+                  className="input-base w-full text-xs"
                 >
                   <option value="sandbox">Sandbox Mode (Exploration & Actions)</option>
                   <option value="safe">Safe Mode (Read-Only Navigation)</option>
@@ -297,7 +297,7 @@ export default function LandingPage() {
             </div>
 
             {/* Application Rules & Constraints Textarea */}
-            <div className="space-y-2">
+            <div className="space-y-2 w-full">
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="target-description"
@@ -315,7 +315,7 @@ export default function LandingPage() {
                 rows={6}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="input-base font-mono text-xs leading-relaxed"
+                className="input-base w-full font-mono text-xs leading-relaxed"
                 placeholder="Enter rules, invariants, or expected flows..."
               />
             </div>

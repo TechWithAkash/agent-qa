@@ -122,12 +122,14 @@ body {
 
 /* Form Controls */
 .input-base {
+  display: block;
+  width: 100%;
   background-color: #0b0e14;
   border: 1px solid var(--border-subtle);
   border-radius: 0.5rem;
   color: var(--text-primary);
   font-size: 0.8125rem;
-  padding: 0.5625rem 0.75rem;
+  padding: 0.625rem 0.875rem;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   outline: none;
 }

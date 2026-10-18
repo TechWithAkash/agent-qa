@@ -1324,7 +1324,7 @@ def test_01_core_dom_rendering(page: Page):
                     onChange={(e) => setCustomStepText(e.target.value)}
                     placeholder={`e.g. Verify sign-up flow on "${signupRoute}" or Click button "${primaryButton}"...`}
                     onKeyDown={(e) => e.key === "Enter" && handleExecuteNLStep(customStepText)}
-                    className="input-base text-xs font-mono"
+                    className="input-base w-full flex-1 text-xs font-mono"
                   />
                   <button
                     onClick={() => handleExecuteNLStep(customStepText)}
