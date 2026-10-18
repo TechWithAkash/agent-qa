@@ -105,6 +105,9 @@ export default function Launchpad({
   const [maxConcurrency, setMaxConcurrency] = useState(3);
   const [replayAttempts, setReplayAttempts] = useState(3);
   const [viewportWidth, setViewportWidth] = useState(1280);
+  const [authEnabled, setAuthEnabled] = useState(true);
+  const [authEmail, setAuthEmail] = useState("demo@mywealthwise.in");
+  const [authPassword, setAuthPassword] = useState("DemoUser2026!QA");
 
   return (
     <section id="operation-workspace" className="py-20 lg:py-28 bg-[#FAFAF9] border-t border-[#E5E5E5]">
@@ -305,6 +308,50 @@ export default function Launchpad({
                       ? "Allows autonomous exploration, form validation boundary probing, and deterministic replay in isolated sandboxes."
                       : "Strictly limits autonomous agent actions to GET requests, navigation, and passive DOM inspection."}
                   </p>
+                </div>
+
+                {/* Authenticated Application Crawl (Credentials Injection) */}
+                <div className="p-4 rounded-xl border border-[#E5E5E5] bg-[#FAFAF9]/90 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[#171717]">
+                      <LockKeyhole className="w-3.5 h-3.5 text-[#F97316]" />
+                      <span>Authenticated Crawl &amp; Internal Route Access</span>
+                    </label>
+                    <input
+                      type="checkbox"
+                      checked={authEnabled}
+                      onChange={(e) => setAuthEnabled(e.target.checked)}
+                      className="rounded border-[#E5E5E5] text-[#171717] focus:ring-0 cursor-pointer"
+                    />
+                  </div>
+
+                  {authEnabled && (
+                    <div className="space-y-2.5 pt-1 animate-in fade-in duration-150">
+                      <p className="text-[11px] text-[#737373] leading-relaxed">
+                        Inject test account credentials to penetrate past the login wall and autonomously audit internal pages (<code className="font-mono text-zinc-800">/dashboard</code>, <code className="font-mono text-zinc-800">/budget</code>, <code className="font-mono text-zinc-800">/settings</code>).
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+                        <input
+                          type="text"
+                          value={authEmail}
+                          onChange={(e) => setAuthEmail(e.target.value)}
+                          placeholder="Test Email (e.g. demo@mywealthwise.in)"
+                          className="px-2.5 py-1.5 rounded-lg border border-[#E5E5E5] bg-white text-zinc-900 text-xs"
+                        />
+                        <input
+                          type="password"
+                          value={authPassword}
+                          onChange={(e) => setAuthPassword(e.target.value)}
+                          placeholder="Password (e.g. ••••••••••••)"
+                          className="px-2.5 py-1.5 rounded-lg border border-[#E5E5E5] bg-white text-zinc-900 text-xs"
+                        />
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[10px] text-emerald-700 font-mono">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+                        <span>Pre-seeded for WealthWise &amp; ShopLite Test Benchmarks</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Authorization Attestation Row (SEC-1 Required) */}

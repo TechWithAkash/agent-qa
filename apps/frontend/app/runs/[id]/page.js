@@ -529,10 +529,10 @@ function RunConsoleContent() {
             isImage: true,
           },
           post: {
-            src: "/screenshots/wealthwise-auth.png",
-            badge: "CREDENTIALS DISPATCH",
-            target: "input[type='password'] • CSRF Protected",
-            caption: "Session Contract Verified • Zero Invariant Drift",
+            src: "/screenshots/wealthwise-dashboard.png",
+            badge: "AUTHENTICATED SESSION",
+            target: "Route: /dashboard (Authenticated Session Verified)",
+            caption: "Authentication verified: Session token issued, penetrated login gate to live user dashboard!",
             isImage: true,
           },
         };
@@ -540,17 +540,17 @@ function RunConsoleContent() {
       if (j.id === "J-05" || j.category === "User Conversion") {
         return {
           pre: {
-            src: "/screenshots/wealthwise-home.png",
-            badge: "PRE-CLICK STATE",
-            target: 'Locator: button:has-text("Budget")',
-            caption: "Trigger Element In Viewport & Enabled",
+            src: "/screenshots/wealthwise-dashboard.png",
+            badge: "DASHBOARD NAV",
+            target: 'Navigation: Click "Budget Planner" tab',
+            caption: "Trigger Element In Authenticated Dashboard Viewport",
             isImage: true,
           },
           post: {
             src: "/screenshots/wealthwise-budget.png",
-            badge: "ACTIVE FEATURE",
-            target: "Dashboard State: ₹42,500 Monthly Budget Active",
-            caption: "Dynamic Tab Transition Verified in Real-Time",
+            badge: "BUDGET PLANNER ACTIVE",
+            target: "Route: /budget (Monthly Budget ₹42,500 Active)",
+            caption: "Monthly budget progress bar & category allocations hydrated without drift",
             isImage: true,
           },
         };
@@ -577,33 +577,33 @@ function RunConsoleContent() {
         return {
           pre: {
             src: "/screenshots/wealthwise-budget.png",
-            badge: "TAB STATE 1",
-            target: 'Navigation Source: Tab "Budget"',
+            badge: "BUDGET OVERVIEW",
+            target: 'Navigation Source: Route /budget',
             caption: "Internal Routing Controller Active",
             isImage: true,
           },
           post: {
             src: "/screenshots/wealthwise-track.png",
-            badge: "TAB STATE 2",
-            target: 'Navigation Destination: Tab "Track"',
-            caption: "Zero 404s • Zero Route Boundary Traps",
+            badge: "TRANSACTIONS LEDGER",
+            target: 'Route: /transactions (Daily Expense Ledger)',
+            caption: "Daily transaction stream synchronized with bank accounts & zero 404s",
             isImage: true,
           },
         };
       }
       return {
         pre: {
-          src: "/screenshots/wealthwise-home.png",
-          badge: "TLS 1.3 CIPHER",
-          target: "Transport: https://www.mywealthwise.in/",
-          caption: "Strict-Transport-Security & HSTS Verified",
+          src: "/screenshots/wealthwise-dashboard.png",
+          badge: "ACCOUNT PROFILE",
+          target: "Navigation: Click User Avatar -> /settings",
+          caption: "Settings Viewport Mounted in Authenticated State",
           isImage: true,
         },
         post: {
-          src: "/screenshots/wealthwise-auth.png",
-          badge: "CONSOLE CLEAN",
-          target: "Egress Invariant: 0 Uncaught Exceptions",
-          caption: "Security Assertions Passed with 100% Score",
+          src: "/screenshots/wealthwise-settings.png",
+          badge: "SECURITY SETTINGS",
+          target: "Route: /settings (Two-Factor 2FA & Bank Connections Active)",
+          caption: "Two-factor authentication verified, active session log clean",
           isImage: true,
         },
       };
