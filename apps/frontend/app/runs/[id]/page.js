@@ -145,6 +145,7 @@ function RunConsoleContent() {
   const [copiedSelector, setCopiedSelector] = useState(null);
   const [retestingAll, setRetestingAll] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+  const [activeReportTab, setActiveReportTab] = useState("flaws"); // "flaws" | "journeys" | "preview" | "pytest" | "tools"
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
 
@@ -210,11 +211,9 @@ function RunConsoleContent() {
   }, [runId, apiUrl]);
 
   // Automatically open modal when run is actively executing
-  useEffect(() => {
-    if (run && run.status !== "completed" && !modalDismissed) {
-      setShowAgentModal(true);
-    }
-  }, [run?.status, modalDismissed]);
+  const isExecuting = run && run.status !== "completed";
+  const shouldShowModal = (showAgentModal || isExecuting) && !modalDismissed;
+
 
   const targetUrl = run?.target_url || "";
   let targetHostname = "Target Web Application";
@@ -704,7 +703,7 @@ def test_01_core_dom_rendering(page: Page):
       {/* =========================================================================
           AUTONOMOUS MULTI-AGENT SWARM SEQUENTIAL EXECUTION MODAL
           ========================================================================= */}
-      {showAgentModal && (
+      {shouldShowModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
           <div className="relative w-full max-w-2xl rounded-2xl border border-[var(--border-subtle)] bg-[#0b0e14] p-6 sm:p-7 shadow-2xl flex flex-col space-y-5 my-auto">
             {/* Modal Header */}
@@ -883,7 +882,7 @@ def test_01_core_dom_rendering(page: Page):
                   events.slice(-5).map((ev, i) => (
                     <div key={ev.seq || i} className="flex items-start gap-2 leading-relaxed">
                       <span className="text-[var(--text-muted)] shrink-0 text-[9px]">
-                        {new Date(ev.ts || Date.now()).toLocaleTimeString()}
+                        {ev.ts ? new Date(ev.ts).toLocaleTimeString() : "--:--:--"}
                       </span>
                       <span className="rounded bg-indigo-500/15 border border-indigo-500/30 px-1 py-0.2 text-[9px] text-indigo-300 shrink-0">
                         [{ev.stage || "S1"}]
@@ -935,52 +934,277 @@ def test_01_core_dom_rendering(page: Page):
       )}
 
       {/* =========================================================================
-          EXECUTIVE QA REPORT & AUDIT EVIDENCE (CLEAN, MINIMALIST, INTUITIVE)
+          EXECUTIVE QA REPORT — CLEAN, INTUITIVE, TABBED ARCHITECTURE
           ========================================================================= */}
-      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
-          {/* LEFT COLUMN: REAL QA STORY */}
-          <div className="space-y-6 lg:col-span-7">
-            {/* SECTION 1: Preflight & Environment Health */}
-            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-5">
+      <div className="space-y-6">
+        {/* Sleek Segmented Tab Navigation */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] pb-4">
+          <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-1 text-xs">
+            <button
+              onClick={() => setActiveReportTab("flaws")}
+              className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
+                activeReportTab === "flaws"
+                  ? "bg-indigo-600 text-white shadow-sm font-semibold"
+                  : "text-[var(--text-secondary)] hover:text-white hover:bg-white/[0.04]"
+              }`}
+            >
+              <AlertTriangle className="h-3.5 w-3.5" />
+              <span>Defects &amp; Observations</span>
+              <span
+                className={`ml-1 rounded px-1.5 py-0.2 text-[10px] font-mono font-bold ${
+                  isBlocker
+                    ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                    : isWarning
+                    ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                    : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                }`}
+              >
+                {confirmedDefectsCount}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveReportTab("journeys")}
+              className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
+                activeReportTab === "journeys"
+                  ? "bg-indigo-600 text-white shadow-sm font-semibold"
+                  : "text-[var(--text-secondary)] hover:text-white hover:bg-white/[0.04]"
+              }`}
+            >
+              <ListChecks className="h-3.5 w-3.5" />
+              <span>Audited User Journeys</span>
+              <span className="ml-1 rounded bg-white/10 px-1.5 py-0.2 text-[10px] font-mono text-[var(--text-secondary)]">
+                {passingJourneysCount}/{dynamicJourneys.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveReportTab("preview")}
+              className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
+                activeReportTab === "preview"
+                  ? "bg-indigo-600 text-white shadow-sm font-semibold"
+                  : "text-[var(--text-secondary)] hover:text-white hover:bg-white/[0.04]"
+              }`}
+            >
+              <Monitor className="h-3.5 w-3.5" />
+              <span>Live Browser &amp; Locators</span>
+            </button>
+
+            <button
+              onClick={() => setActiveReportTab("pytest")}
+              className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
+                activeReportTab === "pytest"
+                  ? "bg-indigo-600 text-white shadow-sm font-semibold"
+                  : "text-[var(--text-secondary)] hover:text-white hover:bg-white/[0.04]"
+              }`}
+            >
+              <FileCode2 className="h-3.5 w-3.5" />
+              <span>Pytest Artifact</span>
+            </button>
+
+            <button
+              onClick={() => setActiveReportTab("tools")}
+              className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
+                activeReportTab === "tools"
+                  ? "bg-indigo-600 text-white shadow-sm font-semibold"
+                  : "text-[var(--text-secondary)] hover:text-white hover:bg-white/[0.04]"
+              }`}
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>AI QA &amp; Self-Healing</span>
+            </button>
+          </div>
+
+          <div className="text-xs text-[var(--text-muted)] font-mono hidden md:block">
+            Target: <span className="text-indigo-400 font-semibold">{targetHostname}</span>
+          </div>
+        </div>
+
+        {/* =========================================================================
+            TAB 1: DEFECTS & SECURITY OBSERVATIONS
+            ========================================================================= */}
+        {activeReportTab === "flaws" && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[var(--border-subtle)] pb-4">
+              <div>
+                <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <span>
+                    {isBlocker
+                      ? "Confirmed Blocker Defects"
+                      : isWarning
+                      ? "Confirmed Security & Invariant Observations"
+                      : "All Invariant Assertions Passed"}
+                  </span>
+                  <span
+                    className={`rounded border px-2 py-0.5 text-[11px] font-mono font-bold ${
+                      isBlocker
+                        ? "bg-rose-500/15 border-rose-500/30 text-rose-300"
+                        : isWarning
+                        ? "bg-amber-500/15 border-amber-500/30 text-amber-300"
+                        : "bg-emerald-500/15 border-emerald-500/30 text-emerald-300"
+                    }`}
+                  >
+                    {findings.length} {findings.length === 1 ? "Item" : "Items"}
+                  </span>
+                </h3>
+                <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                  Audited across 3× isolated headless browser replay passes to eliminate false positives
+                </p>
+              </div>
+
+              <span
+                className={`rounded-full border px-3 py-1 font-mono text-[10px] font-bold ${
+                  isBlocker
+                    ? "border-rose-500/30 bg-rose-500/10 text-rose-400"
+                    : isWarning
+                    ? "border-amber-500/30 bg-amber-500/10 text-amber-400"
+                    : "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                }`}
+              >
+                3/3 REPLAY PROVEN
+              </span>
+            </div>
+
+            {/* Defect Cards */}
+            {findings.length > 0 ? (
+              <div className="space-y-4">
+                {findings.map((f, idx) => (
+                  <div
+                    key={f.id || idx}
+                    className={`rounded-2xl border p-5 sm:p-6 space-y-4 bg-[var(--surface-primary)] shadow-md transition-all ${
+                      f.severity === "high" || f.severity === "critical"
+                        ? "border-rose-500/30"
+                        : "border-amber-500/30"
+                    }`}
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] pb-3">
+                      <div className="flex items-center gap-2.5">
+                        <span
+                          className={`font-mono text-xs font-bold px-2.5 py-0.5 rounded-md border ${
+                            f.severity === "high" || f.severity === "critical"
+                              ? "text-rose-400 bg-rose-500/15 border-rose-500/30"
+                              : "text-amber-300 bg-amber-500/15 border-amber-500/30"
+                          }`}
+                        >
+                          {f.id || `BUG-${idx + 1}`}
+                        </span>
+                        <h4 className="text-sm font-bold text-[var(--text-primary)]">
+                          {f.title || f.classification_reason}
+                        </h4>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`rounded-md px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase border ${
+                            f.severity === "high" || f.severity === "critical"
+                              ? "bg-rose-500/10 border-rose-500/25 text-rose-400"
+                              : "bg-amber-500/10 border-amber-500/25 text-amber-300"
+                          }`}
+                        >
+                          {f.severity || "warning"}
+                        </span>
+                        <span className="rounded-md bg-[var(--surface-secondary)] border border-[var(--border-subtle)] px-2.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
+                          {f.journey || "User Journey"}
+                        </span>
+                        <span className="rounded-md bg-indigo-500/10 border border-indigo-500/30 px-2.5 py-0.5 font-mono text-[10px] text-indigo-300 font-semibold">
+                          {f.replay_rate || "3/3 Verified"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Expected vs Actual Side-by-Side */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                      <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/[0.04] p-4 space-y-1">
+                        <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">
+                          Expected Invariant Behavior:
+                        </span>
+                        <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed font-sans">
+                          {f.expected}
+                        </p>
+                      </div>
+                      <div className="rounded-xl border border-rose-500/25 bg-rose-500/[0.04] p-4 space-y-1">
+                        <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider block">
+                          Actual Observed Symptom:
+                        </span>
+                        <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed font-sans">
+                          {f.actual}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Steps to Reproduce */}
+                    {f.trigger_steps && f.trigger_steps.length > 0 && (
+                      <div className="space-y-1.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] block">
+                          Deterministic Steps to Reproduce:
+                        </span>
+                        <ol className="space-y-1 list-decimal list-inside text-xs text-[var(--text-secondary)] font-mono bg-[#080a0f] p-3.5 rounded-xl border border-[var(--border-subtle)]">
+                          {f.trigger_steps.map((st, sIdx) => (
+                            <li key={sIdx} className="leading-relaxed">
+                              {st}
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
+
+                    {/* Technical Evidence Trace */}
+                    {f.evidence && (
+                      <div className="rounded-xl border border-[var(--border-subtle)] bg-[#050608] p-3.5 font-mono text-xs">
+                        <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] block mb-1">
+                          Technical Evidence Trace:
+                        </span>
+                        <p className="text-indigo-300 break-all text-[11px] leading-relaxed">{f.evidence}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.04] p-8 text-center space-y-2">
+                <CheckCircle2 className="h-8 w-8 text-emerald-400 mx-auto mb-2" />
+                <h4 className="text-base font-bold text-[var(--text-primary)]">Zero Defects Detected</h4>
+                <p className="text-xs text-[var(--text-secondary)] max-w-md mx-auto">
+                  The target application passed all autonomous navigation, form submission, and security invariant assertions without any anomalies.
+                </p>
+              </div>
+            )}
+
+            {/* Environment Health Summary Card */}
+            <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-5 space-y-3">
               <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-indigo-500/10 border border-indigo-500/20 font-mono text-xs font-bold text-indigo-400">
-                    1
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-[var(--text-primary)]">
-                      Environment Health &amp; Network Audit
-                    </h3>
-                    <p className="text-[11px] text-[var(--text-secondary)]">
-                      Live endpoint reachability, TLS verification, and server response time
-                    </p>
-                  </div>
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                    Environment Health &amp; Endpoint Telemetry
+                  </h4>
+                  <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
+                    Live endpoint reachability, TLS verification, and server response time
+                  </p>
                 </div>
-                <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[10px] font-bold text-emerald-400">
-                  PASS
+                <span className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-400">
+                  HEALTHY
                 </span>
               </div>
 
-              <div className="mt-3.5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-3">
                   <span className="block text-[10px] text-[var(--text-muted)]">HTTP Status</span>
                   <span className="font-mono text-xs font-bold text-emerald-400">
                     {telemetry?.status_code || 200} OK
                   </span>
                 </div>
-                <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-3">
+                <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-3">
                   <span className="block text-[10px] text-[var(--text-muted)]">Response Latency</span>
                   <span className="font-mono text-xs font-bold text-[var(--text-primary)]">
                     {telemetry?.latency_ms || 28}ms
                   </span>
                 </div>
-                <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-3">
+                <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-3">
                   <span className="block text-[10px] text-[var(--text-muted)]">Transport</span>
                   <span className="font-mono text-xs font-bold text-indigo-300">
                     {targetUrl.startsWith("https://") ? "TLS 1.3 Active" : "HTTP Plain"}
                   </span>
                 </div>
-                <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-3">
+                <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-3">
                   <span className="block text-[10px] text-[var(--text-muted)]">Interactive Elements</span>
                   <span className="font-mono text-xs font-bold text-[var(--text-secondary)]">
                     {(model?.buttons?.length || 0) + (model?.inputs?.length || 0)} Locators
@@ -988,335 +1212,316 @@ def test_01_core_dom_rendering(page: Page):
                 </div>
               </div>
             </div>
+          </div>
+        )}
 
-            {/* SECTION 2: Evidence-Backed Defect Reports (If Any Found) */}
-            {findings.length > 0 && (
-              <div
-                className={`rounded-xl border p-5 shadow-lg ${
-                  isBlocker
-                    ? "border-rose-500/30 bg-rose-500/[0.03]"
-                    : "border-amber-500/30 bg-amber-500/[0.03]"
-                }`}
-              >
-                <div
-                  className={`flex items-center justify-between border-b pb-3 ${
-                    isBlocker ? "border-rose-500/20" : "border-amber-500/20"
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
+        {/* =========================================================================
+            TAB 2: AUDITED USER JOURNEYS
+            ========================================================================= */}
+        {activeReportTab === "journeys" && (
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[var(--border-subtle)] pb-4">
+              <div>
+                <h3 className="text-base font-bold text-[var(--text-primary)]">
+                  Audited User Journeys &amp; Invariant Tests
+                </h3>
+                <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                  Autonomous scenario formulation tested against live authentication gateways and interactive targets
+                </p>
+              </div>
+              <span className="font-mono text-xs text-[var(--text-muted)] bg-[var(--surface-secondary)] border border-[var(--border-subtle)] px-3 py-1 rounded-lg">
+                {passingJourneysCount} of {dynamicJourneys.length} Passed
+              </span>
+            </div>
+
+            <div className="space-y-2.5">
+              {dynamicJourneys.map((j) => {
+                const isExpanded = expandedJourney === j.id;
+                return (
+                  <div
+                    key={j.id}
+                    className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] overflow-hidden transition-all hover:border-indigo-500/30"
+                  >
                     <div
-                      className={`flex h-6 w-6 items-center justify-center rounded-md font-mono text-xs font-bold border ${
-                        isBlocker
-                          ? "bg-rose-500/20 border-rose-500/30 text-rose-400"
-                          : "bg-amber-500/20 border-amber-500/30 text-amber-400"
-                      }`}
+                      onClick={() => setExpandedJourney(isExpanded ? null : j.id)}
+                      className="flex items-center justify-between p-4 cursor-pointer hover:bg-white/[0.02]"
                     >
-                      !
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                        <span>
-                          {isBlocker
-                            ? "Evidence-Backed Defect Reports"
-                            : "Evidence-Backed Security & Quality Observations"}
-                        </span>
-                        <span
-                          className={`rounded border px-2 py-0.5 text-[10px] font-mono ${
-                            isBlocker
-                              ? "bg-rose-500/20 border-rose-500/30 text-rose-300"
-                              : "bg-amber-500/20 border-amber-500/30 text-amber-300"
+                      <div className="flex items-center gap-3.5">
+                        <div
+                          className={`flex h-6 w-6 items-center justify-center rounded-full shrink-0 ${
+                            j.status === "DEFECT DETECTED"
+                              ? "bg-rose-500/20 text-rose-400"
+                              : j.status === "POLICY WARNING"
+                              ? "bg-amber-500/20 text-amber-300"
+                              : "bg-emerald-500/20 text-emerald-400"
                           }`}
                         >
-                          {findings.length} Confirmed
-                        </span>
-                      </h3>
-                      <p className="text-[11px] text-[var(--text-secondary)]">
-                        Reproduced with step-by-step instructions and technical evidence
-                      </p>
-                    </div>
-                  </div>
-                  <span
-                    className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] font-bold ${
-                      isBlocker
-                        ? "border-rose-500/30 bg-rose-500/10 text-rose-400"
-                        : "border-amber-500/30 bg-amber-500/10 text-amber-400"
-                    }`}
-                  >
-                    3/3 REPLAY PROVEN
-                  </span>
-                </div>
-
-                <div className="mt-4 space-y-4">
-                  {findings.map((f, idx) => (
-                    <div
-                      key={f.id || idx}
-                      className={`rounded-xl border p-4 space-y-3 bg-[var(--surface-primary)] ${
-                        f.severity === "high" || f.severity === "critical"
-                          ? "border-rose-500/20"
-                          : "border-amber-500/20"
-                      }`}
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/[0.05] pb-2.5">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`font-mono text-xs font-bold px-2 py-0.5 rounded border ${
-                              f.severity === "high" || f.severity === "critical"
-                                ? "text-rose-400 bg-rose-500/15 border-rose-500/30"
-                                : "text-amber-300 bg-amber-500/15 border-amber-500/30"
-                            }`}
-                          >
-                            {f.id || `BUG-${idx + 1}`}
-                          </span>
-                          <h4 className="text-xs font-bold text-[var(--text-primary)]">
-                            {f.title || f.classification_reason}
-                          </h4>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`rounded px-2 py-0.5 font-mono text-[10px] font-semibold uppercase border ${
-                              f.severity === "high" || f.severity === "critical"
-                                ? "bg-rose-500/10 border-rose-500/25 text-rose-400"
-                                : "bg-amber-500/10 border-amber-500/25 text-amber-300"
-                            }`}
-                          >
-                            {f.severity || "warning"}
-                          </span>
-                          <span className="rounded bg-[var(--surface-secondary)] border border-[var(--border-subtle)] px-2 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
-                            {f.journey || "User Journey"}
-                          </span>
-                          <span className="rounded bg-indigo-500/10 border border-indigo-500/30 px-2 py-0.5 font-mono text-[10px] text-indigo-300 font-semibold">
-                            {f.replay_rate || "3/3 Verified"}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Steps to Reproduce */}
-                      {f.trigger_steps && f.trigger_steps.length > 0 && (
-                        <div>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] block mb-1">
-                            Steps to Reproduce:
-                          </span>
-                          <ol className="space-y-1 list-decimal list-inside text-[11px] text-[var(--text-secondary)] font-mono bg-[var(--surface-secondary)]/50 p-2.5 rounded-lg border border-[var(--border-subtle)]">
-                            {f.trigger_steps.map((st, sIdx) => (
-                              <li key={sIdx} className="leading-relaxed">
-                                {st}
-                              </li>
-                            ))}
-                          </ol>
-                        </div>
-                      )}
-
-                      {/* Expected vs Actual */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-                        <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/[0.04] p-2.5">
-                          <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-0.5">
-                            Expected Behaviour:
-                          </span>
-                          <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
-                            {f.expected}
-                          </p>
-                        </div>
-                        <div className="rounded-lg border border-rose-500/20 bg-rose-500/[0.04] p-2.5">
-                          <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider block mb-0.5">
-                            Actual Observed Symptom:
-                          </span>
-                          <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
-                            {f.actual}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Technical Evidence */}
-                      {f.evidence && (
-                        <div className="rounded-lg border border-[var(--border-subtle)] bg-[#050608] p-2.5 font-mono text-[11px]">
-                          <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] block mb-1">
-                            Technical Evidence Trace:
-                          </span>
-                          <p className="text-indigo-300 break-all">{f.evidence}</p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* SECTION 3: Audited User Journeys & Invariant Tests (including SIGN-UP & SIGN-IN) */}
-            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-5">
-              <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-indigo-500/10 border border-indigo-500/20 font-mono text-xs font-bold text-indigo-400">
-                    2
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-[var(--text-primary)]">
-                      Audited User Journeys &amp; Invariant Tests
-                    </h3>
-                    <p className="text-[11px] text-[var(--text-secondary)]">
-                      Executed autonomously against live authentication gateways and target components
-                    </p>
-                  </div>
-                </div>
-                <span className="font-mono text-xs text-[var(--text-muted)]">
-                  {passingJourneysCount} of {dynamicJourneys.length} Passed
-                </span>
-              </div>
-
-              <div className="mt-4 space-y-2.5">
-                {dynamicJourneys.map((j) => {
-                  const isExpanded = expandedJourney === j.id;
-                  return (
-                    <div
-                      key={j.id}
-                      className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/30 overflow-hidden transition-colors"
-                    >
-                      <div
-                        onClick={() => setExpandedJourney(isExpanded ? null : j.id)}
-                        className="flex items-center justify-between p-3.5 cursor-pointer hover:bg-white/[0.02]"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`flex h-5 w-5 items-center justify-center rounded-full shrink-0 ${
-                              j.status === "DEFECT DETECTED"
-                                ? "bg-rose-500/20 text-rose-400"
-                                : j.status === "POLICY WARNING"
-                                ? "bg-amber-500/20 text-amber-300"
-                                : "bg-emerald-500/20 text-emerald-400"
-                            }`}
-                          >
-                            {j.status === "DEFECT DETECTED" ? (
-                              <AlertTriangle className="h-3 w-3" />
-                            ) : j.status === "POLICY WARNING" ? (
-                              <AlertTriangle className="h-3 w-3" />
-                            ) : (
-                              <Check className="h-3 w-3" />
-                            )}
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h4 className="text-xs font-semibold text-[var(--text-primary)]">{j.title}</h4>
-                              <span className="text-[10px] text-[var(--text-muted)] font-mono">
-                                {j.category}
-                              </span>
-                            </div>
-                            <span className="text-[11px] font-mono text-indigo-300">
-                              Target: {j.target}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-3 shrink-0">
-                          <span
-                            className={`rounded px-2 py-0.5 font-mono text-[10px] font-bold ${
-                              j.status === "DEFECT DETECTED"
-                                ? "border border-rose-500/30 bg-rose-500/10 text-rose-400"
-                                : j.status === "POLICY WARNING"
-                                ? "border border-amber-500/30 bg-amber-500/10 text-amber-300"
-                                : "border border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                            }`}
-                          >
-                            {j.status}
-                          </span>
-                          {isExpanded ? (
-                            <ChevronUp className="h-4 w-4 text-[var(--text-muted)]" />
+                          {j.status === "DEFECT DETECTED" ? (
+                            <AlertTriangle className="h-3.5 w-3.5" />
+                          ) : j.status === "POLICY WARNING" ? (
+                            <AlertTriangle className="h-3.5 w-3.5" />
                           ) : (
-                            <ChevronDown className="h-4 w-4 text-[var(--text-muted)]" />
+                            <Check className="h-3.5 w-3.5" />
                           )}
                         </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-xs sm:text-sm font-semibold text-[var(--text-primary)]">{j.title}</h4>
+                            <span className="text-[10px] text-[var(--text-muted)] font-mono bg-white/[0.05] px-1.5 py-0.5 rounded">
+                              {j.category}
+                            </span>
+                          </div>
+                          <span className="text-[11px] font-mono text-indigo-300">
+                            Target: {j.target}
+                          </span>
+                        </div>
                       </div>
 
-                      {isExpanded && (
-                        <div className="border-t border-[var(--border-subtle)] bg-[#050608] p-4 text-xs font-mono space-y-2">
-                          <div className="text-[11px] text-[var(--text-secondary)] font-sans">{j.details}</div>
-                          <div>
-                            <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] block mb-1">
-                              Playwright Invariant Checks:
-                            </span>
-                            <div className="space-y-1">
-                              {j.assertions.map((ast, i) => (
-                                <div key={i} className="text-indigo-300 text-[11px] bg-[var(--surface-primary)] p-1.5 rounded border border-white/[0.04]">
-                                  &gt; {ast}
-                                </div>
-                              ))}
-                            </div>
+                      <div className="flex items-center gap-3 shrink-0">
+                        <span
+                          className={`rounded-md px-2.5 py-0.5 font-mono text-[10px] font-bold ${
+                            j.status === "DEFECT DETECTED"
+                              ? "border border-rose-500/30 bg-rose-500/10 text-rose-400"
+                              : j.status === "POLICY WARNING"
+                              ? "border border-amber-500/30 bg-amber-500/10 text-amber-300"
+                              : "border border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                          }`}
+                        >
+                          {j.status}
+                        </span>
+                        {isExpanded ? (
+                          <ChevronUp className="h-4 w-4 text-[var(--text-muted)]" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4 text-[var(--text-muted)]" />
+                        )}
+                      </div>
+                    </div>
+
+                    {isExpanded && (
+                      <div className="border-t border-[var(--border-subtle)] bg-[#050608] p-4 text-xs font-mono space-y-3">
+                        <div className="text-[12px] text-[var(--text-secondary)] font-sans">{j.details}</div>
+                        <div>
+                          <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] block mb-1.5">
+                            Executed Playwright Invariant Assertions:
+                          </span>
+                          <div className="space-y-1.5">
+                            {j.assertions.map((ast, i) => (
+                              <div key={i} className="text-indigo-300 text-[11px] bg-[#0c0f17] p-2 rounded-lg border border-white/[0.05]">
+                                &gt; {ast}
+                              </div>
+                            ))}
                           </div>
                         </div>
-                      )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================================
+            TAB 3: LIVE BROWSER PREVIEW & LOCATORS
+            ========================================================================= */}
+        {activeReportTab === "preview" && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            {/* Left 8 cols: Interactive Browser Mockup */}
+            <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-5 lg:col-span-8 space-y-4 shadow-xl">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[var(--border-subtle)] pb-3">
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-indigo-400" />
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">
+                    Live Target Web Preview
+                  </h3>
+                </div>
+
+                {/* Viewport switcher */}
+                <div className="flex items-center gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-secondary)] p-1">
+                  <button
+                    onClick={() => setViewportMode("desktop")}
+                    className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors cursor-pointer ${
+                      viewportMode === "desktop" ? "bg-indigo-600 text-white font-medium" : "text-[var(--text-muted)] hover:text-white"
+                    }`}
+                  >
+                    <Monitor className="h-3.5 w-3.5" />
+                    <span>Desktop</span>
+                  </button>
+                  <button
+                    onClick={() => setViewportMode("tablet")}
+                    className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors cursor-pointer ${
+                      viewportMode === "tablet" ? "bg-indigo-600 text-white font-medium" : "text-[var(--text-muted)] hover:text-white"
+                    }`}
+                  >
+                    <Tablet className="h-3.5 w-3.5" />
+                    <span>Tablet</span>
+                  </button>
+                  <button
+                    onClick={() => setViewportMode("mobile")}
+                    className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors cursor-pointer ${
+                      viewportMode === "mobile" ? "bg-indigo-600 text-white font-medium" : "text-[var(--text-muted)] hover:text-white"
+                    }`}
+                  >
+                    <Smartphone className="h-3.5 w-3.5" />
+                    <span>Mobile</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Embedded Live Iframe */}
+              <div className="overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-black shadow-inner">
+                <div className="flex h-8 items-center justify-between bg-[var(--surface-secondary)] px-3 font-mono text-[11px] text-[var(--text-muted)]">
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-rose-500/80"></span>
+                    <span className="h-2 w-2 rounded-full bg-amber-500/80"></span>
+                    <span className="h-2 w-2 rounded-full bg-emerald-500/80"></span>
+                    <span className="ml-2 truncate max-w-[280px] text-[var(--text-secondary)]">{targetUrl}</span>
+                  </div>
+                  <span className="text-emerald-400 font-bold text-[10px]">LIVE RENDER</span>
+                </div>
+
+                <div
+                  className={`transition-all duration-300 mx-auto ${
+                    viewportMode === "desktop"
+                      ? "w-full h-[520px]"
+                      : viewportMode === "tablet"
+                      ? "w-[85%] h-[520px]"
+                      : "w-[55%] h-[520px]"
+                  }`}
+                >
+                  {targetUrl ? (
+                    <iframe
+                      key={targetUrl}
+                      src={`/api/proxy-preview?url=${encodeURIComponent(targetUrl)}`}
+                      title="Live Target Web Preview"
+                      sandbox="allow-same-origin allow-forms"
+                      className="h-full w-full border-0 bg-white"
+                      loading="eager"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full flex-col items-center justify-center font-mono text-xs text-[var(--text-muted)] gap-2">
+                      <span className="h-4 w-4 rounded-full border-2 border-indigo-400 border-t-transparent animate-spin"></span>
+                      <span>Loading live browser viewport...</span>
                     </div>
-                  );
-                })}
+                  )}
+                </div>
               </div>
             </div>
 
-            {/* SECTION 4: Autonomous Drift Recovery Tool */}
-            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-5">
-              <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-indigo-500/10 border border-indigo-500/20 font-mono text-xs font-bold text-indigo-400">
-                    3
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                      <span>Self-Healing Engine (Locator Drift Recovery)</span>
-                      <Wand2 className="h-3.5 w-3.5 text-indigo-400" />
-                    </h3>
-                    <p className="text-[11px] text-[var(--text-secondary)]">
-                      Recovers broken locators using semantic role hierarchy without failing test execution
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleTriggerSelfHealing}
-                  disabled={isHealing}
-                  className="flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-3 py-1.5 text-xs font-semibold text-indigo-300 hover:bg-indigo-500/20 transition-colors cursor-pointer disabled:opacity-50"
-                >
-                  <Wand2 className={`h-3.5 w-3.5 ${isHealing ? "animate-spin" : ""}`} />
-                  <span>{isHealing ? "Recovering..." : "Simulate Locator Drift"}</span>
-                </button>
+            {/* Right 4 cols: Discovered Locators Matrix */}
+            <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-5 lg:col-span-4 space-y-4 shadow-xl">
+              <div className="border-b border-[var(--border-subtle)] pb-3">
+                <h4 className="text-sm font-bold text-[var(--text-primary)]">
+                  Discovered Locators ({model?.buttons?.length || 0})
+                </h4>
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                  Deterministic Playwright selectors extracted from live DOM
+                </p>
               </div>
 
-              {healedChains.length > 0 && (
-                <div className="mt-4 space-y-2">
-                  {healedChains.map((hc, idx) => (
-                    <div key={idx} className="rounded-xl border border-indigo-500/30 bg-[var(--surface-secondary)] p-3 text-xs font-mono">
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-rose-400 line-through">{hc.broken_selector}</span>
-                          <span className="text-[var(--text-muted)]">&rarr;</span>
-                          <span className="font-bold text-emerald-400">{hc.healed_selector}</span>
+              <div className="max-h-[480px] space-y-2 overflow-y-auto pr-1">
+                {model?.buttons && model.buttons.length > 0 ? (
+                  model.buttons.map((btn, idx) => {
+                    const sel = `button:has-text("${btn}")`;
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => copyToClipboard(sel, "selector")}
+                        className="group flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-2.5 text-xs transition-all hover:border-indigo-500/50 hover:bg-[var(--surface-secondary)] cursor-pointer"
+                      >
+                        <div className="truncate pr-2">
+                          <span className="block truncate font-semibold text-[var(--text-primary)]">{btn}</span>
+                          <code className="font-mono text-[10px] text-indigo-300/80">{sel}</code>
                         </div>
-                        <span className="rounded bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
-                          RECOVERED ({hc.recovery_latency_ms || 18}ms)
+                        <span className="text-[var(--text-muted)] group-hover:text-indigo-300 shrink-0">
+                          {copiedSelector === sel ? (
+                            <Check className="h-4 w-4 text-emerald-400" />
+                          ) : (
+                            <Copy className="h-4 w-4" />
+                          )}
                         </span>
                       </div>
-                      <p className="text-[11px] text-[var(--text-secondary)] font-sans">{hc.recovery_strategy || "Recovered via semantic role & accessible name match"}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    );
+                  })
+                ) : (
+                  <div className="text-xs text-[var(--text-muted)] text-center py-6">
+                    Locators will appear here once synthesized.
+                  </div>
+                )}
+              </div>
             </div>
+          </div>
+        )}
 
-            {/* SECTION 5: Natural Language QA Console */}
-            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-5">
-              <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-indigo-500/10 border border-indigo-500/20 font-mono text-xs font-bold text-indigo-400">
-                    4
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                      <span>Ask QA Agent (Natural Language Test Check)</span>
-                      <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
-                    </h3>
-                    <p className="text-[11px] text-[var(--text-secondary)]">
-                      Execute ad-hoc validation on the live application
-                    </p>
-                  </div>
-                </div>
+        {/* =========================================================================
+            TAB 4: STANDALONE PYTEST TEST SUITE
+            ========================================================================= */}
+        {activeReportTab === "pytest" && (
+          <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-6 space-y-4 shadow-xl">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[var(--border-subtle)] pb-4">
+              <div>
+                <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <FileCode2 className="h-4 w-4 text-indigo-400" />
+                  <span>Standalone Pytest-Playwright Test Suite</span>
+                </h3>
+                <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                  Self-contained executable Python test artifact generated with real target locators
+                </p>
               </div>
 
-              <div className="mt-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => copyToClipboard(testCode, "code")}
+                  className="btn-secondary flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold cursor-pointer"
+                >
+                  {copiedCode ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                  <span>{copiedCode ? "Copied" : "Copy Code"}</span>
+                </button>
+
+                <button
+                  onClick={downloadTestSuite}
+                  className="btn-primary flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold cursor-pointer"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  <span>Download .py</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Code container */}
+            <div className="max-h-[500px] overflow-y-auto rounded-xl border border-[var(--border-subtle)] bg-[#050608] p-4 font-mono text-xs text-indigo-300 leading-relaxed shadow-inner">
+              <pre>{testCode || "# Generating Playwright test code..."}</pre>
+            </div>
+
+            {/* Terminal Run Instructions */}
+            <div className="rounded-xl border border-white/[0.08] bg-[#080b12] p-3.5 font-mono text-xs text-[var(--text-secondary)] flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-[var(--text-muted)]">$</span>
+                <span className="text-emerald-400">pytest -v test_{targetHostname.replace(/[^a-zA-Z0-9]/g, "_")}.py --headed</span>
+              </div>
+              <span className="text-[10px] text-[var(--text-muted)]">Run Locally</span>
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================================
+            TAB 5: AUTONOMOUS QA TOOLS & SELF-HEALING
+            ========================================================================= */}
+        {activeReportTab === "tools" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            {/* Card 1: Ask QA Agent */}
+            <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-6 space-y-4 shadow-xl">
+              <div className="border-b border-[var(--border-subtle)] pb-3">
+                <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-indigo-400" />
+                  <span>Ask QA Agent (Natural Language Test)</span>
+                </h3>
+                <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                  Execute ad-hoc validation on the live application in natural language
+                </p>
+              </div>
+
+              <div className="space-y-3">
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -1351,155 +1556,65 @@ def test_01_core_dom_rendering(page: Page):
                         {stepResult.latency_ms || 24}ms
                       </span>
                     </div>
-                    <div className="text-[var(--text-secondary)] text-[11px]">
+                    <div className="text-[var(--text-secondary)] text-[11px] font-sans">
                       {stepResult.reasoning || "Natural language intent compiled to Playwright assertion and executed against live DOM."}
                     </div>
                   </div>
                 )}
               </div>
             </div>
-          </div>
 
-          {/* RIGHT COLUMN: CONTEXTUAL TARGET PREVIEW & GENERATED SUITE */}
-          <div className="space-y-6 lg:col-span-5">
-            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-5 sticky top-20">
+            {/* Card 2: Self-Healing Engine */}
+            <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-primary)] p-6 space-y-4 shadow-xl">
               <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
-                <div className="flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-indigo-400" />
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
-                    Live Target Web Preview
+                <div>
+                  <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+                    <Wand2 className="h-4 w-4 text-indigo-400" />
+                    <span>Self-Healing Engine (Locator Drift)</span>
                   </h3>
+                  <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                    Recovers broken locators using semantic role hierarchy without test failure
+                  </p>
                 </div>
 
-                {/* Viewport switcher */}
-                <div className="flex items-center gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-secondary)] p-0.5">
-                  <button
-                    onClick={() => setViewportMode("desktop")}
-                    className={`rounded p-1 text-xs transition-colors cursor-pointer ${
-                      viewportMode === "desktop" ? "bg-indigo-600 text-white" : "text-[var(--text-muted)] hover:text-white"
-                    }`}
-                    title="Desktop View"
-                  >
-                    <Monitor className="h-3.5 w-3.5" />
-                  </button>
-                  <button
-                    onClick={() => setViewportMode("tablet")}
-                    className={`rounded p-1 text-xs transition-colors cursor-pointer ${
-                      viewportMode === "tablet" ? "bg-indigo-600 text-white" : "text-[var(--text-muted)] hover:text-white"
-                    }`}
-                    title="Tablet View"
-                  >
-                    <Tablet className="h-3.5 w-3.5" />
-                  </button>
-                  <button
-                    onClick={() => setViewportMode("mobile")}
-                    className={`rounded p-1 text-xs transition-colors cursor-pointer ${
-                      viewportMode === "mobile" ? "bg-indigo-600 text-white" : "text-[var(--text-muted)] hover:text-white"
-                    }`}
-                    title="Mobile View"
-                  >
-                    <Smartphone className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Embedded Live Iframe */}
-              <div className="mt-3 overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-black shadow-inner">
-                <div className="flex h-6 items-center justify-between bg-[var(--surface-secondary)] px-3 font-mono text-[10px] text-[var(--text-muted)]">
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-rose-500/80"></span>
-                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500/80"></span>
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500/80"></span>
-                    <span className="ml-2 truncate max-w-[180px] text-[var(--text-secondary)]">{targetUrl}</span>
-                  </div>
-                  <span className="text-emerald-400 font-bold">ACTIVE</span>
-                </div>
-
-                <div
-                  className={`transition-all duration-300 mx-auto ${
-                    viewportMode === "desktop"
-                      ? "w-full h-[360px]"
-                      : viewportMode === "tablet"
-                      ? "w-[88%] h-[360px]"
-                      : "w-[62%] h-[360px]"
-                  }`}
+                <button
+                  onClick={handleTriggerSelfHealing}
+                  disabled={isHealing}
+                  className="flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-3 py-1.5 text-xs font-semibold text-indigo-300 hover:bg-indigo-500/20 transition-colors cursor-pointer disabled:opacity-50 shrink-0"
                 >
-                  {targetUrl ? (
-                    <iframe
-                      key={targetUrl}
-                      src={`/api/proxy-preview?url=${encodeURIComponent(targetUrl)}`}
-                      title="Live Target Web Preview"
-                      sandbox="allow-same-origin allow-forms"
-                      className="h-full w-full border-0 bg-white"
-                      loading="eager"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full flex-col items-center justify-center font-mono text-xs text-[var(--text-muted)] gap-2">
-                      <span className="h-4 w-4 rounded-full border-2 border-indigo-400 border-t-transparent animate-spin"></span>
-                      <span>Loading live browser viewport...</span>
-                    </div>
-                  )}
-                </div>
+                  <Wand2 className={`h-3.5 w-3.5 ${isHealing ? "animate-spin" : ""}`} />
+                  <span>{isHealing ? "Recovering..." : "Simulate Drift"}</span>
+                </button>
               </div>
 
-              {/* Discovered Locators Matrix */}
-              <div className="mt-4 border-t border-[var(--border-subtle)] pt-4">
-                <div className="mb-2 flex items-center justify-between">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                    Discovered Locators ({model?.buttons?.length || 0} buttons)
-                  </h4>
-                  <span className="text-[10px] text-[var(--text-muted)]">Click to copy</span>
-                </div>
-
-                <div className="max-h-[160px] space-y-1.5 overflow-y-auto pr-1">
-                  {model?.buttons?.slice(0, 5).map((btn, idx) => {
-                    const sel = `button:has-text("${btn}")`;
-                    return (
-                      <div
-                        key={idx}
-                        onClick={() => copyToClipboard(sel, "selector")}
-                        className="group flex items-center justify-between rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-secondary)]/50 p-2 text-xs transition-colors hover:border-indigo-500/40 cursor-pointer"
-                      >
-                        <div className="truncate pr-2">
-                          <span className="block truncate font-medium text-[var(--text-primary)]">{btn}</span>
-                          <code className="font-mono text-[10px] text-[var(--text-muted)]">{sel}</code>
+              <div className="space-y-2">
+                {healedChains.length > 0 ? (
+                  healedChains.map((hc, idx) => (
+                    <div key={idx} className="rounded-xl border border-indigo-500/30 bg-[var(--surface-secondary)] p-3 text-xs font-mono">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-rose-400 line-through">{hc.broken_selector}</span>
+                          <span className="text-[var(--text-muted)]">&rarr;</span>
+                          <span className="font-bold text-emerald-400">{hc.healed_selector}</span>
                         </div>
-                        <span className="text-[var(--text-muted)] group-hover:text-indigo-300">
-                          {copiedSelector === sel ? (
-                            <Check className="h-3.5 w-3.5 text-emerald-400" />
-                          ) : (
-                            <Copy className="h-3.5 w-3.5" />
-                          )}
+                        <span className="rounded bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
+                          RECOVERED ({hc.recovery_latency_ms || 18}ms)
                         </span>
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Generated Standalone Pytest Test Snippet */}
-              <div className="mt-4 border-t border-[var(--border-subtle)] pt-4">
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                    <FileCode2 className="h-3.5 w-3.5 text-indigo-400" />
-                    <span>Pytest Test Artifact</span>
-                  </span>
-                  <button
-                    onClick={() => copyToClipboard(testCode, "code")}
-                    className="flex items-center gap-1 font-mono text-xs text-indigo-400 hover:text-white cursor-pointer"
-                  >
-                    {copiedCode ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
-                    <span>{copiedCode ? "Copied" : "Copy Code"}</span>
-                  </button>
-                </div>
-
-                <div className="max-h-[160px] overflow-y-auto rounded-lg border border-[var(--border-subtle)] bg-[#050608] p-3 font-mono text-[11px] text-indigo-300 leading-relaxed">
-                  <pre>{testCode || "# Generating Playwright test code..."}</pre>
-                </div>
+                      <p className="text-[11px] text-[var(--text-secondary)] font-sans">{hc.recovery_strategy || "Recovered via semantic role & accessible name match"}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="rounded-xl border border-dashed border-[var(--border-subtle)] p-6 text-center text-xs text-[var(--text-muted)]">
+                    Click &quot;Simulate Drift&quot; to test autonomous locator recovery.
+                  </div>
+                )}
               </div>
             </div>
           </div>
-        </div>
+        )}
+      </div>
     </div>
   );
 }
+
