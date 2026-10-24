@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -10,7 +11,43 @@ import {
   Lock,
   Maximize2,
   Terminal,
+  ChevronDown,
+  ChevronUp,
+  FileCode2,
+  Copy,
+  ExternalLink,
+  Sparkles,
+  ArrowRight,
+  HelpCircle,
+  Wrench,
+  AlertCircle,
 } from "lucide-react";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+
+// Customer impact dictionary for common defects
+const DEFECT_IMPACT_MAP = {
+  B1: {
+    cleanTitle: "Registration Form Accepts Invalid Emails without Error",
+    customerImpact: "Users who mistype their email (missing @ or invalid domain) complete registration. This results in lost transactional receipts, failed password resets, and broken communications.",
+    fixRecommendation: "Add client-side RFC 5322 regex validation and ensure the backend returns HTTP 400 Bad Request with an inline user alert.",
+  },
+  B2: {
+    cleanTitle: "Duplicate Email Submission Crashes Server with HTTP 500",
+    customerImpact: "Existing customers attempting to sign up again see a raw server crash page instead of a helpful prompt to sign in or recover their password.",
+    fixRecommendation: "Catch database uniqueness constraint exceptions and return HTTP 409 Conflict with a user-friendly 'Email already registered' alert.",
+  },
+  B3: {
+    cleanTitle: "Case-Sensitive Authentication Rejects Capitalized Emails",
+    customerImpact: "Mobile users whose keyboards automatically capitalize the first letter of their email cannot log in despite entering the correct password.",
+    fixRecommendation: "Normalize all email lookups using .toLowerCase().trim() before querying authentication credentials.",
+  },
+  B4: {
+    cleanTitle: "Password Reset Link Resolves to 404 Not Found Page",
+    customerImpact: "Users locked out of their accounts cannot recover access, causing immediate frustration and account abandonment.",
+    fixRecommendation: "Verify that the '/auth/forgot-password' route is deployed and bound to the recovery email dispatch handler.",
+  },
+};
 
 export default function DefectsTab({
   isBlocker,
@@ -23,220 +60,293 @@ export default function DefectsTab({
   telemetry,
   getDefectScreenshotInfo,
   setFullImageModal,
+  persona = "pm",
 }) {
+  const [filterSeverity, setFilterSeverity] = useState("all"); // "all" | "blockers" | "warnings"
+  const [expandedDevDetails, setExpandedDevDetails] = useState({});
+  const [copiedCodeId, setCopiedCodeId] = useState(null);
+
+  const toggleDevDetails = (id) => {
+    setExpandedDevDetails((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const copyReproduction = (f) => {
+    const code = `# DRISHTI Automated Playwright Reproduction Script for ${f.id}
+from playwright.sync_api import sync_playwright
+
+with sync_playwright() as p:
+    browser = p.chromium.launch(headless=False)
+    page = browser.new_page()
+    page.goto("${targetUrl}")
+    # Target Element: ${f.anomaly_location?.selector || "input"}
+    print("Executing reproduction steps...")
+    browser.close()`;
+    navigator.clipboard.writeText(code);
+    setCopiedCodeId(f.id);
+    setTimeout(() => setCopiedCodeId(null), 2000);
+  };
+
+  const filteredFindings = findings.filter((f) => {
+    const isHigh = f.severity === "high" || f.severity === "critical";
+    if (filterSeverity === "blockers") return isHigh;
+    if (filterSeverity === "warnings") return !isHigh;
+    return true;
+  });
+
+  const blockerCount = findings.filter(
+    (f) => f.severity === "high" || f.severity === "critical"
+  ).length;
+  const warningCount = findings.filter(
+    (f) => f.severity !== "high" && f.severity !== "critical"
+  ).length;
+
   return (
-    <div className="space-y-8">
-      {/* Section Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-[#E5E5E5]">
+    <div className="space-y-6">
+      {/* Filter and Overview Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-[#e6e9ee]">
         <div>
-          <h2 className="text-lg sm:text-xl font-semibold text-[#171717] tracking-tight flex items-center gap-2">
+          <h2 className="text-lg sm:text-xl font-semibold text-[#000000] tracking-tight flex items-center gap-2">
             <span>
               {isBlocker
-                ? "Confirmed Blocker Defects"
+                ? "Confirmed Release Blockers"
                 : isWarning
-                ? "Confirmed Security & Invariant Observations"
-                : "All Invariant Assertions Passed"}
+                ? "Security & Invariant Observations"
+                : "All Quality Checks Passed"}
             </span>
             <span
-              className={`rounded-md border px-2 py-0.5 text-xs font-mono font-semibold ${
+              className={`rounded-full px-2.5 py-0.5 text-xs font-mono font-bold ${
                 isBlocker
-                  ? "bg-red-50 border-red-200 text-red-700"
+                  ? "bg-rose-50 text-rose-700 border border-rose-200"
                   : isWarning
-                  ? "bg-amber-50 border-amber-200 text-amber-800"
-                  : "bg-emerald-50 border-emerald-200 text-emerald-700"
+                  ? "bg-amber-50 text-amber-800 border border-amber-200"
+                  : "bg-emerald-50 text-emerald-700 border border-emerald-200"
               }`}
             >
-              {findings.length} {findings.length === 1 ? "Item" : "Items"}
+              {findings.length} {findings.length === 1 ? "Issue" : "Issues"}
             </span>
           </h2>
-          <p className="text-xs text-[#737373] mt-1">
-            Audited across 3× isolated headless browser replay passes to eliminate false positives
+          <p className="text-xs text-[#525252] mt-1">
+            Every defect is audited across 3× isolated Chromium replay passes to eliminate false positives and guarantee stability.
           </p>
         </div>
 
-        <span
-          className={`rounded-full border px-3 py-1 font-mono text-[11px] font-semibold tracking-wide ${
-            isBlocker
-              ? "border-red-200 bg-red-50 text-red-700"
-              : isWarning
-              ? "border-amber-200 bg-amber-50 text-amber-800"
-              : "border-emerald-200 bg-emerald-50 text-emerald-700"
-          }`}
-        >
-          3/3 REPLAY PROVEN
-        </span>
+        {/* Quick Filter Pill Buttons */}
+        <div className="flex items-center gap-1.5 p-1 rounded-full bg-[#f4f4f5] border border-[#e6e9ee] text-xs">
+          <button
+            type="button"
+            onClick={() => setFilterSeverity("all")}
+            className={`px-3 py-1 rounded-full transition-all cursor-pointer font-medium ${
+              filterSeverity === "all"
+                ? "bg-white text-[#000000] shadow-2xs font-semibold"
+                : "text-[#737373] hover:text-[#000000]"
+            }`}
+          >
+            All ({findings.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setFilterSeverity("blockers")}
+            className={`px-3 py-1 rounded-full transition-all cursor-pointer font-medium ${
+              filterSeverity === "blockers"
+                ? "bg-white text-rose-700 shadow-2xs font-semibold"
+                : "text-[#737373] hover:text-[#000000]"
+            }`}
+          >
+            Blockers ({blockerCount})
+          </button>
+          <button
+            type="button"
+            onClick={() => setFilterSeverity("warnings")}
+            className={`px-3 py-1 rounded-full transition-all cursor-pointer font-medium ${
+              filterSeverity === "warnings"
+                ? "bg-white text-amber-800 shadow-2xs font-semibold"
+                : "text-[#737373] hover:text-[#000000]"
+            }`}
+          >
+            Warnings ({warningCount})
+          </button>
+        </div>
       </div>
 
       {/* Defect Cards List */}
-      {findings.length > 0 ? (
+      {filteredFindings.length > 0 ? (
         <div className="space-y-6">
-          {findings.map((f, idx) => {
+          {filteredFindings.map((f, idx) => {
             const defectInfo = getDefectScreenshotInfo(f);
             const isHigh = f.severity === "high" || f.severity === "critical";
+            const impactInfo = DEFECT_IMPACT_MAP[f.id] || {
+              cleanTitle: f.title || f.classification_reason || `Defect ${f.id}`,
+              customerImpact: f.actual || "May impact user conversion and flow integrity.",
+              fixRecommendation: "Inspect DOM selector and enforce boundary checks in backend route handler.",
+            };
+            const isDevOpen = expandedDevDetails[f.id] || persona === "dev";
 
             return (
               <div
                 key={f.id || idx}
-                className="rounded-xl border border-[#E5E5E5] bg-white p-5 sm:p-7 space-y-6 shadow-xs hover:border-[#D4D4D4] transition-all"
+                className="rounded-2xl border border-[#e6e9ee] bg-white p-5 sm:p-7 space-y-6 shadow-xs hover:border-[#cbd5e1] transition-all"
               >
                 {/* Defect Card Header */}
-                <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#F5F5F4]">
+                <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#f0f0f0]">
                   <div className="flex items-center gap-3">
                     <span
-                      className={`font-mono text-xs font-bold px-2.5 py-0.5 rounded-md border ${
+                      className={`font-mono text-xs font-bold px-2.5 py-1 rounded-lg border ${
                         isHigh
-                          ? "text-red-700 bg-red-50 border-red-200"
+                          ? "text-rose-700 bg-rose-50 border-rose-200"
                           : "text-amber-800 bg-amber-50 border-amber-200"
                       }`}
                     >
                       {f.id || `BUG-${idx + 1}`}
                     </span>
-                    <h3 className="text-base font-semibold text-[#171717] tracking-tight">
-                      {f.title || f.classification_reason}
-                    </h3>
+                    <div>
+                      <h3 className="text-base font-semibold text-[#000000] tracking-tight">
+                        {impactInfo.cleanTitle}
+                      </h3>
+                      <span className="text-[11px] text-[#737373] font-mono mt-0.5 block">
+                        Affected Journey: {f.journey || "Authentication Gateway"} &bull; Route:{" "}
+                        <code className="text-[#0b7ee6] font-semibold">{defectInfo.route}</code>
+                      </span>
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-2 text-xs">
                     <span
-                      className={`rounded-md px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase border ${
+                      className={`rounded-full px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase border ${
                         isHigh
-                          ? "bg-red-50 border-red-200 text-red-700"
+                          ? "bg-rose-50 border-rose-200 text-rose-700"
                           : "bg-amber-50 border-amber-200 text-amber-800"
                       }`}
                     >
-                      {f.severity || "warning"}
+                      {f.severity === "critical"
+                        ? "Critical Blocker"
+                        : isHigh
+                        ? "High Impact"
+                        : "Policy Warning"}
                     </span>
-                    <span className="rounded-md bg-[#FAFAF9] border border-[#E5E5E5] px-2.5 py-0.5 font-mono text-[10px] text-[#737373]">
-                      {f.journey || "User Journey"}
-                    </span>
-                    <span className="rounded-md bg-orange-50 border border-orange-200 px-2.5 py-0.5 font-mono text-[10px] text-[#F97316] font-bold">
-                      {f.replay_rate || "3/3 Verified"}
+                    <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 font-mono text-[10px] text-emerald-800 font-bold">
+                      {f.replay_rate || "3/3 Deterministic"}
                     </span>
                   </div>
                 </div>
 
-                {/* Section 8: Expected vs Actual Behavior Side-by-Side Comparison */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                  {/* Expected Invariant Panel */}
-                  <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/50 p-4 space-y-1.5">
-                    <div className="flex items-center gap-1.5 text-[11px] font-mono font-semibold text-emerald-800 uppercase tracking-wider">
-                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      <span>Expected Invariant Behavior:</span>
+                {/* =========================================================================
+                    ACTIONABLE 3-COLUMN TAKEAWAY GRID (What • Why • Fix)
+                    ========================================================================= */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                  {/* Card 1: What Happened */}
+                  <div className="rounded-xl border border-rose-200/80 bg-rose-50/40 p-4 space-y-1.5 flex flex-col justify-between">
+                    <div>
+                      <span className="text-[11px] font-mono font-bold text-rose-800 uppercase tracking-wider flex items-center gap-1.5 mb-1">
+                        <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                        <span>What Broke</span>
+                      </span>
+                      <p className="text-xs text-[#262626] leading-relaxed">
+                        {f.actual || "Application accepted boundary inputs without appropriate rejection response."}
+                      </p>
                     </div>
-                    <p className="text-xs text-[#262626] leading-relaxed">
-                      {f.expected}
-                    </p>
+                    <span className="text-[10px] font-mono text-rose-700 mt-2 block">
+                      Status: Anomaly Detected
+                    </span>
                   </div>
 
-                  {/* Actual Observed Symptom Panel */}
-                  <div className="rounded-xl border border-red-200/80 bg-red-50/50 p-4 space-y-1.5">
-                    <div className="flex items-center gap-1.5 text-[11px] font-mono font-semibold text-red-700 uppercase tracking-wider">
-                      <AlertTriangle className="w-3.5 h-3.5 text-red-600 shrink-0" />
-                      <span>Actual Observed Symptom:</span>
+                  {/* Card 2: Why It Matters (Customer & Revenue Impact) */}
+                  <div className="rounded-xl border border-amber-200/80 bg-amber-50/40 p-4 space-y-1.5 flex flex-col justify-between">
+                    <div>
+                      <span className="text-[11px] font-mono font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5 mb-1">
+                        <HelpCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                        <span>Customer Impact</span>
+                      </span>
+                      <p className="text-xs text-[#262626] leading-relaxed">
+                        {impactInfo.customerImpact}
+                      </p>
                     </div>
-                    <p className="text-xs text-[#262626] leading-relaxed">
-                      {f.actual}
-                    </p>
+                    <span className="text-[10px] font-mono text-amber-800 mt-2 block">
+                      Conversion Risk: High
+                    </span>
+                  </div>
+
+                  {/* Card 3: How to Fix (Actionable Recommendation) */}
+                  <div className="rounded-xl border border-[#2D9FFE]/30 bg-[#2D9FFE]/5 p-4 space-y-1.5 flex flex-col justify-between">
+                    <div>
+                      <span className="text-[11px] font-mono font-bold text-[#0b7ee6] uppercase tracking-wider flex items-center gap-1.5 mb-1">
+                        <Wrench className="w-3.5 h-3.5 text-[#2D9FFE] shrink-0" />
+                        <span>Recommended Fix</span>
+                      </span>
+                      <p className="text-xs text-[#262626] leading-relaxed">
+                        {impactInfo.fixRecommendation}
+                      </p>
+                    </div>
+                    <span className="text-[10px] font-mono text-[#0b7ee6] mt-2 block">
+                      Effort: ~15 mins fix
+                    </span>
                   </div>
                 </div>
 
-                {/* Section 9: Deterministic Reproduction Steps */}
-                {f.trigger_steps && f.trigger_steps.length > 0 && (
-                  <div className="space-y-2">
-                    <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#737373] block">
-                      Deterministic Steps to Reproduce:
-                    </span>
-                    <ol className="space-y-1.5 list-decimal list-inside text-xs text-[#262626] font-mono bg-[#FAFAF9] p-4 rounded-xl border border-[#E5E5E5] leading-relaxed">
-                      {f.trigger_steps.map((st, sIdx) => (
-                        <li key={sIdx} className="leading-relaxed">
-                          <span>{st}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-                )}
-
-                {/* Section 10: Technical Evidence Trace */}
-                {f.evidence && (
-                  <div className="rounded-xl border border-[#E5E5E5] bg-[#FAFAF9] p-4 font-mono text-xs">
-                    <span className="text-[11px] uppercase font-bold text-[#737373] flex items-center gap-1.5 mb-2">
-                      <Terminal className="w-3.5 h-3.5 text-[#F97316]" />
-                      <span>Technical Evidence Trace:</span>
-                    </span>
-                    <p className="text-[#262626] break-all text-[11px] leading-relaxed whitespace-pre-wrap">
-                      {f.evidence}
-                    </p>
-                  </div>
-                )}
-
-                {/* Section 11: Visual Evidence Screenshot & Location of Anomaly */}
+                {/* =========================================================================
+                    VISUAL EVIDENCE WITH PINPOINT BOUNDING BOX
+                    ========================================================================= */}
                 {f.anomaly_location && (
-                  <div className="rounded-xl border border-[#E5E5E5] bg-[#FAFAF9] p-4 sm:p-5 space-y-3.5">
+                  <div className="rounded-xl border border-[#e6e9ee] bg-[#f8fafc] p-4 sm:p-5 space-y-3.5">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <Camera className="w-4 h-4 text-[#F97316]" />
-                        <span className="text-xs font-semibold text-[#171717]">
-                          Visual Workflow Screenshot &amp; Location of Anomaly
+                        <Camera className="w-4 h-4 text-[#2D9FFE]" />
+                        <span className="text-xs font-semibold text-[#000000]">
+                          Visual Screenshot with Red Anomaly Pinpoint
                         </span>
-                        <span className="rounded bg-red-50 border border-red-200 px-2 py-0.5 text-[10px] font-mono text-red-700 font-bold flex items-center gap-1">
-                          <Crosshair className="w-3 h-3 text-red-600 animate-spin" />
-                          <span>Pinpoint Active</span>
+                        <span className="rounded-full bg-rose-50 border border-rose-200 px-2 py-0.5 text-[10px] font-mono text-rose-700 font-bold flex items-center gap-1">
+                          <Crosshair className="w-3 h-3 text-rose-600" />
+                          <span>Red-Line Box Active</span>
                         </span>
                       </div>
 
                       <div className="flex items-center gap-2 text-[11px] font-mono text-[#737373]">
-                        <span>Screen: <span className="text-[#171717] font-semibold">{f.anomaly_location.screen}</span></span>
+                        <span>Screen: <span className="text-[#000000] font-semibold">{f.anomaly_location.screen}</span></span>
                         <span>&bull;</span>
-                        <span>Target: <span className="text-red-700 font-semibold">{f.anomaly_location.selector}</span></span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFullImageModal({
+                              src: defectInfo.src,
+                              title: `${f.id}: ${impactInfo.cleanTitle}`,
+                              route: defectInfo.route,
+                              selector: f.anomaly_location?.selector,
+                              description: f.anomaly_location?.description,
+                              id: f.id,
+                            })
+                          }
+                          className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#000000] text-white text-[10px] font-mono hover:bg-[#262626] transition-colors shadow-2xs cursor-pointer ml-1"
+                        >
+                          <Maximize2 className="w-3 h-3" />
+                          <span>Expand Full Image</span>
+                        </button>
                       </div>
                     </div>
 
-                    {/* macOS Browser Mockup Frame with Anomaly Pinpoint */}
-                    <div className="rounded-xl border border-[#E5E5E5] bg-white shadow-xs overflow-hidden">
-                      {/* Browser Header Bar */}
-                      <div className="flex items-center justify-between px-3.5 py-2 border-b border-[#E5E5E5] bg-[#FAFAF9]">
+                    {/* Screenshot Frame */}
+                    <div className="rounded-xl border border-[#e6e9ee] bg-white shadow-xs overflow-hidden">
+                      <div className="flex items-center justify-between px-3.5 py-2 border-b border-[#e6e9ee] bg-[#f8fafc]">
                         <div className="flex items-center gap-2">
-                          {/* Traffic lights */}
                           <div className="flex items-center gap-1.5 mr-2">
-                            <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56] border border-[#E0443E]/40 inline-block"></span>
-                            <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E] border border-[#DEA123]/40 inline-block"></span>
-                            <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F] border border-[#1AAB29]/40 inline-block"></span>
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56] inline-block" />
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E] inline-block" />
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F] inline-block" />
                           </div>
-                          {/* Route URL Pill */}
-                          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white border border-[#E5E5E5] text-[11px] font-mono text-[#525252]">
+                          <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white border border-[#e6e9ee] text-[11px] font-mono text-[#525252]">
                             <Lock className="w-3 h-3 text-emerald-600" />
-                            <span className="text-[#A3A3A3]">{targetUrl ? new URL(targetUrl).origin : "https://app"}</span>
-                            <span className="font-semibold text-[#171717]">{defectInfo.route}</span>
+                            <span className="text-[#a3a3a3]">{targetUrl ? new URL(targetUrl).origin : "https://app"}</span>
+                            <span className="font-semibold text-[#000000]">{defectInfo.route}</span>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-mono text-[#737373] hidden sm:inline">
-                            {defectInfo.pageName}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setFullImageModal({
-                                src: defectInfo.src,
-                                title: `${f.id}: ${f.title}`,
-                                route: defectInfo.route,
-                                selector: f.anomaly_location?.selector,
-                                description: f.anomaly_location?.description,
-                                id: f.id,
-                              })
-                            }
-                            className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#171717] text-white text-[11px] font-mono hover:bg-black transition-colors shadow-2xs cursor-pointer"
-                            title="Open Fullscreen High-Resolution Screenshot"
-                          >
-                            <Maximize2 className="w-3 h-3" />
-                            <span>Full Page</span>
-                          </button>
-                        </div>
+                        <span className="text-[10px] font-mono text-[#737373] hidden sm:inline">
+                          {defectInfo.pageName}
+                        </span>
                       </div>
 
-                      {/* Scrollable Viewport with Authentic Image & Precise Pinpoint */}
-                      <div className="relative max-h-[540px] overflow-y-auto bg-zinc-100 select-none group">
+                      <div className="relative max-h-[460px] overflow-y-auto bg-zinc-50 select-none group">
                         {defectInfo.isImage ? (
                           <div className="relative w-full">
                             <img
@@ -245,7 +355,7 @@ export default function DefectsTab({
                               className="w-full h-auto block select-none"
                             />
 
-                            {/* Dynamic Anomaly Bounding Box With Target Crosshair */}
+                            {/* Anomaly Bounding Box */}
                             <div
                               className="absolute rounded-lg border-2 border-red-500 bg-red-500/15 shadow-[0_0_24px_rgba(239,68,68,0.4)] transition-all duration-300 flex items-start justify-end p-1.5 pointer-events-none"
                               style={{
@@ -255,98 +365,135 @@ export default function DefectsTab({
                                 height: `${f.anomaly_location.h ?? 25}%`,
                               }}
                             >
-                              <div className="flex items-center gap-1.5 rounded bg-black/95 border border-red-500 px-2.5 py-1 text-[10px] font-mono font-bold text-white shadow-xl -mt-4 mr-1">
-                                <Crosshair className="w-3 h-3 text-red-400 animate-spin" />
-                                <span>LOCATION OF ANOMALY: {f.id}</span>
+                              <div className="flex items-center gap-1.5 rounded bg-black/95 border border-red-500 px-2 py-0.5 text-[9px] font-mono font-bold text-white shadow-xl -mt-4 mr-1">
+                                <Crosshair className="w-2.5 h-2.5 text-red-400" />
+                                <span>ANOMALY: {f.id}</span>
                               </div>
-
-                              {/* Target Crosshairs in corner */}
-                              <span className="absolute -bottom-1 -left-1 h-3 w-3 border-b-2 border-l-2 border-red-500"></span>
-                              <span className="absolute -top-1 -right-1 h-3 w-3 border-t-2 border-r-2 border-red-500"></span>
-                              <span className="absolute -bottom-1 -right-1 h-3 w-3 border-b-2 border-r-2 border-red-500"></span>
-                              <span className="absolute -top-1 -left-1 h-3 w-3 border-t-2 border-l-2 border-red-500"></span>
                             </div>
                           </div>
                         ) : (
-                          <iframe
-                            src={defectInfo.src}
-                            title={`Visual Screenshot for ${f.id}`}
-                            sandbox="allow-same-origin allow-forms"
-                            className="w-full h-[500px] border-0 pointer-events-none select-none bg-white"
-                            loading="lazy"
-                          />
+                          <div className="p-8 text-center text-xs text-[#737373] space-y-2">
+                            <p>Chromium High-Resolution Snapshot</p>
+                            <a
+                              href={defectInfo.src}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 text-[#0b7ee6] underline text-[11px] font-mono"
+                            >
+                              <span>Open Target URL ({defectInfo.route})</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
                         )}
 
-                        {/* Sticky Bottom Descriptor Pill */}
-                        <div className="sticky bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-[#E5E5E5] p-3 flex items-center justify-between text-xs font-mono shadow-xs text-[#171717] z-10">
+                        <div className="sticky bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-[#e6e9ee] p-2.5 px-3.5 flex items-center justify-between text-xs font-mono shadow-xs text-[#000000] z-10">
                           <span className="truncate">
-                            Detected anomaly: <span className="text-red-600 font-semibold">{f.anomaly_location.description}</span>
+                            Detected Anomaly: <span className="text-red-600 font-semibold">{f.anomaly_location.description}</span>
                           </span>
                           <span className="text-[11px] text-[#737373] shrink-0 ml-2 hidden sm:inline">
-                            Selector: <code className="text-[#171717] font-semibold">{f.anomaly_location.selector}</code> [x: {f.anomaly_location.x}%, y: {f.anomaly_location.y}%]
+                            Target Selector: <code className="text-[#000000] font-semibold">{f.anomaly_location.selector}</code>
                           </span>
                         </div>
                       </div>
                     </div>
                   </div>
                 )}
+
+                {/* =========================================================================
+                    PROGRESSIVE DISCLOSURE: DEVELOPER DIAGNOSTICS & REPRODUCTION CODE
+                    ========================================================================= */}
+                <div className="border-t border-[#f0f0f0] pt-3">
+                  <div className="flex items-center justify-between">
+                    <button
+                      type="button"
+                      onClick={() => toggleDevDetails(f.id)}
+                      className="flex items-center gap-1.5 text-xs font-medium text-[#525252] hover:text-[#000000] transition-colors cursor-pointer"
+                    >
+                      <Terminal className="w-3.5 h-3.5 text-[#2D9FFE]" />
+                      <span>{isDevOpen ? "Hide Developer Diagnostics" : "Show Developer Diagnostics & Playwright Script"}</span>
+                      {isDevOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => copyReproduction(f)}
+                      className="text-[11px] font-mono text-[#737373] hover:text-[#000000] flex items-center gap-1 cursor-pointer transition-colors"
+                      title="Copy Python Playwright reproduction script"
+                    >
+                      {copiedCodeId === f.id ? (
+                        <>
+                          <Check className="w-3 h-3 text-emerald-600" />
+                          <span className="text-emerald-700">Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3 h-3 text-[#a3a3a3]" />
+                          <span>Copy Reproduction Script</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {isDevOpen && (
+                    <div className="mt-4 space-y-3 text-xs font-mono bg-[#f8fafc] p-4 rounded-xl border border-[#e6e9ee] animate-in fade-in duration-150">
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#737373] block mb-1">
+                          DOM Target Selector:
+                        </span>
+                        <code className="text-xs text-[#000000] bg-white px-2.5 py-1 rounded-md border border-[#e6e9ee] inline-block font-mono">
+                          {f.anomaly_location?.selector || "input"}
+                        </code>
+                      </div>
+
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#737373] block mb-1">
+                          Expected Invariant Contract:
+                        </span>
+                        <p className="text-xs text-emerald-800 bg-emerald-50/60 p-2 rounded-md border border-emerald-200">
+                          {f.expected}
+                        </p>
+                      </div>
+
+                      {f.trigger_steps && f.trigger_steps.length > 0 && (
+                        <div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#737373] block mb-1.5">
+                            Automated Playwright Sequence:
+                          </span>
+                          <div className="space-y-1">
+                            {f.trigger_steps.map((st, sIdx) => (
+                              <div
+                                key={sIdx}
+                                className="flex items-center gap-2 p-1.5 rounded-lg bg-white border border-[#e6e9ee] text-[11px] text-[#525252]"
+                              >
+                                <span className="w-4 h-4 rounded-full bg-[#f4f4f5] text-[#000000] flex items-center justify-center text-[10px] font-bold shrink-0">
+                                  {sIdx + 1}
+                                </span>
+                                <span>{st}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}
         </div>
       ) : (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-8 text-center space-y-2">
-          <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto mb-2" />
-          <h3 className="text-base font-semibold text-[#171717]">Zero Defects Detected</h3>
-          <p className="text-xs text-[#737373] max-w-md mx-auto">
-            The target application passed all autonomous navigation, form validation boundaries, and security invariant assertions without any anomalies.
+        <div className="p-12 text-center rounded-2xl border border-[#e6e9ee] bg-white space-y-3">
+          <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-200">
+            <CheckCircle2 className="w-6 h-6" />
+          </div>
+          <h3 className="text-base font-semibold text-[#000000]">
+            No Defects Found in this Category
+          </h3>
+          <p className="text-xs text-[#525252] max-w-md mx-auto">
+            All user flows and invariant checks passed with 100% stability across 3× isolated browser replays.
           </p>
         </div>
       )}
-
-      {/* Section 12: Environment Health & Endpoint Telemetry (Clearly Separated) */}
-      <div className="rounded-xl border border-[#E5E5E5] bg-white p-5 sm:p-6 space-y-4 shadow-xs">
-        <div className="flex items-center justify-between border-b border-[#F5F5F4] pb-3">
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#171717] font-mono">
-              Environment Health &amp; Endpoint Telemetry
-            </h4>
-            <p className="text-[11px] text-[#737373] mt-0.5">
-              Live endpoint reachability, TLS verification, and server response time
-            </p>
-          </div>
-          <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-700">
-            HEALTHY
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="rounded-lg border border-[#E5E5E5] bg-[#FAFAF9] p-3.5">
-            <span className="block text-[11px] text-[#737373] font-mono">HTTP Status</span>
-            <span className="font-mono text-xs font-bold text-emerald-700 mt-0.5 block">
-              {telemetry?.status_code || 200} OK
-            </span>
-          </div>
-          <div className="rounded-lg border border-[#E5E5E5] bg-[#FAFAF9] p-3.5">
-            <span className="block text-[11px] text-[#737373] font-mono">Response Latency</span>
-            <span className="font-mono text-xs font-bold text-[#171717] mt-0.5 block">
-              {telemetry?.latency_ms || 28}ms
-            </span>
-          </div>
-          <div className="rounded-lg border border-[#E5E5E5] bg-[#FAFAF9] p-3.5">
-            <span className="block text-[11px] text-[#737373] font-mono">Transport</span>
-            <span className="font-mono text-xs font-bold text-[#171717] mt-0.5 block">
-              {targetUrl?.startsWith("https://") ? "TLS 1.3 Active" : "HTTP Plain"}
-            </span>
-          </div>
-          <div className="rounded-lg border border-[#E5E5E5] bg-[#FAFAF9] p-3.5">
-            <span className="block text-[11px] text-[#737373] font-mono">Interactive Elements</span>
-            <span className="font-mono text-xs font-bold text-[#171717] mt-0.5 block">
-              {(model?.buttons?.length || 0) + (model?.inputs?.length || 0)} Locators
-            </span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

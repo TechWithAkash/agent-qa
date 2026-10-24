@@ -6,17 +6,21 @@ import {
   Play,
   RotateCcw,
   ShieldCheck,
-  ShieldAlert,
   AlertTriangle,
   ChevronDown,
   ChevronUp,
-  Terminal,
-  Activity,
   CheckCircle2,
   LockKeyhole,
   Sliders,
-  ExternalLink,
+  Sparkles,
+  Check,
+  Compass,
+  ShoppingCart,
+  Lock,
+  FileCode2,
 } from "lucide-react";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 
 export const PRESET_TARGETS = [
   {
@@ -86,6 +90,49 @@ export const PRESET_TARGETS = [
   },
 ];
 
+export const QUALITY_GOAL_PACKS = [
+  {
+    id: "nav",
+    icon: Compass,
+    label: "Navigation & Routing",
+    tag: "Core",
+    desc: "Crawl routes, verify HTTP 200, detect broken links",
+    rules: "- Navigation: Root URL and all discovered internal links must resolve with HTTP 200 OK without dead links.",
+  },
+  {
+    id: "auth",
+    icon: Lock,
+    label: "Auth & Gateways",
+    tag: "Critical",
+    desc: "Validate sign-up forms, login, and password recovery",
+    rules: "- Authentication: /auth/signup must reject malformed emails with 400; /auth/signin must authenticate case-insensitive; forgot password must not 404.",
+  },
+  {
+    id: "forms",
+    icon: CheckCircle2,
+    label: "Form Boundaries",
+    tag: "UX",
+    desc: "Audit required fields, input sanitization, error states",
+    rules: "- Form Inputs: Required fields must prevent submission with user-visible errors; inputs must sanitize boundary characters.",
+  },
+  {
+    id: "security",
+    icon: ShieldCheck,
+    label: "Security & Invariants",
+    tag: "Security",
+    desc: "Enforce CSP, nosniff, zero console exceptions",
+    rules: "- Security Invariants: Validate HTTPS encryption, Content-Security-Policy headers, and ensure 0 unhandled browser runtime console errors.",
+  },
+  {
+    id: "ecommerce",
+    icon: ShoppingCart,
+    label: "Checkout Funnel",
+    tag: "Funnel",
+    desc: "Check product catalog, cart count, checkout triggers",
+    rules: "- E-Commerce: Product catalog must load images, add-to-cart must increment quantity, and checkout must trigger order flow.",
+  },
+];
+
 export default function Launchpad({
   targetUrl,
   setTargetUrl,
@@ -102,6 +149,8 @@ export default function Launchpad({
   activePreset,
 }) {
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showRuleEditor, setShowRuleEditor] = useState(false);
+  const [selectedGoals, setSelectedGoals] = useState(["nav", "auth", "forms", "security"]);
   const [maxConcurrency, setMaxConcurrency] = useState(3);
   const [replayAttempts, setReplayAttempts] = useState(3);
   const [viewportWidth, setViewportWidth] = useState(1280);
@@ -109,35 +158,60 @@ export default function Launchpad({
   const [authEmail, setAuthEmail] = useState("demo@mywealthwise.in");
   const [authPassword, setAuthPassword] = useState("DemoUser2026!QA");
 
+  const handleToggleGoal = (goalId) => {
+    let nextGoals;
+    if (selectedGoals.includes(goalId)) {
+      nextGoals = selectedGoals.filter((g) => g !== goalId);
+    } else {
+      nextGoals = [...selectedGoals, goalId];
+    }
+    setSelectedGoals(nextGoals);
+
+    const combinedRules = nextGoals
+      .map((id) => QUALITY_GOAL_PACKS.find((p) => p.id === id)?.rules)
+      .filter(Boolean)
+      .join("\n");
+
+    const header = `# Ground-Truth Behavioral Rules for ${targetUrl || "Target Web Application"}\n\n`;
+    setDescription(header + combinedRules);
+  };
+
+  const isHttps = targetUrl.startsWith("https://");
+  const isLocalhost = targetUrl.includes("localhost") || targetUrl.includes("127.0.0.1");
+
   return (
-    <section id="operation-workspace" className="py-20 lg:py-28 bg-[#FAFAF9] border-t border-[#E5E5E5]">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section id="operation-workspace" className="py-20 lg:py-28 bg-white border-t border-[#e6e9ee]">
+      <div className="mx-auto max-w-[980px] px-4 sm:px-6">
         {/* Section Header */}
-        <div className="max-w-2xl mb-12">
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium bg-white text-[#737373] border border-[#E5E5E5] mb-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <Badge variant="subtle" className="mb-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#2D9FFE] animate-pulse" />
             <span>Autonomous QA Launchpad</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-semibold text-[#171717] tracking-tight">
-            Start testing your application.
+          </Badge>
+          <h2 className="text-3xl sm:text-4xl font-semibold text-[#000000] tracking-tight">
+            Launch an autonomous audit in seconds.
           </h2>
-          <p className="mt-3 text-base text-[#737373] leading-relaxed">
-            Provide a target URL and behavioral guidelines. DRISHTI will explore the application, model core user journeys, validate failures through 3× clean replay, and export a pytest regression suite.
+          <p className="mt-3 text-sm text-[#525252] leading-relaxed">
+            Provide a target URL and choose your testing goals. DRISHTI explores your application, models real user journeys, and verifies regressions across 3× fresh browser replays.
           </p>
         </div>
 
         {/* Workspace Form Card */}
         <form
           onSubmit={onSubmit}
-          className="bg-white border border-[#E5E5E5] rounded-xl shadow-xs overflow-hidden"
+          className="rounded-2xl border border-[#e6e9ee] bg-white shadow-xs overflow-hidden"
         >
           {/* Target Preset Picker Bar */}
-          <div className="p-4 sm:p-5 border-b border-[#E5E5E5] bg-[#FAFAF9]/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="p-4 sm:p-5 border-b border-[#e6e9ee] bg-[#f8fafc] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-[#171717]">Preset Target:</span>
-              <span className="text-xs text-[#737373]">Select a validated benchmark or custom URL</span>
+              <span className="text-xs font-semibold text-[#000000]">
+                Target Presets:
+              </span>
+              <span className="text-xs text-[#737373] hidden sm:inline">
+                Staging environments &amp; benchmarks
+              </span>
             </div>
-            <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               {PRESET_TARGETS.map((p) => {
                 const isSelected = activePreset === p.id;
                 return (
@@ -145,13 +219,14 @@ export default function Launchpad({
                     key={p.id}
                     type="button"
                     onClick={() => onPresetSelect(p.id)}
-                    className={`px-2.5 py-1 text-xs rounded-md font-medium transition-all ${
+                    className={`px-3 py-1 text-xs rounded-full font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
                       isSelected
-                        ? "bg-[#171717] text-white shadow-2xs"
-                        : "bg-white text-[#525252] border border-[#E5E5E5] hover:bg-[#F5F5F4] hover:text-[#171717]"
+                        ? "bg-[#000000] text-white shadow-2xs font-semibold"
+                        : "bg-white text-[#525252] border border-[#e6e9ee] hover:bg-[#fafafa] hover:text-[#000000]"
                     }`}
                   >
-                    {p.label}
+                    {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-[#2D9FFE]" />}
+                    <span>{p.label}</span>
                   </button>
                 );
               })}
@@ -160,82 +235,163 @@ export default function Launchpad({
 
           {/* Form Body: 2 Columns */}
           <div className="p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Left Column: Target & Testing Guidelines (7 Cols) */}
+            {/* Left Column: Target & Goal Packs (7 Cols) */}
             <div className="lg:col-span-7 space-y-6">
               {/* Target URL Input */}
               <div>
-                <label
-                  htmlFor="target-url"
-                  className="block text-xs font-semibold text-[#171717] mb-2 uppercase tracking-wider font-mono"
-                >
-                  Target Web URL or GitHub Repository
-                </label>
-                <div className="relative rounded-lg border border-[#E5E5E5] bg-white shadow-2xs focus-within:border-[#171717] focus-within:ring-1 focus-within:ring-[#171717]/10 transition-all">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#A3A3A3]">
-                    <Globe className="w-4 h-4 text-[#737373]" />
+                <div className="flex items-center justify-between mb-2">
+                  <label
+                    htmlFor="target-url"
+                    className="block text-xs font-semibold text-[#000000]"
+                  >
+                    Target Application URL
+                  </label>
+                  {targetUrl && (
+                    <span className="text-[11px] font-mono flex items-center gap-1">
+                      {isHttps ? (
+                        <span className="text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                          <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                          <span>HTTPS Secure</span>
+                        </span>
+                      ) : isLocalhost ? (
+                        <span className="text-[#0b7ee6] bg-[#2D9FFE]/10 border border-[#2D9FFE]/20 px-2 py-0.5 rounded-full font-medium">
+                          Localhost
+                        </span>
+                      ) : (
+                        <span className="text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                          <AlertTriangle className="w-3 h-3 text-amber-600" />
+                          <span>HTTP</span>
+                        </span>
+                      )}
+                    </span>
+                  )}
+                </div>
+                <div className="relative rounded-[9px] border border-[#e6e9ee] bg-white shadow-2xs focus-within:border-[#2D9FFE] focus-within:ring-2 focus-within:ring-[#2D9FFE]/15 transition-all">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#737373]">
+                    <Globe className="w-4 h-4 text-[#2D9FFE]" />
                   </div>
                   <input
                     id="target-url"
-                    type="text"
+                    type="url"
                     value={targetUrl}
                     onChange={(e) => setTargetUrl(e.target.value)}
                     placeholder="https://your-staging-app.com"
-                    className="block w-full pl-10 pr-4 py-2.5 text-xs text-[#171717] placeholder-[#A3A3A3] focus:outline-none bg-transparent"
+                    className="block w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm text-[#000000] placeholder-[#a3a3a3] focus:outline-hidden bg-transparent font-sans"
                     required
                   />
                 </div>
                 <p className="mt-1.5 text-[11px] text-[#737373]">
-                  Chromium headless engine will initiate deterministic DOM frontier exploration on this URL.
+                  Playwright Chromium agents will autonomously explore navigation, DOM anchors, and forms.
                 </p>
               </div>
 
-              {/* Testing Guidelines & Expectations */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label
-                    htmlFor="target-description"
-                    className="block text-xs font-semibold text-[#171717] uppercase tracking-wider font-mono"
-                  >
-                    Testing Guidelines & Behavioral Expectations
-                  </label>
-                  <span className="text-[11px] font-mono text-[#A3A3A3]">
-                    {description.length} chars
+              {/* 1-Click Quality Goals Selection */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-[#2D9FFE]" />
+                    <span className="text-xs font-semibold text-[#000000]">
+                      Quality Goals
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-[#737373]">
+                    {selectedGoals.length} of {QUALITY_GOAL_PACKS.length} active
                   </span>
                 </div>
-                <textarea
-                  id="target-description"
-                  rows={8}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe critical user journeys, validation rules, HTTP response expectations..."
-                  className="block w-full p-3.5 text-xs text-[#171717] border border-[#E5E5E5] rounded-lg shadow-2xs focus:border-[#171717] focus:ring-1 focus:ring-[#171717]/10 focus:outline-none font-mono leading-relaxed"
-                />
-                <p className="mt-1.5 text-[11px] text-[#737373]">
-                  DRISHTI parses these rules into Assertion DSL contracts to verify form validations, HTTP status codes, and deterministic routing.
-                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {QUALITY_GOAL_PACKS.map((g) => {
+                    const isChecked = selectedGoals.includes(g.id);
+                    return (
+                      <div
+                        key={g.id}
+                        onClick={() => handleToggleGoal(g.id)}
+                        className={`p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 select-none ${
+                          isChecked
+                            ? "bg-white border-[#2D9FFE] shadow-2xs ring-1 ring-[#2D9FFE]/20"
+                            : "bg-[#f8fafc] border-[#e6e9ee] hover:bg-white hover:border-[#cbd5e1]"
+                        }`}
+                      >
+                        <div
+                          className={`w-4 h-4 rounded mt-0.5 flex items-center justify-center shrink-0 transition-colors ${
+                            isChecked
+                              ? "bg-[#2D9FFE] text-white"
+                              : "border border-[#cbd5e1] bg-white"
+                          }`}
+                        >
+                          {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="text-xs font-medium text-[#000000] truncate">
+                              {g.label}
+                            </span>
+                            <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#f0f0f0] text-[#525252]">
+                              {g.tag}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-[#737373] mt-0.5 line-clamp-1 leading-normal">
+                            {g.desc}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
-              {/* Collapsible Advanced Settings */}
-              <div className="pt-2 border-t border-[#E5E5E5]">
+              {/* Progressive Disclosure: Custom Rule Editor Drawer */}
+              <div className="pt-2 border-t border-[#e6e9ee]">
+                <button
+                  type="button"
+                  onClick={() => setShowRuleEditor(!showRuleEditor)}
+                  className="flex items-center justify-between w-full py-1 text-xs font-medium text-[#525252] hover:text-[#000000] transition-colors cursor-pointer"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <FileCode2 className="w-3.5 h-3.5 text-[#2D9FFE]" />
+                    <span>View / Customize Invariant Rules</span>
+                  </span>
+                  <span className="text-[11px] font-mono text-[#a3a3a3] flex items-center gap-1">
+                    {showRuleEditor ? "Collapse" : "Expand"}
+                    {showRuleEditor ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                  </span>
+                </button>
+
+                {showRuleEditor && (
+                  <div className="mt-3 space-y-2 animate-in fade-in duration-150">
+                    <textarea
+                      id="target-description"
+                      rows={5}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Custom invariants, status expectations, and edge-cases..."
+                      className="block w-full p-3 text-xs text-[#000000] border border-[#e6e9ee] rounded-xl shadow-2xs focus:border-[#2D9FFE] focus:ring-1 focus:ring-[#2D9FFE]/20 focus:outline-hidden font-mono leading-relaxed bg-[#f8fafc]"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Collapsible Advanced Parameters */}
+              <div className="pt-2 border-t border-[#e6e9ee]">
                 <button
                   type="button"
                   onClick={() => setShowAdvanced(!showAdvanced)}
-                  className="flex items-center gap-1.5 text-xs font-medium text-[#737373] hover:text-[#171717] transition-colors"
+                  className="flex items-center gap-1.5 text-xs font-medium text-[#737373] hover:text-[#000000] transition-colors cursor-pointer"
                 >
-                  <Sliders className="w-3.5 h-3.5 text-[#F97316]" />
-                  <span>Advanced Engine Parameters</span>
+                  <Sliders className="w-3.5 h-3.5 text-[#2D9FFE]" />
+                  <span>Advanced Parameters (Concurrency &amp; Replay)</span>
                   {showAdvanced ? (
-                    <ChevronUp className="w-3 h-3 text-[#A3A3A3]" />
+                    <ChevronUp className="w-3 h-3 text-[#a3a3a3]" />
                   ) : (
-                    <ChevronDown className="w-3 h-3 text-[#A3A3A3]" />
+                    <ChevronDown className="w-3 h-3 text-[#a3a3a3]" />
                   )}
                 </button>
 
                 {showAdvanced && (
-                  <div className="mt-4 p-4 rounded-lg bg-[#FAFAF9] border border-[#E5E5E5] grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                  <div className="mt-3 p-4 rounded-xl bg-[#f8fafc] border border-[#e6e9ee] grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs animate-in fade-in duration-150">
                     <div>
-                      <label className="block text-[11px] font-semibold text-[#171717] mb-1">
-                        Replay Isolation Count
+                      <label className="block text-[11px] font-medium text-[#000000] mb-1">
+                        Replay Iterations
                       </label>
                       <input
                         type="number"
@@ -243,14 +399,14 @@ export default function Launchpad({
                         max="5"
                         value={replayAttempts}
                         onChange={(e) => setReplayAttempts(Number(e.target.value))}
-                        className="w-full px-2.5 py-1.5 text-xs border border-[#E5E5E5] rounded bg-white"
+                        className="w-full px-2.5 py-1.5 text-xs border border-[#e6e9ee] rounded-lg bg-white"
                       />
-                      <span className="text-[10px] text-[#A3A3A3] mt-0.5 block">Default 3× fresh contexts</span>
+                      <span className="text-[10px] text-[#737373] mt-0.5 block">3× fresh contexts</span>
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-semibold text-[#171717] mb-1">
-                        Crawl Concurrency
+                      <label className="block text-[11px] font-medium text-[#000000] mb-1">
+                        Concurrency
                       </label>
                       <input
                         type="number"
@@ -258,13 +414,13 @@ export default function Launchpad({
                         max="6"
                         value={maxConcurrency}
                         onChange={(e) => setMaxConcurrency(Number(e.target.value))}
-                        className="w-full px-2.5 py-1.5 text-xs border border-[#E5E5E5] rounded bg-white"
+                        className="w-full px-2.5 py-1.5 text-xs border border-[#e6e9ee] rounded-lg bg-white"
                       />
-                      <span className="text-[10px] text-[#A3A3A3] mt-0.5 block">Parallel headless workers</span>
+                      <span className="text-[10px] text-[#737373] mt-0.5 block">Parallel headless workers</span>
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-semibold text-[#171717] mb-1">
+                      <label className="block text-[11px] font-medium text-[#000000] mb-1">
                         Viewport Width
                       </label>
                       <input
@@ -274,23 +430,23 @@ export default function Launchpad({
                         step="10"
                         value={viewportWidth}
                         onChange={(e) => setViewportWidth(Number(e.target.value))}
-                        className="w-full px-2.5 py-1.5 text-xs border border-[#E5E5E5] rounded bg-white"
+                        className="w-full px-2.5 py-1.5 text-xs border border-[#e6e9ee] rounded-lg bg-white"
                       />
-                      <span className="text-[10px] text-[#A3A3A3] mt-0.5 block">1280px standard desktop</span>
+                      <span className="text-[10px] text-[#737373] mt-0.5 block">1280px Desktop default</span>
                     </div>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Right Column: Execution Mode, Attestation & Launch (5 Cols) */}
-            <div className="lg:col-span-5 flex flex-col justify-between space-y-6 lg:border-l lg:border-[#E5E5E5] lg:pl-8">
+            {/* Right Column: Execution Safety, Auth Crawl & Launch (5 Cols) */}
+            <div className="lg:col-span-5 flex flex-col justify-between space-y-6 lg:border-l lg:border-[#e6e9ee] lg:pl-8">
               <div className="space-y-6">
-                {/* Execution Mode Selector */}
+                {/* Execution Safety Mode Selector */}
                 <div>
                   <label
                     htmlFor="mode-select"
-                    className="block text-xs font-semibold text-[#171717] mb-2 uppercase tracking-wider font-mono"
+                    className="block text-xs font-semibold text-[#000000] mb-2"
                   >
                     Execution Safety Mode
                   </label>
@@ -298,153 +454,110 @@ export default function Launchpad({
                     id="mode-select"
                     value={mode}
                     onChange={(e) => setMode(e.target.value)}
-                    className="block w-full px-3 py-2.5 text-xs text-[#171717] border border-[#E5E5E5] rounded-lg shadow-2xs focus:border-[#171717] focus:outline-none bg-white font-medium"
+                    className="block w-full px-3 py-2 text-xs text-[#000000] border border-[#e6e9ee] rounded-[9px] shadow-2xs focus:border-[#2D9FFE] focus:outline-hidden bg-white font-medium cursor-pointer"
                   >
-                    <option value="sandbox">Sandbox Mode (Exploration & Non-Destructive Actions)</option>
-                    <option value="safe_exploration">Safe Exploration (Read-Only Navigation & Form Probing)</option>
+                    <option value="sandbox">Sandbox Mode (Exploration &amp; Non-Destructive Actions)</option>
+                    <option value="safe_exploration">Safe Exploration (Passive DOM Inspection &amp; Read-Only)</option>
                   </select>
-                  <p className="mt-1.5 text-[11px] text-[#737373]">
-                    {mode === "sandbox"
-                      ? "Allows autonomous exploration, form validation boundary probing, and deterministic replay in isolated sandboxes."
-                      : "Strictly limits autonomous agent actions to GET requests, navigation, and passive DOM inspection."}
-                  </p>
                 </div>
 
-                {/* Authenticated Application Crawl (Credentials Injection) */}
-                <div className="p-4 rounded-xl border border-[#E5E5E5] bg-[#FAFAF9]/90 space-y-3">
+                {/* Authenticated Application Crawl */}
+                <div className="p-4 rounded-xl border border-[#e6e9ee] bg-[#f8fafc] space-y-3">
                   <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[#171717]">
-                      <LockKeyhole className="w-3.5 h-3.5 text-[#F97316]" />
-                      <span>Authenticated Crawl &amp; Internal Route Access</span>
+                    <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-[#000000]">
+                      <LockKeyhole className="w-3.5 h-3.5 text-[#2D9FFE]" />
+                      <span>Audit Behind Login</span>
                     </label>
                     <input
                       type="checkbox"
                       checked={authEnabled}
                       onChange={(e) => setAuthEnabled(e.target.checked)}
-                      className="rounded border-[#E5E5E5] text-[#171717] focus:ring-0 cursor-pointer"
+                      className="rounded border-[#cbd5e1] text-[#2D9FFE] focus:ring-0 cursor-pointer"
                     />
                   </div>
 
                   {authEnabled && (
-                    <div className="space-y-2.5 pt-1 animate-in fade-in duration-150">
-                      <p className="text-[11px] text-[#737373] leading-relaxed">
-                        Inject test account credentials to penetrate past the login wall and autonomously audit internal pages (<code className="font-mono text-zinc-800">/dashboard</code>, <code className="font-mono text-zinc-800">/budget</code>, <code className="font-mono text-zinc-800">/settings</code>).
-                      </p>
+                    <div className="space-y-2 pt-1 animate-in fade-in duration-150">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
                         <input
                           type="text"
                           value={authEmail}
                           onChange={(e) => setAuthEmail(e.target.value)}
-                          placeholder="Test Email (e.g. demo@mywealthwise.in)"
-                          className="px-2.5 py-1.5 rounded-lg border border-[#E5E5E5] bg-white text-zinc-900 text-xs"
+                          placeholder="Test Email"
+                          className="px-2.5 py-1.5 rounded-lg border border-[#e6e9ee] bg-white text-zinc-900 text-xs"
                         />
                         <input
                           type="password"
                           value={authPassword}
                           onChange={(e) => setAuthPassword(e.target.value)}
-                          placeholder="Password (e.g. ••••••••••••)"
-                          className="px-2.5 py-1.5 rounded-lg border border-[#E5E5E5] bg-white text-zinc-900 text-xs"
+                          placeholder="Password"
+                          className="px-2.5 py-1.5 rounded-lg border border-[#e6e9ee] bg-white text-zinc-900 text-xs"
                         />
                       </div>
-                      <div className="flex items-center gap-1.5 text-[10px] text-emerald-700 font-mono">
-                        <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
-                        <span>Pre-seeded for WealthWise &amp; ShopLite Test Benchmarks</span>
-                      </div>
+                      <span className="text-[10px] text-emerald-700 font-mono block">
+                        ✓ Pre-seeded for WealthWise &amp; ShopLite targets
+                      </span>
                     </div>
                   )}
                 </div>
 
-                {/* Authorization Attestation Row (SEC-1 Required) */}
-                <div className="p-4 rounded-lg bg-[#FAFAF9] border border-[#E5E5E5]">
+                {/* Friendly Target Authorization Confirmation */}
+                <div className="p-4 rounded-xl bg-[#f8fafc] border border-[#e6e9ee]">
                   <label
                     htmlFor="attestation-check"
-                    className="flex items-start gap-2.5 cursor-pointer text-xs"
+                    className="flex items-start gap-2.5 cursor-pointer text-xs select-none"
                   >
                     <input
                       id="attestation-check"
                       type="checkbox"
                       checked={attestation}
                       onChange={(e) => setAttestation(e.target.checked)}
-                      className="mt-0.5 w-4 h-4 rounded border-[#D4D4D4] text-[#171717] focus:ring-[#171717]"
+                      className="mt-0.5 w-4 h-4 rounded border-[#cbd5e1] text-[#2D9FFE] focus:ring-[#2D9FFE] cursor-pointer"
                     />
                     <div>
-                      <span className="font-semibold text-[#171717] block">
-                        Authorization Attestation (SEC-1 Required)
+                      <span className="font-medium text-[#000000] flex items-center gap-1.5">
+                        <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>Authorized Testing Confirmation</span>
                       </span>
                       <span className="text-[#737373] text-[11px] mt-0.5 block leading-relaxed">
-                        I confirm that I own or am explicitly authorized to test this target URL, and that this test run operates in a controlled non-production or staging environment.
+                        I confirm I am authorized to test this target in a non-destructive sandbox.
                       </span>
                     </div>
                   </label>
                 </div>
 
-                {/* Engine Telemetry Readiness Checklist */}
-                <div className="p-3.5 bg-white border border-[#E5E5E5] rounded-lg text-xs space-y-2">
-                  <div className="flex items-center justify-between text-[11px] pb-1.5 border-b border-[#F5F5F4] text-[#737373]">
-                    <span className="font-semibold text-[#171717]">Engine Environment Readiness</span>
-                    <span className="font-mono text-emerald-700">Ready</span>
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] text-[#525252]">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                      Chromium Browser Sandboxes
-                    </span>
-                    <span className="font-mono text-[#737373]">v1.50 Headless</span>
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] text-[#525252]">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                      Isolated Replay Contexts
-                    </span>
-                    <span className="font-mono text-[#737373]">Enabled (3×)</span>
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] text-[#525252]">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                      Pytest Codegen Emitter
-                    </span>
-                    <span className="font-mono text-[#737373]">Active</span>
-                  </div>
-                </div>
-
-                {/* Error Banner if any */}
+                {/* Error Banner */}
                 {error && (
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 flex items-start gap-2">
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-start gap-2">
                     <AlertTriangle className="w-4 h-4 shrink-0 text-red-600 mt-0.5" />
-                    <div>
-                      <span className="font-semibold block">Execution Blocked</span>
-                      <span>{error}</span>
-                    </div>
+                    <span>{error}</span>
                   </div>
                 )}
               </div>
 
               {/* Primary Action Button */}
-              <div className="pt-4 border-t border-[#E5E5E5]">
-                <button
+              <div className="pt-4 border-t border-[#e6e9ee]">
+                <Button
                   id="start-run-btn"
                   type="submit"
                   disabled={loading || !attestation}
-                  className={`w-full py-3.5 px-6 rounded-lg text-xs font-semibold tracking-tight transition-all flex items-center justify-center gap-2 shadow-xs ${
-                    loading || !attestation
-                      ? "bg-[#E5E5E5] text-[#A3A3A3] cursor-not-allowed"
-                      : "bg-[#171717] text-white hover:bg-black active:scale-[0.99]"
-                  }`}
+                  size="lg"
+                  className="w-full text-xs sm:text-sm font-semibold shadow-xs"
                 >
                   {loading ? (
                     <>
-                      <RotateCcw className="w-4 h-4 animate-spin text-[#F97316]" />
+                      <RotateCcw className="w-4 h-4 animate-spin text-white" />
                       <span>Initializing Autonomous Session...</span>
                     </>
                   ) : (
                     <>
-                      <Play className="w-4 h-4 fill-current text-[#F97316]" />
+                      <Play className="w-4 h-4 fill-current text-white" />
                       <span>Launch Autonomous QA Run</span>
                     </>
                   )}
-                </button>
-                <div className="mt-2 text-center text-[11px] text-[#A3A3A3]">
-                  Submits to FastAPI /api/runs &bull; Redirects to live telemetry dashboard
+                </Button>
+                <div className="mt-2 text-center text-[11px] text-[#737373]">
+                  Submits to FastAPI /api/runs &bull; Redirects to live audit dashboard
                 </div>
               </div>
             </div>

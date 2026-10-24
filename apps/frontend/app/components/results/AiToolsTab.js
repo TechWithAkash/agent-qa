@@ -19,6 +19,8 @@ import {
   ChevronUp,
   Cpu,
   Zap,
+  Play,
+  FileCode2,
 } from "lucide-react";
 
 const DEMO_DRIFT_SCENARIOS = [
@@ -28,6 +30,7 @@ const DEMO_DRIFT_SCENARIOS = [
     broken: "#legacy_cta_button_v1",
     strategy: "Semantic Accessible Role + Text Match",
     description: "Element ID was renamed during a frontend refactor; DOM query returned null.",
+    tag: "ID Mutation",
   },
   {
     id: "tailwind_drift",
@@ -35,6 +38,7 @@ const DEMO_DRIFT_SCENARIOS = [
     broken: "button.bg-orange-500.hover\\:bg-orange-600.px-4.py-2.rounded-lg",
     strategy: "Accessible Button Hierarchy Recovery",
     description: "Utility classes shifted from Tailwind v3 to v4; hardcoded selector broke.",
+    tag: "Class Drift",
   },
   {
     id: "hash_drift",
@@ -42,6 +46,7 @@ const DEMO_DRIFT_SCENARIOS = [
     broken: "div[data-testid='auth-modal-v2'] > button.btn-7x9q",
     strategy: "Proximity & Accessible Name Recovery",
     description: "Bundler generated a new dynamic CSS-in-JS hash on rebuild.",
+    tag: "Hash Drift",
   },
   {
     id: "xpath_drift",
@@ -49,6 +54,7 @@ const DEMO_DRIFT_SCENARIOS = [
     broken: "/html/body/div[1]/main/section[2]/div[3]/div/button",
     strategy: "Semantic Subtree Graph Synthesis",
     description: "Wrapper div added around marketing hero section; strict XPath collapsed.",
+    tag: "DOM Shift",
   },
 ];
 
@@ -85,11 +91,27 @@ export default function AiToolsTab({
 
   const currentScenario = DEMO_DRIFT_SCENARIOS.find((s) => s.id === activeDriftScenario) || DEMO_DRIFT_SCENARIOS[0];
 
-  const suggestions = [
-    `Click button "${primaryButton || "Get Started"}"`,
-    `Verify signup inputs on "${signupRoute || "/auth/signup"}"`,
-    `Assert primary headline "${(h1Text || "Autonomous").slice(0, 24)}..." is visible`,
-    `Check responsive navigation and zero console errors`,
+  const categorizedSuggestions = [
+    {
+      category: "CTA Interaction",
+      prompt: `Click button "${primaryButton || "Get Started"}"`,
+      badge: "Action",
+    },
+    {
+      category: "Auth Gateway",
+      prompt: `Verify signup inputs on "${signupRoute || "/auth/signup"}"`,
+      badge: "Form",
+    },
+    {
+      category: "Branding Invariant",
+      prompt: `Assert primary headline "${(h1Text || "Autonomous").slice(0, 24)}..." is visible`,
+      badge: "UI Assert",
+    },
+    {
+      category: "Console Stability",
+      prompt: `Check responsive navigation and zero console errors`,
+      badge: "Stability",
+    },
   ];
 
   return (
@@ -97,26 +119,46 @@ export default function AiToolsTab({
       {/* =========================================================================
           CARD 1: ASK QA AGENT (NATURAL LANGUAGE TEST EXECUTION)
           ========================================================================= */}
-      <div className="lg:col-span-6 rounded-2xl border border-[#E5E5E5] bg-white p-5 sm:p-6 space-y-5 shadow-xs">
-        <div className="flex items-start justify-between border-b border-[#F5F5F4] pb-4">
+      <div className="lg:col-span-6 rounded-2xl border border-[#e6e9ee] bg-white p-5 sm:p-6 space-y-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+        <div className="flex items-start justify-between border-b border-[#f0f0f0] pb-4">
           <div>
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center text-[#F97316]">
-                <Sparkles className="w-4 h-4 fill-[#F97316]/20" />
+              <div className="w-7 h-7 rounded-lg bg-[#2D9FFE]/10 border border-[#2D9FFE]/20 flex items-center justify-center text-[#2D9FFE]">
+                <Sparkles className="w-4 h-4 fill-[#2D9FFE]/20" />
               </div>
-              <h3 className="text-base font-bold text-[#171717] tracking-tight">
+              <h3 className="text-base font-bold text-[#000000] tracking-tight">
                 Ask QA Agent (Natural Language Test)
               </h3>
             </div>
-            <p className="text-xs text-[#737373] mt-1">
+            <p className="text-xs text-[#525252] mt-1">
               Autonomous compiler turns plain English intent into live Playwright actions &amp; invariant checks.
             </p>
           </div>
 
-          <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
             Agent Live
           </span>
+        </div>
+
+        {/* Visual Compilation Pipeline Stepper */}
+        <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#fafafa] border border-[#e6e9ee] text-[10px] font-mono text-[#737373]">
+          <div className="flex items-center gap-1 text-[#000000] font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#2D9FFE]"></span>
+            <span>English Prompt</span>
+          </div>
+          <ArrowRight className="w-3 h-3 text-zinc-400" />
+          <div className="flex items-center gap-1">
+            <span>AST Parse</span>
+          </div>
+          <ArrowRight className="w-3 h-3 text-zinc-400" />
+          <div className="flex items-center gap-1">
+            <span>Playwright Invariant</span>
+          </div>
+          <ArrowRight className="w-3 h-3 text-zinc-400" />
+          <div className="flex items-center gap-1 text-emerald-600 font-semibold">
+            <span>Chromium Run</span>
+          </div>
         </div>
 
         {/* Quick Suggestion Chips */}
@@ -124,18 +166,24 @@ export default function AiToolsTab({
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#737373] font-semibold">
             Suggested Test Prompts:
           </span>
-          <div className="flex flex-wrap gap-1.5">
-            {suggestions.map((s, idx) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+            {categorizedSuggestions.map((item, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => {
-                  setCustomStepText(s);
-                  handleExecuteNLStep(s);
+                  setCustomStepText(item.prompt);
+                  handleExecuteNLStep(item.prompt);
                 }}
-                className="text-[11px] font-sans px-2.5 py-1 rounded-lg border border-[#E5E5E5] bg-[#FAFAF9] hover:bg-orange-50 hover:border-orange-200 hover:text-orange-900 text-[#525252] transition-all cursor-pointer text-left truncate max-w-full"
+                className="text-[11px] p-2 rounded-xl border border-[#e6e9ee] bg-[#fafafa] hover:bg-[#2D9FFE]/5 hover:border-[#2D9FFE]/40 text-[#525252] hover:text-[#000000] transition-all cursor-pointer text-left flex items-start justify-between gap-2"
               >
-                👉 {s}
+                <div className="truncate">
+                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-zinc-200 text-zinc-700 mr-1.5">
+                    {item.badge}
+                  </span>
+                  <span className="font-medium">{item.prompt}</span>
+                </div>
+                <Play className="w-3 h-3 text-[#2D9FFE] shrink-0 mt-0.5" />
               </button>
             ))}
           </div>
@@ -151,19 +199,19 @@ export default function AiToolsTab({
                 onChange={(e) => setCustomStepText(e.target.value)}
                 placeholder={`e.g. Verify sign-up flow on "${signupRoute || "/auth/signup"}"...`}
                 onKeyDown={(e) => e.key === "Enter" && handleExecuteNLStep(customStepText)}
-                className="w-full text-xs font-mono text-[#171717] placeholder-[#A3A3A3] px-3.5 py-2.5 rounded-xl border border-[#E5E5E5] bg-[#FAFAF9] focus:bg-white focus:border-[#171717] focus:outline-hidden transition-all shadow-2xs"
+                className="w-full text-xs font-mono text-[#000000] placeholder-[#a3a3a3] px-3.5 py-2.5 rounded-xl border border-[#e6e9ee] bg-[#fafafa] focus:bg-white focus:border-[#2D9FFE] focus:ring-2 focus:ring-[#2D9FFE]/20 focus:outline-hidden transition-all shadow-2xs"
               />
             </div>
             <button
               type="button"
               onClick={() => handleExecuteNLStep(customStepText)}
               disabled={executingStep || !customStepText.trim()}
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#171717] hover:bg-black text-white text-xs font-semibold cursor-pointer disabled:opacity-50 whitespace-nowrap shadow-xs transition-all group"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#2D9FFE] hover:bg-[#0b7ee6] text-white text-xs font-bold cursor-pointer disabled:opacity-50 whitespace-nowrap shadow-xs transition-all group"
             >
               {executingStep ? (
-                <RotateCcw className="w-3.5 h-3.5 animate-spin text-[#F97316]" />
+                <RotateCcw className="w-3.5 h-3.5 animate-spin text-white" />
               ) : (
-                <Send className="w-3.5 h-3.5 text-[#F97316] transition-transform group-hover:translate-x-0.5" />
+                <Send className="w-3.5 h-3.5 text-white transition-transform group-hover:translate-x-0.5" />
               )}
               <span>{executingStep ? "Compiling..." : "Execute"}</span>
             </button>
@@ -207,7 +255,7 @@ export default function AiToolsTab({
               <button
                 type="button"
                 onClick={() => handleCopy(stepResult.resolved_locator, "nl_loc")}
-                className="text-zinc-400 hover:text-zinc-800 transition-colors p-1"
+                className="text-zinc-400 hover:text-zinc-800 transition-colors p-1 cursor-pointer"
                 title="Copy resolved locator"
               >
                 {copiedKey === "nl_loc" ? (
@@ -224,9 +272,9 @@ export default function AiToolsTab({
             </p>
 
             {/* Generated Code Snippet */}
-            <div className="rounded-lg bg-[#18181B] text-zinc-200 p-3 text-[11px] font-mono border border-zinc-800 space-y-1">
+            <div className="rounded-lg bg-[#0d1117] text-zinc-200 p-3 text-[11px] font-mono border border-zinc-800 space-y-1">
               <div className="flex items-center justify-between text-[10px] text-zinc-400 border-b border-zinc-800 pb-1 mb-1">
-                <span className="flex items-center gap-1.5 text-orange-400">
+                <span className="flex items-center gap-1.5 text-[#2D9FFE]">
                   <Terminal className="w-3 h-3" />
                   Synthesized Playwright Action
                 </span>
@@ -238,7 +286,7 @@ export default function AiToolsTab({
                       "nl_code"
                     )
                   }
-                  className="hover:text-white transition-colors flex items-center gap-1"
+                  className="hover:text-white transition-colors flex items-center gap-1 cursor-pointer"
                 >
                   {copiedKey === "nl_code" ? "Copied!" : "Copy"}
                 </button>
@@ -247,7 +295,7 @@ export default function AiToolsTab({
                 # Natural language step compiled into invariant test
               </div>
               <div>
-                await page.locator(&apos;<span className="text-orange-300">{stepResult.resolved_locator || "body"}</span>&apos;).{stepResult.action === "fill" ? "fill('test@drishti.ai')" : "click()"}
+                await page.locator(&apos;<span className="text-sky-300">{stepResult.resolved_locator || "body"}</span>&apos;).{stepResult.action === "fill" ? "fill('test@drishti.ai')" : "click()"}
               </div>
               <div className="text-zinc-400">
                 expect(page.status).to_be_one_of([200, 201, 204])
@@ -283,15 +331,15 @@ export default function AiToolsTab({
             )}
           </div>
         ) : (
-          <div className="rounded-xl border border-dashed border-[#E5E5E5] bg-[#FAFAF9] p-5 text-center space-y-2">
-            <div className="w-8 h-8 rounded-full bg-orange-100 text-[#F97316] mx-auto flex items-center justify-center text-xs font-bold">
+          <div className="rounded-xl border border-dashed border-[#e6e9ee] bg-[#fafafa] p-6 text-center space-y-2">
+            <div className="w-8 h-8 rounded-full bg-[#2D9FFE]/10 text-[#2D9FFE] mx-auto flex items-center justify-center text-xs font-bold">
               AI
             </div>
-            <div className="text-xs font-semibold text-[#171717]">
+            <div className="text-xs font-semibold text-[#000000]">
               Ready for Live Prompt Validation
             </div>
             <p className="text-[11px] text-[#737373] max-w-xs mx-auto">
-              Type any test command or click a prompt above to compile natural language into headless Chromium actions.
+              Click any suggested test prompt above or enter custom natural language instructions to generate live Playwright invariants.
             </p>
           </div>
         )}
@@ -300,18 +348,18 @@ export default function AiToolsTab({
       {/* =========================================================================
           CARD 2: SELF-HEALING ENGINE (LOCATOR DRIFT RECOVERY)
           ========================================================================= */}
-      <div className="lg:col-span-6 rounded-2xl border border-[#E5E5E5] bg-white p-5 sm:p-6 space-y-5 shadow-xs">
-        <div className="flex items-start justify-between border-b border-[#F5F5F4] pb-4">
+      <div className="lg:col-span-6 rounded-2xl border border-[#e6e9ee] bg-white p-5 sm:p-6 space-y-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+        <div className="flex items-start justify-between border-b border-[#f0f0f0] pb-4">
           <div>
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center text-[#F97316]">
-                <Wand2 className="w-4 h-4 fill-[#F97316]/20" />
+              <div className="w-7 h-7 rounded-lg bg-[#2D9FFE]/10 border border-[#2D9FFE]/20 flex items-center justify-center text-[#2D9FFE]">
+                <Wand2 className="w-4 h-4 fill-[#2D9FFE]/20" />
               </div>
-              <h3 className="text-base font-bold text-[#171717] tracking-tight">
+              <h3 className="text-base font-bold text-[#000000] tracking-tight">
                 Self-Healing Engine (Locator Drift)
               </h3>
             </div>
-            <p className="text-xs text-[#737373] mt-1">
+            <p className="text-xs text-[#525252] mt-1">
               Autonomous semantic recovery intercepts broken CSS/XPath selectors and heals them on the fly.
             </p>
           </div>
@@ -320,7 +368,7 @@ export default function AiToolsTab({
             type="button"
             onClick={() => handleTriggerSelfHealing(currentScenario.broken)}
             disabled={isHealing}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#F97316] hover:bg-[#EA580C] text-white text-xs font-bold transition-all cursor-pointer disabled:opacity-50 shrink-0 shadow-xs group"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#2D9FFE] hover:bg-[#0b7ee6] text-white text-xs font-bold transition-all cursor-pointer disabled:opacity-50 shrink-0 shadow-xs group"
           >
             <Wand2 className={`w-3.5 h-3.5 ${isHealing ? "animate-spin" : "transition-transform group-hover:rotate-12"}`} />
             <span>{isHealing ? "Healing..." : "Simulate Drift"}</span>
@@ -332,7 +380,7 @@ export default function AiToolsTab({
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#737373] font-semibold">
             Choose Drift Simulation Scenario:
           </span>
-          <div className="grid grid-cols-2 gap-1.5">
+          <div className="grid grid-cols-2 gap-2">
             {DEMO_DRIFT_SCENARIOS.map((s) => (
               <button
                 key={s.id}
@@ -341,26 +389,31 @@ export default function AiToolsTab({
                   setActiveDriftScenario(s.id);
                   handleTriggerSelfHealing(s.broken);
                 }}
-                className={`text-left p-2 rounded-xl border text-xs transition-all cursor-pointer ${
+                className={`text-left p-2.5 rounded-xl border text-xs transition-all cursor-pointer ${
                   activeDriftScenario === s.id
-                    ? "border-orange-500 bg-orange-50/60 text-orange-950 font-semibold shadow-2xs"
-                    : "border-[#E5E5E5] bg-[#FAFAF9] hover:bg-white text-zinc-600"
+                    ? "border-[#2D9FFE] bg-[#2D9FFE]/5 text-[#000000] font-semibold shadow-2xs"
+                    : "border-[#e6e9ee] bg-[#fafafa] hover:bg-white text-zinc-600"
                 }`}
               >
-                <div className="font-bold text-[11px] truncate">{s.label}</div>
-                <div className="text-[10px] font-mono text-zinc-500 truncate">{s.broken}</div>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[11px] text-[#000000] truncate">{s.label}</span>
+                  <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-zinc-200 text-zinc-700">
+                    {s.tag}
+                  </span>
+                </div>
+                <div className="text-[10px] font-mono text-zinc-500 truncate mt-0.5">{s.broken}</div>
               </button>
             ))}
           </div>
         </div>
 
         {/* Selected Scenario Details */}
-        <div className="p-3 rounded-xl border border-zinc-200 bg-[#FAFAF9] text-xs space-y-1">
+        <div className="p-3.5 rounded-xl border border-[#e6e9ee] bg-[#fafafa] text-xs space-y-1">
           <div className="flex items-center justify-between text-[11px] font-mono">
             <span className="text-zinc-600 font-semibold">Simulated Failure Mode:</span>
-            <span className="text-orange-700 font-bold">{currentScenario.label}</span>
+            <span className="text-[#0b7ee6] font-bold">{currentScenario.label}</span>
           </div>
-          <p className="text-[11px] text-zinc-500 leading-relaxed font-sans">
+          <p className="text-[11px] text-zinc-600 leading-relaxed font-sans">
             {currentScenario.description}
           </p>
         </div>
@@ -408,7 +461,7 @@ export default function AiToolsTab({
                     <button
                       type="button"
                       onClick={() => handleCopy(hc.healed_selector, `heal_${idx}`)}
-                      className="text-zinc-400 hover:text-zinc-800 transition-colors p-1 shrink-0"
+                      className="text-zinc-400 hover:text-zinc-800 transition-colors p-1 shrink-0 cursor-pointer"
                       title="Copy healed selector"
                     >
                       {copiedKey === `heal_${idx}` ? (
@@ -441,11 +494,11 @@ export default function AiToolsTab({
               </div>
             ))
           ) : (
-            <div className="rounded-xl border border-dashed border-[#E5E5E5] bg-[#FAFAF9] p-6 text-center space-y-2">
-              <div className="w-8 h-8 rounded-full bg-orange-100 text-[#F97316] mx-auto flex items-center justify-center text-xs font-bold">
+            <div className="rounded-xl border border-dashed border-[#e6e9ee] bg-[#fafafa] p-6 text-center space-y-2">
+              <div className="w-8 h-8 rounded-full bg-[#2D9FFE]/10 text-[#2D9FFE] mx-auto flex items-center justify-center text-xs font-bold">
                 <Wand2 className="w-4 h-4" />
               </div>
-              <div className="text-xs font-semibold text-[#171717]">
+              <div className="text-xs font-semibold text-[#000000]">
                 Zero Locator Drift Incurred
               </div>
               <p className="text-[11px] text-[#737373] max-w-xs mx-auto">

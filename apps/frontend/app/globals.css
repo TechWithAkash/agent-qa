@@ -1,59 +1,56 @@
 @import "tailwindcss";
 
 :root {
-  /* User-Defined Exact Font Families */
-  --font-heading: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  /* Simulithic Design Tokens */
+  --canvas: #ffffff;
+  --surface: #ffffff;
+  --surface-subtle: #fafafa;
+  --surface-card: #ffffff;
 
-  /* Vostride Light Mode Design Token System */
-  --bg-canvas: #fafafa;
-  --bg-surface: #ffffff;
-  --bg-surface-elevated: #f4f4f5;
-  --bg-surface-hover: #f1f1f4;
-  --bg-subtle: #f9f9fb;
-  
-  --border-subtle: #e4e4e7;
-  --border-medium: #d4d4d8;
-  --border-focus: #09090b;
+  --ink: #262626;
+  --ink-dark: #000000;
+  --ink-muted: #525252;
+  --ink-subtle: #737373;
+  --ink-faint: #a3a3a3;
 
-  /* Vostride Accent & Brand Colors */
-  --accent: #000000;
-  --accent-orange: #FF9500;
-  --accent-orange-hover: #e08500;
-  --accent-orange-muted: rgba(255, 149, 0, 0.12);
-  --accent-hover: #18181b;
-  --accent-muted: rgba(0, 0, 0, 0.05);
-  --accent-text: #09090b;
+  /* Signature Simulithic Sky Blue */
+  --sky: #2D9FFE;
+  --sky-deep: #0b7ee6;
+  --sky-hover: #1b8eed;
+  --sky-subtle: rgba(45, 159, 254, 0.08);
+  --sky-border: rgba(45, 159, 254, 0.3);
 
-  --success: #16a34a;
-  --success-muted: rgba(22, 163, 74, 0.1);
-  --success-text: #15803d;
+  /* Hairlines & Inset Borders */
+  --border-hairline: #e6e9ee;
+  --border-subtle: #f0f0f0;
+  --border-strong: #d4d4d8;
 
-  --warning: #d97706;
-  --warning-muted: rgba(217, 119, 6, 0.1);
-  --warning-text: #b45309;
+  /* Status Colors */
+  --success: #10b981;
+  --success-subtle: rgba(16, 185, 129, 0.08);
+  --fail: #c2453a;
+  --fail-subtle: rgba(194, 69, 58, 0.08);
+  --warning: #f59e0b;
 
-  --danger: #dc2626;
-  --danger-muted: rgba(220, 38, 38, 0.1);
-  --danger-text: #b91c1c;
+  /* Typography */
+  --font-heading: "Geist", "Geist Fallback", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-body: "Instrument Sans", "Instrument Sans Fallback", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", "IBM Plex Mono Fallback", ui-monospace, Menlo, Monaco, Consolas, monospace;
 
-  --text-primary: #09090b;
-  --text-secondary: #52525b;
-  --text-tertiary: #71717a;
-  --text-muted: #a1a1aa;
-  --text-disabled: #d4d4d8;
+  /* Container width */
+  --max-content-w: 980px;
 
-  /* Card and Shadows */
-  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
-  --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  /* Inset Elevation Shadows */
+  --inset-hairline: 0px 0px 0px 1px #e6e9ee inset;
+  --inset-hairline-subtle: 0px 0px 0px 1px #f0f0f0 inset;
+  --inset-hairline-sky: 0px 0px 0px 1px rgba(45, 159, 254, 0.4) inset;
 }
 
 body {
-  background-color: var(--bg-canvas);
-  color: var(--text-primary);
+  background-color: var(--canvas);
+  color: var(--ink);
   font-family: var(--font-body);
-  letter-spacing: -0.011em;
+  letter-spacing: -0.015em;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -62,158 +59,90 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
-  letter-spacing: -0.025em;
+  letter-spacing: -0.03em;
+  color: var(--ink-dark);
 }
 
-/* Modern clean monospace for code, traces, and terminal logs */
 code, pre, kbd, samp, .font-mono {
   font-family: var(--font-mono);
-  font-feature-settings: "liga" 1, "calt" 1;
 }
 
-/* Polished Surfaces */
-.surface-card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: 0.75rem;
-  box-shadow: var(--shadow-subtle);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+/* Inset hairline card container */
+.simulithic-card {
+  background-color: #ffffff;
+  box-shadow: 0 0 0 1px #e6e9ee inset;
+  border-radius: 16px;
+  transition: box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.surface-card-hover:hover {
-  border-color: var(--border-medium);
-  box-shadow: var(--shadow-medium);
+.simulithic-card:hover {
+  box-shadow: 0 0 0 1px #d6dbe1 inset, 0 8px 24px -12px rgba(0, 0, 0, 0.06);
 }
 
-.surface-elevated {
-  background-color: var(--bg-surface-elevated);
-  border: 1px solid var(--border-subtle);
-  border-radius: 0.75rem;
+/* Isometric technical line background pattern */
+.bg-simulithic-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(230, 233, 238, 0.5) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(230, 233, 238, 0.5) 1px, transparent 1px);
 }
 
-/* Primary Action Button (Vostride High-Precision Solid Black) */
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  background-color: #000000;
+.bg-isometric-dots {
+  background-image: radial-gradient(rgba(38, 38, 38, 0.12) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Subtle glass navbar */
+.simulithic-header {
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 0 0 #e6e9ee;
+}
+
+/* Buttons */
+.btn-simulithic-primary {
+  background-color: var(--sky);
   color: #ffffff;
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
+  border-radius: 9px;
   font-weight: 500;
-  line-height: 1.25rem;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid #000000;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(45, 159, 254, 0.24);
 }
 
-.btn-primary:hover:not(:disabled) {
-  background-color: #18181b;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.btn-simulithic-primary:hover:not(:disabled) {
+  background-color: var(--sky-deep);
+  box-shadow: 0 4px 12px rgba(11, 126, 230, 0.28);
   transform: translateY(-0.5px);
 }
 
-.btn-primary:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.btn-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Accent Orange Button (Vostride signature #FF9500) */
-.btn-accent {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  background-color: var(--accent-orange);
-  color: #ffffff;
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  line-height: 1.25rem;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 1px 3px rgba(255, 149, 0, 0.3);
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-
-.btn-accent:hover:not(:disabled) {
-  background-color: var(--accent-orange-hover);
-  box-shadow: 0 4px 12px rgba(255, 149, 0, 0.35);
-  transform: translateY(-0.5px);
-}
-
-/* Secondary Button (Vostride crisp white surface) */
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+.btn-simulithic-secondary {
   background-color: #ffffff;
-  color: #09090b;
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
+  color: var(--ink);
+  box-shadow: 0 0 0 1px #e6e9ee inset;
+  border-radius: 9px;
   font-weight: 500;
-  padding: 0.5rem 0.875rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--border-subtle);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-  transition: all 0.15s ease;
-  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.btn-secondary:hover:not(:disabled) {
-  background-color: #f4f4f5;
-  border-color: var(--border-medium);
-}
-
-/* Form Controls */
-.input-base {
-  display: block;
-  width: 100%;
-  background-color: #ffffff;
-  border: 1px solid var(--border-subtle);
-  border-radius: 0.5rem;
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
-  padding: 0.625rem 0.875rem;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  outline: none;
-}
-
-.input-base:focus {
-  border-color: #09090b;
-  box-shadow: 0 0 0 1px #09090b;
-}
-
-.input-base::placeholder {
-  color: var(--text-muted);
+.btn-simulithic-secondary:hover:not(:disabled) {
+  background-color: #fafafa;
+  box-shadow: 0 0 0 1px #cbd5e1 inset;
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
+  background: #d4d4d8;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.28);
+  background: #a1a1aa;
 }
 
 /* Respect Reduced Motion */

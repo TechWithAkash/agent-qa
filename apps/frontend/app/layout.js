@@ -10,10 +10,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="h-full scroll-smooth">
-      <body className="min-h-full flex flex-col antialiased bg-[#FAFAF9] text-[#171717] selection:bg-[#F97316]/20 selection:text-[#171717]">
-        {/* Top Navigation - Interactive with localStorage session sync */}
-        <Suspense fallback={<div className="h-14 border-b border-[#E5E5E5] bg-[#FAFAF9]" />}>
+    <html lang="en" className="h-full" data-scroll-behavior="smooth">
+      <body className="min-h-full flex flex-col antialiased bg-white text-[#262626] selection:bg-[#2D9FFE]/20 selection:text-[#000000]">
+        {/* Floating Capsule Dock Navigation */}
+        <Suspense fallback={<div className="h-16" />}>
           <Navbar />
         </Suspense>
 

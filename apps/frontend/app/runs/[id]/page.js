@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import WorkspaceLayout from "../../components/workspace/WorkspaceLayout";
 import MultiAgentSwarmModal from "../../components/MultiAgentSwarmModal";
 import AuditSummaryHeader from "../../components/results/AuditSummaryHeader";
 import DefectsTab from "../../components/results/DefectsTab";
@@ -165,13 +166,32 @@ function RunConsoleContent() {
   const [toastMessage, setToastMessage] = useState(null);
   const [activeReportTab, setActiveReportTab] = useState("flaws"); // "flaws" | "journeys" | "preview" | "pytest" | "tools"
   const [showAnomalyPinpoint, setShowAnomalyPinpoint] = useState({}); // map of findingId -> boolean
+  const [persona, setPersona] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        return localStorage.getItem("drishti_persona") || "pm";
+      } catch (e) {
+        return "pm";
+      }
+    }
+    return "pm";
+  });
+
+  // Synchronize persona with navbar / storage
+  useEffect(() => {
+    const handlePersonaChange = (e) => {
+      if (e.detail) setPersona(e.detail);
+    };
+
+    window.addEventListener("drishti_persona_change", handlePersonaChange);
+    return () => window.removeEventListener("drishti_persona_change", handlePersonaChange);
+  }, []);
 
   // Interactive Live Browser Preview Navigation State
   const [previewRoute, setPreviewRoute] = useState("/");
   const [previewUrlInput, setPreviewUrlInput] = useState("");
   const [isNavigatingPreview, setIsNavigatingPreview] = useState(false);
   const [fullImageModal, setFullImageModal] = useState(null); // { src, title, route, selector, description }
-
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
 
@@ -879,9 +899,10 @@ def test_j07_transport_security_and_console(page: Page):
   const qualityScorePercent = Math.round((passingJourneysCount / dynamicJourneys.length) * 100);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 w-full flex-1 flex flex-col space-y-6 bg-[#FAFAF9]">
-      {/* Toast Notification */}
-      {toastMessage && (
+    <WorkspaceLayout>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 w-full flex-1 flex flex-col space-y-6">
+        {/* Toast Notification */}
+        {toastMessage && (
         <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs text-emerald-800 shadow-xs">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -922,6 +943,7 @@ def test_j07_transport_security_and_console(page: Page):
         onRetestAll={handleRetestAll}
         retestingAll={retestingAll}
         onDownloadPytest={downloadTestSuite}
+        persona={persona}
       />
 
       {/* =========================================================================
@@ -946,28 +968,26 @@ def test_j07_transport_security_and_console(page: Page):
       />
 
       {/* =========================================================================
-          EXECUTIVE QA REPORT — VOSTRIDE LIGHT TABBED ARCHITECTURE
+          EXECUTIVE QA REPORT — SIMULITHIC MINIMALIST TABBED ARCHITECTURE
           ========================================================================= */}
       <div className="space-y-6">
         {/* Sleek Segmented Tab Navigation */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E5E5E5] pb-4">
-          <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-[#E5E5E5] bg-white p-1 text-xs shadow-2xs">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e6e9ee] pb-4">
+          <div className="flex flex-wrap items-center gap-1.5 rounded-2xl border border-[#e6e9ee] bg-[#fafafa] p-1.5 text-xs shadow-2xs">
             <button
               onClick={() => setActiveReportTab("flaws")}
-              className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
+              className={`flex items-center gap-2 rounded-xl px-3.5 py-2 font-medium transition-all cursor-pointer ${
                 activeReportTab === "flaws"
-                  ? "bg-[#171717] text-white shadow-xs font-semibold"
-                  : "text-[#737373] hover:text-[#171717] hover:bg-[#F5F5F4]"
+                  ? "bg-white text-[#000000] border border-[#e6e9ee] shadow-xs font-semibold"
+                  : "text-[#525252] hover:text-[#000000] hover:bg-white/60"
               }`}
             >
-              <AlertTriangle className="w-3.5 h-3.5 text-[#F97316]" />
+              <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
               <span>Defects &amp; Observations</span>
               <span
-                className={`ml-1 rounded px-1.5 py-0.2 text-[10px] font-mono font-bold ${
-                  activeReportTab === "flaws"
-                    ? "bg-white/20 text-white"
-                    : isBlocker
-                    ? "bg-red-50 text-red-700 border border-red-200"
+                className={`ml-1 rounded-full px-2 py-0.5 text-[10px] font-mono font-bold ${
+                  isBlocker
+                    ? "bg-rose-50 text-rose-700 border border-rose-200"
                     : isWarning
                     ? "bg-amber-50 text-amber-800 border border-amber-200"
                     : "bg-emerald-50 text-emerald-700 border border-emerald-200"
@@ -979,17 +999,19 @@ def test_j07_transport_security_and_console(page: Page):
 
             <button
               onClick={() => setActiveReportTab("journeys")}
-              className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
+              className={`flex items-center gap-2 rounded-xl px-3.5 py-2 font-medium transition-all cursor-pointer ${
                 activeReportTab === "journeys"
-                  ? "bg-[#171717] text-white shadow-xs font-semibold"
-                  : "text-[#737373] hover:text-[#171717] hover:bg-[#F5F5F4]"
+                  ? "bg-white text-[#000000] border border-[#e6e9ee] shadow-xs font-semibold"
+                  : "text-[#525252] hover:text-[#000000] hover:bg-white/60"
               }`}
             >
-              <ListChecks className="w-3.5 h-3.5" />
+              <ListChecks className="w-3.5 h-3.5 text-[#2D9FFE]" />
               <span>Audited User Journeys</span>
               <span
-                className={`ml-1 rounded px-1.5 py-0.2 text-[10px] font-mono ${
-                  activeReportTab === "journeys" ? "bg-white/20 text-white" : "bg-[#F5F5F4] text-[#737373]"
+                className={`ml-1 rounded-full px-2 py-0.5 text-[10px] font-mono ${
+                  activeReportTab === "journeys"
+                    ? "bg-[#2D9FFE]/10 text-[#0b7ee6] border border-[#2D9FFE]/20 font-semibold"
+                    : "bg-[#e6e9ee] text-[#525252]"
                 }`}
               >
                 {passingJourneysCount}/{dynamicJourneys.length}
@@ -998,43 +1020,101 @@ def test_j07_transport_security_and_console(page: Page):
 
             <button
               onClick={() => setActiveReportTab("preview")}
-              className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
+              className={`flex items-center gap-2 rounded-xl px-3.5 py-2 font-medium transition-all cursor-pointer ${
                 activeReportTab === "preview"
-                  ? "bg-[#171717] text-white shadow-xs font-semibold"
-                  : "text-[#737373] hover:text-[#171717] hover:bg-[#F5F5F4]"
+                  ? "bg-white text-[#000000] border border-[#e6e9ee] shadow-xs font-semibold"
+                  : "text-[#525252] hover:text-[#000000] hover:bg-white/60"
               }`}
             >
-              <Monitor className="w-3.5 h-3.5" />
+              <Monitor className="w-3.5 h-3.5 text-emerald-600" />
               <span>Live Browser &amp; Locators</span>
             </button>
 
             <button
               onClick={() => setActiveReportTab("pytest")}
-              className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
+              className={`flex items-center gap-2 rounded-xl px-3.5 py-2 font-medium transition-all cursor-pointer ${
                 activeReportTab === "pytest"
-                  ? "bg-[#171717] text-white shadow-xs font-semibold"
-                  : "text-[#737373] hover:text-[#171717] hover:bg-[#F5F5F4]"
+                  ? "bg-white text-[#000000] border border-[#e6e9ee] shadow-xs font-semibold"
+                  : "text-[#525252] hover:text-[#000000] hover:bg-white/60"
               }`}
             >
-              <FileCode2 className="w-3.5 h-3.5" />
+              <FileCode2 className="w-3.5 h-3.5 text-indigo-500" />
               <span>Pytest Artifact</span>
             </button>
 
             <button
               onClick={() => setActiveReportTab("tools")}
-              className={`flex items-center gap-2 rounded-lg px-3.5 py-2 font-medium transition-all cursor-pointer ${
+              className={`flex items-center gap-2 rounded-xl px-3.5 py-2 font-medium transition-all cursor-pointer ${
                 activeReportTab === "tools"
-                  ? "bg-[#171717] text-white shadow-xs font-semibold"
-                  : "text-[#737373] hover:text-[#171717] hover:bg-[#F5F5F4]"
+                  ? "bg-white text-[#000000] border border-[#e6e9ee] shadow-xs font-semibold"
+                  : "text-[#525252] hover:text-[#000000] hover:bg-white/60"
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
               <span>AI QA &amp; Self-Healing</span>
             </button>
           </div>
 
-          <div className="text-xs text-[#737373] font-mono hidden md:block">
-            Target: <span className="text-[#171717] font-semibold">{targetHostname}</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 p-1 rounded-xl border border-[#e6e9ee] bg-[#fafafa] text-xs">
+              <button
+                type="button"
+                onClick={() => {
+                  setPersona("pm");
+                  try {
+                    localStorage.setItem("drishti_persona", "pm");
+                    window.dispatchEvent(new CustomEvent("drishti_persona_change", { detail: "pm" }));
+                  } catch (e) {}
+                }}
+                className={`px-2.5 py-1.5 rounded-lg transition-all cursor-pointer font-medium ${
+                  persona === "pm"
+                    ? "bg-white text-[#000000] font-semibold shadow-2xs border border-[#e6e9ee]"
+                    : "text-[#737373] hover:text-[#000000]"
+                }`}
+                title="Product Manager / Executive Perspective"
+              >
+                👔 PM
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPersona("dev");
+                  try {
+                    localStorage.setItem("drishti_persona", "dev");
+                    window.dispatchEvent(new CustomEvent("drishti_persona_change", { detail: "dev" }));
+                  } catch (e) {}
+                }}
+                className={`px-2.5 py-1.5 rounded-lg transition-all cursor-pointer font-medium ${
+                  persona === "dev"
+                    ? "bg-white text-[#000000] font-semibold shadow-2xs border border-[#e6e9ee]"
+                    : "text-[#737373] hover:text-[#000000]"
+                }`}
+                title="Developer / Engineering Perspective"
+              >
+                🛠️ Dev
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPersona("qa");
+                  try {
+                    localStorage.setItem("drishti_persona", "qa");
+                    window.dispatchEvent(new CustomEvent("drishti_persona_change", { detail: "qa" }));
+                  } catch (e) {}
+                }}
+                className={`px-2.5 py-1.5 rounded-lg transition-all cursor-pointer font-medium ${
+                  persona === "qa"
+                    ? "bg-white text-[#000000] font-semibold shadow-2xs border border-[#e6e9ee]"
+                    : "text-[#737373] hover:text-[#000000]"
+                }`}
+                title="QA Specialist / Automation Perspective"
+              >
+                🧪 QA
+              </button>
+            </div>
+            <div className="text-xs text-[#737373] font-mono hidden md:block">
+              Target: <span className="text-[#000000] font-semibold">{targetHostname}</span>
+            </div>
           </div>
         </div>
 
@@ -1051,6 +1131,7 @@ def test_j07_transport_security_and_console(page: Page):
             telemetry={telemetry}
             getDefectScreenshotInfo={getDefectScreenshotInfo}
             setFullImageModal={setFullImageModal}
+            persona={persona}
           />
         )}
 
@@ -1063,6 +1144,7 @@ def test_j07_transport_security_and_console(page: Page):
             setExpandedJourney={setExpandedJourney}
             getWorkflowScreens={getWorkflowScreens}
             setFullImageModal={setFullImageModal}
+            persona={persona}
           />
         )}
 
@@ -1082,6 +1164,7 @@ def test_j07_transport_security_and_console(page: Page):
             copiedSelector={copiedSelector}
             copyToClipboard={copyToClipboard}
             setFullImageModal={setFullImageModal}
+            persona={persona}
           />
         )}
 
@@ -1124,6 +1207,7 @@ def test_j07_transport_security_and_console(page: Page):
         setFullImageModal={setFullImageModal}
       />
     </div>
+    </WorkspaceLayout>
   );
 }
 
