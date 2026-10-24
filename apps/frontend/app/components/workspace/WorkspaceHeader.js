@@ -13,6 +13,7 @@ import {
   Activity,
   Layers,
 } from "lucide-react";
+import { AnimatedThemeToggler } from "../ui/animated-theme-toggler";
 
 function subscribePersona(callback) {
   window.addEventListener("drishti_persona_change", callback);
@@ -140,6 +141,9 @@ export default function WorkspaceHeader({ onOpenQuickLaunch, setIsMobileOpen }) 
           <span className="hidden sm:inline">New Audit</span>
           <span className="sm:hidden">New</span>
         </button>
+
+        {/* Animated Theme Toggler */}
+        <AnimatedThemeToggler />
 
         {/* Docs Link */}
         <a

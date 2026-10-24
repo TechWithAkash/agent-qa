@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
 
 :root {
   /* Simulithic Design Tokens */
@@ -153,4 +154,161 @@ code, pre, kbd, samp, .font-mono {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* =========================================================================
+   ANIMATED THEME TOGGLER (VIEW TRANSITIONS API)
+   ========================================================================= */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html[data-magicui-theme-vt="active"]::view-transition-group(root) {
+  animation-duration: var(--magicui-theme-toggle-vt-duration);
+}
+
+html[data-magicui-theme-vt="active"]::view-transition-new(root) {
+  clip-path: var(--magicui-theme-vt-clip-from);
+}
+
+/* =========================================================================
+   DARK THEME COMPREHENSIVE ENGINE
+   ========================================================================= */
+.dark {
+  color-scheme: dark;
+  --canvas: #080c14;
+  --surface: #0e131f;
+  --surface-subtle: #131927;
+  --surface-card: #0e1422;
+
+  --ink: #e2e8f0;
+  --ink-dark: #f8fafc;
+  --ink-muted: #94a3b8;
+  --ink-subtle: #64748b;
+  --ink-faint: #475569;
+
+  --border-hairline: #1e293b;
+  --border-subtle: #1e293b;
+  --border-strong: #334155;
+
+  --inset-hairline: 0px 0px 0px 1px #1e293b inset;
+  --inset-hairline-subtle: 0px 0px 0px 1px #1e293b inset;
+}
+
+.dark,
+.dark body {
+  background-color: #080c14 !important;
+  color: #e2e8f0 !important;
+}
+
+/* Base Surfaces & Backgrounds */
+.dark header,
+.dark aside,
+.dark nav,
+.dark section,
+.dark footer {
+  background-color: #0d121f !important;
+  color: #e2e8f0 !important;
+  border-color: #1e293b !important;
+}
+
+.dark main {
+  background-color: #080c14 !important;
+}
+
+.dark .bg-white {
+  background-color: #0d121f !important;
+}
+
+.dark .bg-\[\#fafafa\] {
+  background-color: #121826 !important;
+}
+
+.dark .bg-\[\#fafafa\]\/50 {
+  background-color: #080c14 !important;
+}
+
+.dark .bg-\[\#f4f4f5\] {
+  background-color: #161e30 !important;
+}
+
+/* Typography in Dark Mode */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: #f8fafc !important;
+}
+
+.dark .text-\[\#000000\] {
+  color: #f8fafc !important;
+}
+
+.dark .text-\[\#262626\] {
+  color: #e2e8f0 !important;
+}
+
+.dark .text-\[\#525252\] {
+  color: #94a3b8 !important;
+}
+
+.dark .text-\[\#737373\] {
+  color: #64748b !important;
+}
+
+.dark .text-zinc-600,
+.dark .text-zinc-700,
+.dark .text-zinc-800 {
+  color: #cbd5e1 !important;
+}
+
+/* Borders in Dark Mode */
+.dark .border-\[\#e6e9ee\] {
+  border-color: #1e293b !important;
+}
+
+.dark .border-\[\#f0f0f0\] {
+  border-color: #1e293b !important;
+}
+
+.dark .border-zinc-200,
+.dark .border-zinc-300 {
+  border-color: #1e293b !important;
+}
+
+.dark .divide-\[\#e6e9ee\] > :not([hidden]) ~ :not([hidden]),
+.dark .divide-\[\#f0f0f0\] > :not([hidden]) ~ :not([hidden]) {
+  border-color: #1e293b !important;
+}
+
+/* Interactive States in Dark Mode */
+.dark .hover\:bg-\[\#fafafa\]:hover {
+  background-color: #151d2e !important;
+}
+
+.dark .hover\:bg-white:hover {
+  background-color: #121826 !important;
+}
+
+/* Inputs & Form Controls */
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #121826 !important;
+  color: #f8fafc !important;
+  border-color: #1e293b !important;
+}
+
+.dark input::placeholder {
+  color: #475569 !important;
+}
+
+/* Card & Header Utilities */
+.dark .simulithic-card {
+  background-color: #0d121f !important;
+  box-shadow: 0 0 0 1px #1e293b inset !important;
+}
+
+.dark .simulithic-header {
+  background-color: rgba(13, 18, 31, 0.92) !important;
+  box-shadow: 0 1px 0 0 #1e293b !important;
 }

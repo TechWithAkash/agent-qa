@@ -13,6 +13,7 @@ import {
   LayoutDashboard,
   PlayCircle,
 } from "lucide-react";
+import { AnimatedThemeToggler } from "./ui/animated-theme-toggler";
 
 function subscribeAuth(callback) {
   window.addEventListener("drishti_auth_change", callback);
@@ -232,8 +233,10 @@ export default function Navbar() {
           )}
         </nav>
 
-        {/* Right CTA Button */}
-        {currentUser ? (
+        {/* Right CTA Button & Theme Toggler */}
+        <div className="flex items-center gap-2.5">
+          <AnimatedThemeToggler />
+          {currentUser ? (
           <div className="relative">
             <button
               type="button"
@@ -312,6 +315,7 @@ export default function Navbar() {
             <ArrowRight className="h-3.5 w-3.5 ml-1 transition-transform group-hover:translate-x-0.5" />
           </Link>
         )}
+        </div>
       </header>
     </div>
   );
